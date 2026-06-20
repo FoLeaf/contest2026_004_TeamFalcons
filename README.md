@@ -1,210 +1,148 @@
-**1. 项目定位**
-项目名称：`VelaGuard FaultLens v2.0`
+# contest2026_004_TeamFalcons
 
-一句话定位：
+👋 欢迎参加 **2026 首届 openvela AI 硬件开发者大赛**！
 
-> 基于 openvela 的工业设备异常诊断终端，用于在设备异常时主动告警，并通过 AI 给出可解释的运维建议。
+这是组委会为你的队伍创建的**专属参赛仓库**（本仓为样例/模板，队伍编号 `004`；你看到的将是你自己的 `contest2026_<编号>_<队伍名>`）。比赛期间，你的全部参赛代码、打包产物与 AI Coding 日志都提交到这里。
 
-目标用户：
+> 本仓既是「代码仓」，又内置了一键拉取整套 openvela 工程的 `repo` 清单（manifest）。你只需跟它打交道，**自始至终只动一个文件夹**。
 
-- 小型自动化现场运维人员
-- 实验室设备管理员
-- 工控/嵌入式系统集成调试人员
+---
 
-真实问题：
+## 一、先读这些官方文档
 
-- 设备异常只显示数值或告警码，原因不清楚。
-- 运维人员需要翻寄存器表、日志、历史曲线才能判断问题。
-- 现场不能让 AI 直接控制设备，必须本地规则校验和人工确认。
+**通用（所有赛道必读）：**
 
-**2. 产品边界**
-v2.0 只做一个核心产品，不做平台化。
+| 文档                                                                                                                                     | 用途                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [《大赛总览》](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/contest_overview.md)                        | 赛道、流程、评分、资源，建议先通读             |
+| [《参赛代码提交指南》](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/code_submission_guide.md)           | 仓库获取、提交流程、时间与权限（**以此为准**） |
+| [《AI Coding 日志归集与提交手册》](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/ai_coding_log_guide.md) | 如何导出 AI 对话日志并提交到 `logs/`           |
 
-P0 只保留：
+**按你的赛道选读（三选一）：**
 
-- 一个工业数据源：优先 `Modbus RTU / RS485`
-- 三类异常：超阈值、通信离线、数值突变
-- 一个 LVGL 状态面板
-- 一个告警详情页
-- 一个 AI 诊断 Skill
-- 一个告警日志
-- 一个 5 分钟稳定 Demo
+| 赛道                  | 教程导航                                                                                                                                                 |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 快应用 / 手表应用创新 | [快应用教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/quickapp/quickapp_guide_index.md)                         |
+| AI 硬件产品创新       | [AI 硬件赛道教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/ai_hardware/ai_hardware_guide_index.md)              |
+| 新硬件适配            | [新硬件适配赛道教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/hardware_porting/hardware_porting_guide_index.md) |
 
-明确不做：
+---
 
-- 不做多协议平台
-- 不做 AI 直接控制设备
-- 不做自然语言配置设备
-- 不做多设备协作平台
-- 不把 CAN FD、以太网、语音作为 v2.0 主线
+## 二、第一步：拉取完整工程
 
-**3. 核心用户流程**
-1. VelaGuard 上电启动，进入设备状态面板。
-2. 板端周期读取 Modbus 设备数据。
-3. 本地规则引擎判断是否异常。
-4. 一旦异常，LVGL 自动弹出告警。
-5. 用户点击“AI 诊断”。
-6. Agent 读取当前值、历史值、规则快照和设备说明。
-7. AI 返回：现象、可能原因、建议排查步骤、风险等级。
-8. 系统保存本次告警和诊断结果。
-9. 用户按建议处理，设备恢复正常，告警关闭。
+用组委会提供的命令一键拉取「openvela 全量源码 + 你的专属仓」：
 
-**4. P0 功能清单**
-| 模块 | 功能 | 验收标准 |
-|---|---|---|
-| 数据采集 | 读取 1 个 Modbus 设备的 1-3 个寄存器 | 每 1-2 秒刷新一次 |
-| 规则引擎 | 超阈值、离线、突变检测 | 三类异常可手动注入并触发 |
-| LVGL 面板 | 显示当前值、状态、告警数量 | 触摸可进入详情页 |
-| 告警详情 | 显示异常类型、当前值、阈值、时间 | 信息完整、可复现 |
-| AI 诊断 | 调用 Skill 生成诊断报告 | 输出结构化建议 |
-| 日志 | 保存告警与诊断记录 | 重启后可查看最近记录 |
-| Fallback | LLM 失败时使用预置诊断模板 | Demo 不因网络失败中断 |
-
-**5. 数据模型**
-设备配置：
-
-```json
-{
-  "device_id": "motor_01",
-  "name": "Cooling Pump Motor",
-  "protocol": "modbus_rtu",
-  "slave_addr": 1,
-  "registers": [
-    {"name": "temperature", "addr": 40001, "scale": 0.1, "unit": "C"}
-  ],
-  "rules": {
-    "temperature_high": 70,
-    "offline_timeout_ms": 5000,
-    "jump_delta": 15
-  }
-}
+```bash
+repo init -u https://github.com/open-vela/contest2026_004_TeamFalcons \
+  -b dev-ai-contest-2026 -m contest2026_004_TeamFalcons.xml
+repo sync -c -j8
 ```
 
-告警事件：
+同步后，你的整个仓库位于工作区的 `contest2026_004_TeamFalcons/`，openvela 全量源码在外层（`nuttx/`、`apps/`、`packages/`、`vendor/` 等）。
 
-```json
-{
-  "event_id": "evt_001",
-  "device_id": "motor_01",
-  "type": "threshold_high",
-  "severity": "warning",
-  "current_value": 82.4,
-  "rule": "temperature > 70",
-  "history": [65.1, 66.0, 72.8, 82.4],
-  "timestamp": "2026-06-20T10:30:00"
-}
+---
+
+## 三、第二步：在哪里写代码
+
+**只在自己的仓目录 `contest2026_004_TeamFalcons/` 里开发。** 不同作品形态放在对应子目录，manifest 会通过 `<linkfile>` 把它们**软链**到 openvela 编译树该在的位置——你不用手动 copy：
+
+| 作品形态 | 你的代码放这里             | 系统自动映射到                                 |
+| -------- | -------------------------- | ---------------------------------------------- |
+| 应用     | `app/hello_app/`           | `packages/demos/contest2026_004_hello_app`     |
+| 快应用   | `quickapp/hello_quickapp/` | `packages/apps/contest2026_004_hello_quickapp` |
+| 板级适配 | `board/contest_board/`     | `vendor/openvela/boards/contest2026_004_board` |
+
+> 用不到的形态目录可以删掉；新增作品时按同样规则加子目录，并在 `contest2026_004_TeamFalcons.xml` 里补一条 `<linkfile>` 映射即可。**生产仓库（packages/nuttx/vendor 等）零改动。**
+
+建议仓库目录约定（便于评委定位）：
+
+```text
+app/ | quickapp/ | board/   # 你的作品代码
+logs/                       # AI Coding 日志（主动导出后提交，格式见 logs/README.md）
+README.md                   # 作品说明（提交前请改成你自己的，见第六节）
 ```
 
-AI 诊断输出：
+> 仓内附带了一个 `.gitignore.example`，给出了**编译产物**等不需要进仓的文件示例。如需启用，`cp .gitignore.example .gitignore` 后按需增删即可。**注意 `logs/` 下最终导出的 AI Coding 日志必须提交，不要忽略。**
+>
+> `logs/` 的目录结构与提交格式见 [logs/README.md](logs/README.md)。
 
-```json
-{
-  "summary": "电机温度持续超过阈值",
-  "possible_causes": ["负载过高", "散热异常", "传感器接触不良"],
-  "recommended_actions": ["检查风扇", "确认负载电流", "复测温度传感器"],
-  "risk_level": "medium"
-}
+---
+
+## 四、第三步：编译与运行
+
+编译/运行步骤随作品形态不同而不同，请参考你所在赛道的教程导航：
+
+- 快应用 / 手表应用：[快应用教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/quickapp/quickapp_guide_index.md)（含模拟器与开发板部署）。
+- AI 硬件产品创新：[AI 硬件赛道教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/ai_hardware/ai_hardware_guide_index.md)（环境搭建、编译烧录、Skill 开发）。
+- 新硬件适配：[新硬件适配赛道教程导航](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/hardware_porting/hardware_porting_guide_index.md)（BSP 移植、最小 NSH 基线）。
+
+子目录已通过 manifest 中的 `<linkfile>` 软链进 openvela 编译树，因此构建在 openvela 工作区**根目录**（即你这个仓的上一级）进行。openvela 使用 `build.sh` 作为统一入口，接收一个 **board config 路径**作为参数：
+
+```bash
+# 进入 openvela 工作区根目录（你的仓的上一级）
+cd ..
+
+# 通用语法：第一个参数是 board config 路径，第二个参数可以是 menuconfig / distclean 等
+./build.sh <board-config-path> [menuconfig|distclean] [-j8]
 ```
 
-**6. 技术实施结构**
-板端模块：
+> 具体的 board config 路径、目标产物、模拟器/真机部署方式请以你所在赛道的教程导航为准。本仓 `app/` `quickapp/` `board/` 三个示例骨架对应的 Kconfig 选项可通过 `menuconfig` 启用。
 
-- `modbus_collector`：负责 Modbus RTU 读取。
-- `rule_engine`：负责异常判断。
-- `event_store`：保存告警和诊断记录。
-- `agent_bridge`：向 Sidecar/LLM 发送诊断请求。
-- `hmi_app`：LVGL 页面。
-- `skill_prompt`：工业异常诊断 Skill。
+---
 
-PC/Sidecar：
+## 五、第四步：提交作品
 
-- 接收板端诊断请求。
-- 调用 MiMo 或兼容 LLM API。
-- 网络失败时返回本地缓存诊断模板。
-- 不负责核心判断，核心告警必须在板端完成。
+1. **fork** 你的专属仓 → 开发 → `git commit` 并推送 → 向专属仓发起 **Pull Request**，可**自行 review 并合入**（无需等组委会）。
+2. **AI Coding 日志**：与 AI 工具的对话会自动记录到本机 staging（不会自动上传），需你**主动导出/打包**选定会话到仓内 `logs/` 目录后一并提交。详见[《AI Coding 日志归集与提交手册》](https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/ai_coding_log_guide.md)。
+3. 若需改动 **nuttx 等公共仓库**，不在本仓改，而是 fork 对应公共仓、以 PR 提交到 `dev-ai-contest-2026` 分支，由组委会 review 后合入。
 
-**7. UI 页面**
-只做 4 个页面：
+> ⏰ **提交作品截止：9 月 20 日**。截止后统一收回 push 权限，仍可查看 / clone。
+>
+> 获奖后再按要求将作品 PR 至 openvela 上游对应仓库（走标准 PR + CI 流程）。
 
-1. **设备总览页**
-   - 当前温度/状态/通信状态
-   - 正常、告警、离线三种状态色
+### 关于 PR 与 CLA
 
-2. **告警弹窗**
-   - 异常类型
-   - 当前值和阈值
-   - “查看详情”“AI 诊断”按钮
+- 本仓所有改动通过 **Pull Request** 合入（分支保护强制，可自行合入自己的 PR）。
+- 首次贡献需在**官网签署 CLA**；PR 上会自动跑 `cla/signature` 检查，在官网签署成功后，在 PR 评论 `/check-cla` 复检即可通过。
 
-3. **诊断详情页**
-   - 现象摘要
-   - 可能原因
-   - 建议步骤
-   - 风险等级
+---
 
-4. **日志页**
-   - 最近 10 条告警
-   - 可查看历史诊断结果
+## 六、提交前：把本 README 改成你的作品说明
 
-**8. 开发里程碑**
-第 1 阶段：POC，3-5 天
+本文件目前是组委会给的**使用说明书**。**作品提交前，请把它替换成你自己作品的说明**，方便评委快速了解你做了什么、怎么跑起来。建议至少包含以下内容：
 
-- openvela + LVGL 跑通
-- Modbus 读取一个点位
-- 手动注入异常
-- Sidecar 调通 LLM
+```markdown
+# <你的作品名>
 
-第 2 阶段：MVP，1-2 周
+## 一、作品简介
+<一句话/一段话说明这个作品是什么、解决什么问题、亮点在哪>
 
-- 完成设备总览页
-- 完成三类异常检测
-- 完成告警弹窗
-- 完成 AI 诊断闭环
-- 完成日志记录
+## 二、选题方向
+<快应用 / 手表应用创新 ｜ AI 硬件产品创新 ｜ 新硬件适配 ｜ 自定方向，并简述理由>
 
-第 3 阶段：比赛版，2-3 周
+## 三、目录结构
+<列出你这个仓里各目录/文件的作用，例如：>
+- `app/xxx/`        — <说明>
+- `board/xxx/`      — <说明>
+- `quickapp/xxx/`   — <说明>
+- `logs/`           — AI Coding 日志
+- `docs/` 或其他    — <说明>
 
-- UI 打磨
-- 增加异常注入开关
-- 增加离线诊断 fallback
-- 编写 README、Skill、演示脚本
-- 录制 5 分钟 Demo
+## 四、运行方式
+<拉取工程后，如何编译、烧录/部署、运行的完整步骤；最好能让评委照着一步步复现>
 
-第 4 阶段：加分项，可选
+## 五、AI Coding 使用说明
+<说明本作品如何借助 AI 辅助开发：
+- 在需求拆解 / 方案设计 / 编码 / 调试 / 文档等环节如何与 AI 协作；
+- AI 对开发效率或质量带来的实际帮助。
+完整对话日志见 logs/ 目录>
+```
 
-- 增加第二个寄存器，例如电流或振动
-- 增加简单趋势图
-- 尝试 CAN FD，但不影响主线
-- 尝试以太网，但不作为交付依赖
+> 提示：将会根据「作品本身 + 你的 README 说明 + `logs/` 里的 AI Coding 日志」来理解和评估你的作品，README 写清楚很重要。
 
-**9. 5 分钟 Demo 脚本**
-1. 展示 openvela 启动和 VelaGuard 主界面。
-2. 设备正常运行，温度实时变化。
-3. 注入温度超限。
-4. 屏幕主动弹出告警。
-5. 点击 AI 诊断。
-6. 屏幕显示可能原因和排查建议。
-7. 展示日志中保存了本次异常。
-8. 强调：AI 没有直接控制设备，只提供可解释建议。
+---
 
-**10. 成功标准**
-项目完成不以功能数量衡量，而以闭环稳定性衡量。
+## 附：仓库命名规范
 
-必须满足：
-
-- 设备数据能稳定刷新。
-- 异常能自动触发。
-- 告警能被用户看懂。
-- AI 诊断能解释当前异常。
-- 网络失败不影响本地告警。
-- Demo 连续演示 5 次不失败。
-
-最终交付物：
-
-- 可运行固件或应用
-- LVGL UI
-- Modbus 模拟器或真实设备接线说明
-- 自定义 Skill
-- README
-- 架构图
-- 5 分钟 Demo 视频
-- AI Coding 日志
+`contest2026_<编号>_<队伍名>` — 编号三位零填充；队名 slug（全小写、英文/拼音、连字符）。例：`contest2026_004_TeamFalcons`。
+（仓库由组委会统一创建，**每队仅一个仓**，无需自行命名。）
