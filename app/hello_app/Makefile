@@ -1,14 +1,14 @@
 ############################################################################
-# Contest 2026 team 000 hello app - Makefile
+# Team Falcons VS Code Lab - Makefile
 ############################################################################
 
 include $(APPDIR)/Make.defs
 
-PROGNAME  = hello_app
-PRIORITY  = SCHED_PRIORITY_DEFAULT
-STACKSIZE = 2048
-MODULE    = $(CONFIG_LVX_USE_DEMO_CONTEST2026_000_HELLO_APP)
+PROGNAME  = vscode_lab
+PRIORITY  = $(CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_PRIORITY)
+STACKSIZE = $(CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_STACKSIZE)
+MODULE    = $(CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB)
 
-MAINSRC = hello_app_main.c
+MAINSRC = vscode_lab_main.c
 
 include $(APPDIR)/Application.mk

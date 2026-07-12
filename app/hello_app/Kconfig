@@ -3,8 +3,26 @@
 # see the file kconfig-language.txt in the NuttX tools repository.
 #
 
-config LVX_USE_DEMO_CONTEST2026_000_HELLO_APP
-	bool "Contest 2026 team 000 hello app"
+menuconfig LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB
+	tristate "Team Falcons VS Code Lab"
 	default n
+	depends on GRAPHICS_LVGL && SYSTEM_NSH
 	---help---
-		Enable the contest 2026 team 000 hello app demo.
+		Enable the project-owned STM32H750B-DK build, flash, touch,
+		and source-breakpoint experiment.
+
+if LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB
+
+config LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_PRIORITY
+	int "VS Code Lab UI task priority"
+	default 100
+
+config LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_STACKSIZE
+	int "VS Code Lab UI task stack size"
+	default 32768
+
+config LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_INPUT_PATH
+	string "Touchscreen device path"
+	default "/dev/input0"
+
+endif

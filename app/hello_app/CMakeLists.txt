@@ -1,7 +1,10 @@
-# Contest 2026 team 000 hello app
-if(CONFIG_LVX_USE_DEMO_CONTEST2026_000_HELLO_APP)
+# Team Falcons VS Code build, flash, and debug experiment
+if(CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB)
   nuttx_add_application(
-    NAME hello_app
-    SRCS hello_app_main.c
-    STACKSIZE 2048)
+    NAME vscode_lab
+    PRIORITY ${CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_PRIORITY}
+    STACKSIZE ${CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_STACKSIZE}
+    MODULE ${CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB}
+    DEPENDS lvgl
+    SRCS vscode_lab_main.c)
 endif()
