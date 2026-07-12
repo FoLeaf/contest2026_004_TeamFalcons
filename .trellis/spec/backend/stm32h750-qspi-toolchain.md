@@ -82,6 +82,12 @@ qspi_bootstub.hex
 qspi_bootstub.bin
 ```
 
+PowerShell scripts must forward parameters to another project script with
+named hashtable splatting. Do not build a string array containing tokens such
+as `"-DebugBuild"` and `"-OutDir"`: for script invocation, those elements can
+bind positionally (`WslDistro="-DebugBuild"`) instead of retaining their names.
+Switch keys are included with `$true` only when enabled.
+
 `nuttx.hex` must contain data only within the external-QSPI window.
 `qspi_bootstub.hex` must contain data only within the physical internal-Flash
 window. Intel HEX upper bounds are exclusive.
@@ -135,6 +141,7 @@ null LVGL display.
 | Boot stub remains at `0x080002aa` with a word-aligned QSPI vector MSP | Do not reject `(msp & 4) != 0`; require only `(msp & 3) == 0` plus the SRAM range. |
 | `lv_nuttx_init()` returns `disp=NULL` but `indev!=NULL` | Check for an incorrect display-path override; retain the `/dev/fb0` default on the current framebuffer config. |
 | Custom app starts before `BOARDIOC_INIT` | Run `nsh_initialize()` before creating the UI task; otherwise display/input registration races the app. |
+| A child PowerShell script reports a parameter token as a value, such as WSL distro `-DebugBuild` | Replace string-array forwarding with named hashtable splatting at the caller. |
 
 Normal scripts must not alter Option Bytes, mass erase the device, or claim an
 OpenOCD flash bank larger than the chip's physical internal Flash.
@@ -155,6 +162,10 @@ OpenOCD flash bank larger than the chip's physical internal Flash.
   screen while NSH remains available.
 - Bad custom-app case: the UI hard-codes `/dev/lcd0`, starts before board
   initialization, or a boot guard rejects a word-aligned NuttX initial MSP.
+- Good script-forwarding case: `-DebugBuild` reaches the child as
+  `DebugBuild=$true` while `OutDir` retains the real artifact path.
+- Bad script-forwarding case: a string array makes `-DebugBuild` the value of
+  the child's first positional string parameter.
 
 ### 6. Tests Required
 
@@ -181,6 +192,10 @@ For any change to this workflow, assert all applicable points:
    its uptime advances. Attach without loading, set a hardware breakpoint on
    `vscode_lab_debug_checkpoint`, touch the button, and compare the arguments
    with `g_vscode_lab_debug_state`.
+10. For every project-script forwarding boundary, assert named hashtable
+    splatting and reject string-array construction of named arguments. Run the
+    Windows debug-flash task and confirm it reports the configured WSL distro
+    and a debug build independently.
 
 For a breakpoint in early QSPI-resident startup code, let the target reach the
 QSPI image once before asking GDB to resolve/read the source location. Set a
@@ -216,6 +231,19 @@ OpenOCD + Cortex-Debug request=attach + loadFiles=[]
 
 The External Loader contains the board-specific QSPI programming algorithm;
 the boot stub initializes memory-mapped QSPI for execution after reset.
+
+For PowerShell script forwarding:
+
+```powershell
+# Wrong: the child can bind these tokens as positional values.
+$arguments = @("-DebugBuild", "-OutDir", $OutDir)
+& $buildScript @arguments
+
+# Correct: the child binds by declared parameter name.
+$parameters = @{ OutDir = $OutDir }
+if ($DebugBuild) { $parameters["DebugBuild"] = $true }
+& $buildScript @parameters
+```
 
 For display initialization:
 

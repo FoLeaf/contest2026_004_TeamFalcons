@@ -3,7 +3,7 @@
   "name": "fix-windows-flash-args",
   "title": "Fix Windows PowerShell debug flash argument forwarding",
   "description": "",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

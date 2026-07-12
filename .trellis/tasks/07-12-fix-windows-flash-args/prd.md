@@ -38,8 +38,9 @@ wrapper uses the same forwarding pattern and has the same latent defect.
 - [ ] `windows_flash_openocd.ps1` forwards every supported option by name to
   `windows_flash_cube.ps1`.
 - [ ] The QSPI boot-flow harness detects regression to string-array splatting.
-- [ ] The existing QSPI boot-flow harness, contest harness, and
-  `git diff --check` pass.
+- [ ] The committed QSPI boot-flow harness and `git diff --check` pass. If the
+  separate untracked contest harness is present, it also passes; its absence
+  does not block this script-only fix.
 - [ ] A Windows VS Code `openvela: flash debug firmware (CubeProgrammer)` run
   reports `Building debug QSPI-XIP firmware in WSL distro 'Debian'` rather
   than treating `-DebugBuild` as the distro name.

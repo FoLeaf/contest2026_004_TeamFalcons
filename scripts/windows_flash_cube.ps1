@@ -88,13 +88,14 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 }
 
 if (-not $NoBuild) {
-  $buildArguments = @()
-  if ($DebugBuild) {
-    $buildArguments += "-DebugBuild"
+  $buildParameters = @{
+    OutDir = $OutDir
   }
-  $buildArguments += @("-OutDir", $OutDir)
+  if ($DebugBuild) {
+    $buildParameters["DebugBuild"] = $true
+  }
 
-  & (Join-Path $PSScriptRoot "windows_build_openvela.ps1") @buildArguments
+  & (Join-Path $PSScriptRoot "windows_build_openvela.ps1") @buildParameters
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
   }

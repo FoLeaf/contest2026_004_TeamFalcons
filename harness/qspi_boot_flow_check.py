@@ -169,9 +169,34 @@ def main() -> int:
         "Cube flash flow validates and verifies both images",
     )
     checks.check(
+        "$buildParameters = @{" in win_flash
+        and "OutDir = $OutDir" in win_flash
+        and '$buildParameters["DebugBuild"] = $true' in win_flash
+        and "@buildParameters" in win_flash
+        and "$buildArguments = @()" not in win_flash,
+        "Cube flash forwards debug-build parameters by name",
+    )
+    checks.check(
         "windows_flash_cube.ps1" in openocd_wrapper
         and "debug-only" in openocd_wrapper,
         "legacy OpenOCD flash entry redirects to CubeProgrammer",
+    )
+    checks.check(
+        "$parameters = @{}" in openocd_wrapper
+        and all(
+            f'$parameters["{name}"]' in openocd_wrapper
+            for name in (
+                "CubeCli",
+                "ExternalLoader",
+                "OutDir",
+                "NoBuild",
+                "DebugBuild",
+                "ValidateOnly",
+            )
+        )
+        and "@parameters" in openocd_wrapper
+        and "$arguments = @()" not in openocd_wrapper,
+        "OpenOCD wrapper forwards all Cube flash parameters by name",
     )
 
     try:
