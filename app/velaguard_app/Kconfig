@@ -1,0 +1,44 @@
+#
+# VelaGuard - independent industrial edge gateway
+#
+
+menuconfig LVX_USE_VELAGUARD
+	tristate "VelaGuard industrial edge gateway"
+	default n
+	depends on GRAPHICS_LVGL && SYSTEM_NSH
+	---help---
+		Enable the bootable VelaGuard product application for the
+		STM32H750B-DK.
+
+if LVX_USE_VELAGUARD
+
+config LVX_VELAGUARD_PRIORITY
+	int "VelaGuard UI task priority"
+	default 100
+
+config LVX_VELAGUARD_STACKSIZE
+	int "VelaGuard UI task stack size"
+	default 32768
+
+config LVX_VELAGUARD_INPUT_PATH
+	string "VelaGuard touchscreen device path"
+	default "/dev/input0"
+
+config VG_BUILD_MODE
+	int "VelaGuard product mode (0=test, 1=production)"
+	default 0
+	range 0 1
+	---help---
+		Test mode uses a compile-time Device ID override. Production mode
+		derives a stable Device ID from the STM32 96-bit unique ID.
+
+config VG_DEVICE_ID_OVERRIDE
+	string "Test-mode Device ID override"
+	default "vg-test-001"
+	depends on VG_BUILD_MODE = 0
+
+config VG_FIRMWARE_VERSION
+	string "VelaGuard firmware version"
+	default "0.1.0"
+
+endif

@@ -5,6 +5,9 @@ param(
   [string]$OutDir = "",
   [switch]$NoBuild,
   [switch]$DebugBuild,
+  [ValidateSet("test", "production")]
+  [string]$VelaGuardMode = "test",
+  [string]$DeviceIdOverride = "vg-test-001",
   [switch]$ValidateOnly
 )
 
@@ -17,6 +20,8 @@ if (-not [string]::IsNullOrWhiteSpace($ExternalLoader)) { $parameters["ExternalL
 if (-not [string]::IsNullOrWhiteSpace($OutDir)) { $parameters["OutDir"] = $OutDir }
 if ($NoBuild) { $parameters["NoBuild"] = $true }
 if ($DebugBuild) { $parameters["DebugBuild"] = $true }
+$parameters["VelaGuardMode"] = $VelaGuardMode
+$parameters["DeviceIdOverride"] = $DeviceIdOverride
 if ($ValidateOnly) { $parameters["ValidateOnly"] = $true }
 
 & (Join-Path $PSScriptRoot "windows_flash_cube.ps1") @parameters

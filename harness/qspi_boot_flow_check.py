@@ -134,18 +134,19 @@ def main() -> int:
     checks.check(
         "stm32h750b-dk:lvgl" in win_build
         and "CONFIG_STM32H750B_DK_QSPI_BOOT" in win_build
+        and "CONFIG_LVX_USE_VELAGUARD" in win_build
         and "CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB" in win_build
         and "--disable CONFIG_EXAMPLES_LVGLDEMO" in win_build
         and "--disable CONFIG_LV_BUILD_EXAMPLES" in win_build
         and "--disable CONFIG_LV_USE_DEMO_WIDGETS" in win_build
-        and "CONFIG_INIT_ENTRYPOINT 'vscode_lab_main'" in win_build
+        and "CONFIG_INIT_ENTRYPOINT 'velaguard_main'" in win_build
         and "apply-openvela-qspi-patch.sh" in win_build
-        and "app/hello_app/.built" in win_build
+        and "ensure-openvela-links.sh" in win_build
+        and "app/velaguard_app/.built" in win_build
         and "qspi_bootstub.hex" in win_build
         and "--disable CONFIG_DEBUG_SYMBOLS" in win_build
-        and "--enable CONFIG_DEBUG_FULLOPT" in win_build
-        and "velaguard_app" not in win_build,
-        "Windows build selects the project-owned VS Code Lab",
+        and "--enable CONFIG_DEBUG_FULLOPT" in win_build,
+        "Windows build selects VelaGuard on the proven QSPI platform",
     )
     checks.check(
         "LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB" in lab_kconfig
@@ -157,7 +158,7 @@ def main() -> int:
         and "nsh_initialize()" in lab_source
         and "nsh_consolemain(argc, argv)" in lab_source
         and "lv_demos" not in lab_source,
-        "project-owned app exposes auto-start, NSH, and breakpoint contracts",
+        "reference VS Code Lab retains its standalone debug contracts",
     )
     checks.check(
         "MT25TL01G_STM32H750B-DISCO.stldr" in win_flash
@@ -191,6 +192,8 @@ def main() -> int:
                 "OutDir",
                 "NoBuild",
                 "DebugBuild",
+                "VelaGuardMode",
+                "DeviceIdOverride",
                 "ValidateOnly",
             )
         )
@@ -208,11 +211,12 @@ def main() -> int:
         labels = {task.get("label") for task in tasks.get("tasks", [])}
         checks.check(
             {
-                "openvela: build QSPI firmware",
-                "openvela: flash QSPI firmware (CubeProgrammer)",
-                "openvela: flash debug firmware (CubeProgrammer)",
+                "openvela: build VelaGuard test QSPI firmware",
+                "openvela: flash VelaGuard test QSPI firmware (CubeProgrammer)",
+                "openvela: flash VelaGuard test debug firmware (CubeProgrammer)",
+                "openvela: flash VelaGuard production firmware (CubeProgrammer)",
             }.issubset(labels),
-            "VSCode exposes build, release flash, and debug flash tasks",
+            "VSCode exposes VelaGuard test, debug, and production tasks",
         )
         configurations = launches.get("configurations", [])
         checks.check(
@@ -232,7 +236,7 @@ def main() -> int:
         and "OpenOCD" in docs
         and "0x08000000" in docs
         and "0x90000000" in docs
-        and "vscode_lab_debug_checkpoint" in docs,
+        and "vg_ui_home_uptime_checkpoint" in docs,
         "Chinese workflow documentation states the tool and address boundaries",
     )
 

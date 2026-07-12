@@ -67,7 +67,7 @@ must build on this baseline rather than reintroducing the old boot path.
 
 ## Acceptance Criteria
 
-- [ ] Test and production QSPI images build from the team repository workflow.
+- [x] Test and production QSPI images build from the team repository workflow.
 - [ ] The test image shows the configured override; the production image shows
   a UID-derived stable Device ID with no runtime editor.
 - [ ] A cold boot reaches the VelaGuard home screen without a connected PC.

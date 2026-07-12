@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "openvela: STM32H750B-DK debug after Cube flash",
+      "name": "openvela: VelaGuard test debug after Cube flash",
       "type": "cortex-debug",
       "request": "attach",
       "cwd": "${workspaceFolder}",
@@ -15,11 +15,11 @@
       "sourceFileMap": {
         "/home/debian19y/openvela": "${workspaceFolder}/.."
       },
-      "preLaunchTask": "openvela: flash debug firmware (CubeProgrammer)",
+      "preLaunchTask": "openvela: flash VelaGuard test debug firmware (CubeProgrammer)",
       "showDevDebugOutput": "none"
     },
     {
-      "name": "openvela: STM32H750B-DK attach only",
+      "name": "openvela: VelaGuard attach only",
       "type": "cortex-debug",
       "request": "attach",
       "cwd": "${workspaceFolder}",

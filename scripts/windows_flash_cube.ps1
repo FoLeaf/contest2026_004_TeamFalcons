@@ -5,6 +5,9 @@ param(
   [string]$OutDir = "",
   [switch]$NoBuild,
   [switch]$DebugBuild,
+  [ValidateSet("test", "production")]
+  [string]$VelaGuardMode = "test",
+  [string]$DeviceIdOverride = "vg-test-001",
   [switch]$ValidateOnly
 )
 
@@ -90,6 +93,8 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 if (-not $NoBuild) {
   $buildParameters = @{
     OutDir = $OutDir
+    VelaGuardMode = $VelaGuardMode
+    DeviceIdOverride = $DeviceIdOverride
   }
   if ($DebugBuild) {
     $buildParameters["DebugBuild"] = $true

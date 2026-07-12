@@ -57,29 +57,33 @@ PowerShell 脚本也支持环境变量：
 
 ## 2. 编译
 
-按 `Ctrl+Shift+B`，运行：
+按 `Ctrl+Shift+B`，运行默认测试版本：
 
 ```text
-openvela: build QSPI firmware
+openvela: build VelaGuard test QSPI firmware
 ```
 
 构建脚本会：
 
 1. 将团队仓内的 QSPI 补丁幂等应用到当前 NuttX checkout；
-2. 以 `stm32h750b-dk:lvgl` 作为板级驱动基线，但禁用官方
-   `lvgldemo` 应用；
-3. 启用 `CONFIG_STM32H750B_DK_QSPI_BOOT`；
-4. 启用项目自有 `vscode_lab` 并将其设置为自动启动入口；
-5. 构建主镜像和内部 boot stub；
-6. 复制以下文件到参赛仓 `.debug`：
+2. 维护 manifest 声明的 VelaGuard 生成态 linkfile；
+3. 以 `stm32h750b-dk:lvgl` 作为板级驱动基线，但禁用官方
+   `lvgldemo` 和开发期 VS Code Lab；
+4. 启用 `CONFIG_STM32H750B_DK_QSPI_BOOT`；
+5. 启用项目自有 VelaGuard 并将 `velaguard_main` 设置为启动入口；
+6. 构建主镜像和内部 boot stub；
+7. 复制以下文件到参赛仓 `.debug`：
 
 ```text
 nuttx.elf  nuttx.hex  nuttx.bin
 qspi_bootstub.elf  qspi_bootstub.hex  qspi_bootstub.bin
+nuttx.config  build-info.txt
 ```
 
-调试构建使用任务 `openvela: build debug QSPI firmware`，它额外启用 `-g3`
-和无优化构建。
+调试构建使用任务 `openvela: build VelaGuard test debug QSPI firmware`，它额外
+启用 `-g3` 和无优化构建。生产身份验证使用
+`openvela: build VelaGuard production QSPI firmware`。产品模式
+test/production 与编译模式 debug/release 相互独立。
 
 判断编译正确不要只看任务退出码，还应确认 `.debug` 中六个产物都存在，且
 日志显示主镜像位于 `0x9000xxxx`、boot stub 位于 `0x0800xxxx`。
@@ -89,7 +93,7 @@ qspi_bootstub.elf  qspi_bootstub.hex  qspi_bootstub.bin
 运行：
 
 ```text
-openvela: flash QSPI firmware (CubeProgrammer)
+openvela: flash VelaGuard test QSPI firmware (CubeProgrammer)
 ```
 
 脚本在连接硬件前检查：
@@ -106,7 +110,9 @@ Cube                   → 写入并校验片内 boot stub
 Cube                   → 复位
 ```
 
-已有产物时可使用 `openvela: flash only (CubeProgrammer)`。
+已有产物时可使用 `openvela: flash current artifacts only
+(CubeProgrammer)`。生产版本使用 `openvela: flash VelaGuard production
+firmware (CubeProgrammer)`。
 
 没有连接开发板时，可在 Windows PowerShell 只验证工具和镜像布局：
 
@@ -119,20 +125,20 @@ scripts\windows_flash_cube.ps1 -NoBuild -ValidateOnly
 选择：
 
 ```text
-openvela: STM32H750B-DK debug after Cube flash
+openvela: VelaGuard test debug after Cube flash
 ```
 
 按 `F5` 后会先构建并用 CubeProgrammer 下载 debug 镜像，再由 OpenOCD
 启动 GDB server。配置使用 `request: attach` 和空 `loadFiles`，因此 GDB 只
 加载 `${workspaceFolder}\.debug\nuttx.elf` 的符号，不会再次写 Flash。
 
-若固件已经下载，使用 `openvela: STM32H750B-DK attach only`。
+若固件已经下载，使用 `openvela: VelaGuard attach only`。
 
 推荐的日常操作顺序是：
 
-1. 普通运行验证：执行 `openvela: flash QSPI firmware
+1. 普通运行验证：执行 `openvela: flash VelaGuard test QSPI firmware
    (CubeProgrammer)`，它会自动编译、烧录并复位。
-2. 调试代码：在“运行和调试”中选择 `openvela: STM32H750B-DK debug
+2. 调试代码：在“运行和调试”中选择 `openvela: VelaGuard test debug
    after Cube flash` 后按 `F5`；该配置会先生成并烧录 debug 固件，再 attach。
 3. 只增加或移动断点、不改固件：选择 `attach only`，避免重复擦写 QSPI。
 4. 改过代码后不要直接使用 `attach only`，否则板上代码与 ELF 符号可能不一致。
@@ -141,20 +147,21 @@ openvela: STM32H750B-DK debug after Cube flash
 或 GDB 的 Download/Load 命令；本项目的 `loadFiles: []` 正是为了阻止这条错误
 路径。
 
-## 5. 运行与触摸验证
+## 5. VelaGuard 运行验证
 
-ST-LINK 虚拟串口使用 `115200 8N1`。看到 `NuttShell (NSH)` 和 `nsh>` 后，
-烧录当前项目固件后，`VS Code Lab` 会自动显示，不需要再运行 openvela 的
-`lvgldemo`。界面包含运行秒数、触摸计数、`Breakpoint +1` 按钮和滑块。
+ST-LINK 虚拟串口使用 `115200 8N1`。烧录后，VelaGuard 工业首页会自动显示，
+不需要运行 openvela 的 `lvgldemo`。界面显示 Device ID、test/production
+模式、固件版本、存储启动状态，以及 Acquisition、Alarm、Network、Audio、
+Time 五类状态占位。
 
-在 [vscode_lab_main.c](../app/hello_app/vscode_lab_main.c) 的
-`vscode_lab_debug_checkpoint()` 中设置断点，按 `F5` attach，然后触摸
-`Breakpoint +1`，即可完成一次从物理触摸到 C 源码断点的实验。
+在 [vg_ui_home.c](../app/velaguard_app/src/vg_ui_home.c) 的
+`vg_ui_home_uptime_checkpoint()` 中设置断点，按 `F5` attach。每秒 uptime
+刷新会命中该稳定断点，可检查 `g_velaguard_uptime_seconds`。
 
-NSH 仍在 `COM7 / 115200 8N1` 上可用。触摸初始化成功时串口会出现
-`/dev/input0 open success, maxpoint 1`，应用启动成功后还会输出
-`[vscode_lab] UI ready`。本项目已经补齐旧 FT5X06 驱动的
-`TSIOC_GETMAXPOINTS` 契约。
+NSH 仍在实际枚举的 ST-LINK COM 口（本机当前为 `COM7`）以 `115200 8N1`
+可用。触摸初始化成功时串口会出现 `/dev/input0 open success, maxpoint 1`，
+应用启动成功后还会输出 `[velaguard] UI ready`。ISSUE1 首页没有虚构的交互
+按钮，触摸仅作为平台连续性验证。
 
 ## 6. 故障恢复
 
@@ -166,7 +173,7 @@ NSH 仍在 `COM7 / 115200 8N1` 上可用。触摸初始化成功时串口会出�
 - QSPI 下载成功但不启动：先检查 boot stub 是否写入片内 Flash，再检查复位后
   PC 是否进入 `0x9000xxxx`。若停在 `0x080002aa`，检查 boot stub 是否错误要求
   NuttX 初始 MSP 8 字节对齐；当前实现只要求合法 SRAM 范围和 4 字节对齐。
-- 屏幕只有背光：查看串口是否出现 `[vscode_lab] UI ready`；若没有，检查更早的
+- 屏幕只有背光：查看串口是否出现 `[velaguard] UI ready`；若没有，检查更早的
   板级/LVGL 初始化错误，确认烧录的是刚生成的 `.debug` 产物。
 - LVGL 报 `get touch maxpoints failed (errno=25)`：当前 NuttX checkout 未应用
   团队补丁，重新执行项目构建任务，不要只烧录旧 `.debug` 产物。

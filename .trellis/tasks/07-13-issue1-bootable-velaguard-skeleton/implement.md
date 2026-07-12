@@ -74,3 +74,17 @@ address ranges. Run Windows `-ValidateOnly` after each generated artifact set.
   and compare with the working VS Code Lab before changing board drivers.
 - The rollback is to disable VelaGuard and reselect the untouched VS Code Lab;
   never alter QSPI addresses to work around an application failure.
+
+## Validation Snapshot (2026-07-13)
+
+- `test/debug`, `test/release`, and `production/release` build successfully with
+  the complete openvela Python Kconfig tool path.
+- Both ISSUE1 and QSPI harnesses pass for all retained variants.
+- Windows PowerShell `-DebugBuild` reaches the child build correctly, and Cube
+  `-NoBuild -ValidateOnly` finds the External Loader and accepts both HEX
+  ranges without accessing hardware.
+- The final `.debug` hand-off contains `test/debug` symbols and is ready for
+  Cube programming plus OpenOCD attach.
+- Hardware acceptance remains pending because ST-LINK was not enumerated by
+  Windows or WSL at the final flash attempt. No programming had started when
+  Cube reported `No debug probe detected`.

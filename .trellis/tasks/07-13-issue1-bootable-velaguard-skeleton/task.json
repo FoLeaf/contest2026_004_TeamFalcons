@@ -3,7 +3,7 @@
   "name": "issue1-bootable-velaguard-skeleton",
   "title": "Implement Issue 01 Bootable VelaGuard Skeleton",
   "description": "Build the first hardware-bootable VelaGuard product slice with stable identity, startup records, and a Taste-reviewed LVGL industrial home screen.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

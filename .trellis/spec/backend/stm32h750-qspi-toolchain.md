@@ -27,6 +27,8 @@ scripts\windows_build_openvela.ps1
   [-BoardConfig <string>]
   [-OutDir <Windows path>]
   [-DebugBuild]
+  [-VelaGuardMode test|production]
+  [-DeviceIdOverride <1-39 safe characters>]
 
 scripts\windows_flash_cube.ps1
   [-CubeCli <Windows file>]
@@ -34,6 +36,8 @@ scripts\windows_flash_cube.ps1
   [-OutDir <Windows path>]
   [-NoBuild]
   [-DebugBuild]
+  [-VelaGuardMode test|production]
+  [-DeviceIdOverride <1-39 safe characters>]
   [-ValidateOnly]
 
 scripts\windows_flash_openocd.ps1
@@ -50,14 +54,16 @@ scripts/apply-openvela-qspi-patch.sh <openvela-root>
 VS Code debug configurations must use Cortex-Debug with `request: "attach"`,
 `.debug/nuttx.elf` as the executable/symbol file, and `loadFiles: []`.
 
-The team application exposes this debug interface:
+The VelaGuard application exposes this debug interface:
 
 ```c
-int vscode_lab_main(int argc, char *argv[]);
-void vscode_lab_debug_checkpoint(uint32_t button_count,
-                                 int32_t slider_value);
-extern struct vscode_lab_debug_state g_vscode_lab_debug_state;
+int velaguard_main(int argc, char *argv[]);
+void vg_ui_home_uptime_checkpoint(uint64_t uptime_seconds);
+extern volatile uint64_t g_velaguard_uptime_seconds;
 ```
+
+The older `vscode_lab_main()` interface remains only in `app/hello_app` as a
+reference experiment. New product builds must not select it.
 
 ### 3. Contracts
 
@@ -77,6 +83,8 @@ The build output directory is the single hand-off boundary and must contain:
 nuttx.elf
 nuttx.hex
 nuttx.bin
+nuttx.config
+build-info.txt
 qspi_bootstub.elf
 qspi_bootstub.hex
 qspi_bootstub.bin
@@ -103,13 +111,32 @@ Release builds enable `CONFIG_DEBUG_FULLOPT` and disable debug symbols/no-opt.
 Debug builds enable `CONFIG_DEBUG_SYMBOLS`, `-g3`, and `CONFIG_DEBUG_NOOPT`.
 Both builds enable `CONFIG_STM32H750B_DK_QSPI_BOOT`.
 
-For the project-owned experiment, both builds also select
-`CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB`, set
-`CONFIG_INIT_ENTRYPOINT="vscode_lab_main"`, and disable the stock
-`CONFIG_EXAMPLES_LVGLDEMO`, `CONFIG_LV_BUILD_EXAMPLES`, and
-`CONFIG_LV_USE_DEMO_WIDGETS` options. `vscode_lab_main()` must call
+For the project-owned product, both builds also select
+`CONFIG_LVX_USE_VELAGUARD`, set
+`CONFIG_INIT_ENTRYPOINT="velaguard_main"`, and disable the old VS Code Lab and
+stock `CONFIG_EXAMPLES_LVGLDEMO`, `CONFIG_LV_BUILD_EXAMPLES`, and
+`CONFIG_LV_USE_DEMO_WIDGETS` options. `velaguard_main()` must call
 `nsh_initialize()` before creating its UI task because that call owns
 `BOARDIOC_INIT`; it then enters `nsh_consolemain()` to preserve serial NSH.
+
+Product mode is independent from compiler mode. Test mode sets
+`CONFIG_VG_BUILD_MODE=0` and validates a compile-time Device ID containing only
+letters, digits, `_`, and `-`, with a maximum of 39 characters. Production
+mode sets `CONFIG_VG_BUILD_MODE=1`, ignores the test override, and formats the
+STM32H750 96-bit UID as `vg-<24 lowercase hex>`. Neither mode exposes a runtime
+Device ID setter.
+
+VelaGuard startup creates `/data/velaguard`, `configs`, and `logs`, then appends
+`latest.log` and `events.jsonl`. The boot event contains `device_id`,
+`build_mode`, `firmware_version`, `boot_id`, `ts_ms`, `uptime_ms`, and
+`time_quality`. A storage failure is fail-visible as `DEGRADED` on serial and
+LVGL but must not remove the home screen or NSH rescue console.
+
+The ISSUE1 home screen is a fixed 480x272 dark industrial console. It uses an
+asymmetric 304 px local-safety panel and 154 px supporting-state panel, one cyan
+product accent, semantic-only red/amber, one 8 px panel radius, and no equal
+five-card row, decorative dots, gradients, glows, fake controls, or automatic
+animation.
 
 The boot stub validates that the QSPI vector MSP is inside SRAM and 4-byte
 aligned. Do not require 8-byte alignment: NuttX can emit a valid early stack
@@ -142,6 +169,9 @@ null LVGL display.
 | `lv_nuttx_init()` returns `disp=NULL` but `indev!=NULL` | Check for an incorrect display-path override; retain the `/dev/fb0` default on the current framebuffer config. |
 | Custom app starts before `BOARDIOC_INIT` | Run `nsh_initialize()` before creating the UI task; otherwise display/input registration races the app. |
 | A child PowerShell script reports a parameter token as a value, such as WSL distro `-DebugBuild` | Replace string-array forwarding with named hashtable splatting at the caller. |
+| Test Device ID is empty, 40+ characters, or contains other punctuation | Reject it before configuring/building and retain an explicit identity error if an invalid value reaches firmware. |
+| VelaGuard storage path or either startup append fails | Report the path/error on serial, show `Storage: DEGRADED`, continue LVGL and NSH, and never claim the event was written. |
+| Production mode is selected | Derive identity only from the STM32 UID and omit `CONFIG_VG_DEVICE_ID_OVERRIDE` from the generated configuration. |
 
 Normal scripts must not alter Option Bytes, mass erase the device, or claim an
 OpenOCD flash bank larger than the chip's physical internal Flash.
@@ -157,11 +187,14 @@ OpenOCD flash bank larger than the chip's physical internal Flash.
 - Bad: an oversized `0x08000000` image is sent to OpenOCD, an arbitrary QSPI
   driver is expected to probe the board's dual MT25TL01G arrangement, or an
   External Loader is used without checking the HEX address window.
-- Good custom-app case: uptime advances, slider touch changes the state, and a
-  hardware breakpoint hit reports the same counter/value arguments shown on
-  screen while NSH remains available.
-- Bad custom-app case: the UI hard-codes `/dev/lcd0`, starts before board
-  initialization, or a boot guard rejects a word-aligned NuttX initial MSP.
+- Good VelaGuard case: test/debug boots from QSPI, uptime advances, storage state
+  is honest, NSH remains available, and an attach-only hardware breakpoint hits
+  `vg_ui_home_uptime_checkpoint` without downloading.
+- Base VelaGuard case: storage is unavailable, the UI and NSH still start, and
+  both surfaces report `DEGRADED` rather than silently claiming persistence.
+- Bad VelaGuard case: the UI hard-codes `/dev/lcd0`, starts before board
+  initialization, exposes a runtime Device ID editor, or hides startup write
+  failures.
 - Good script-forwarding case: `-DebugBuild` reaches the child as
   `DebugBuild=$true` while `OutDir` retains the real artifact path.
 - Bad script-forwarding case: a string array makes `-DebugBuild` the value of
@@ -185,14 +218,20 @@ For any change to this workflow, assert all applicable points:
 7. Start `lvgldemo widgets`; assert that `/dev/input0` opens without `ENOTTY`,
    then physically verify press/release, a button click, a slider drag, and
    coordinate alignment near the display edges.
-8. For the project app, assert the generated config selects `vscode_lab_main`
-   and disables stock demo/example options. Verify the ELF exports the three
-   documented debug symbols.
-9. After Cube programming, assert the custom screen appears automatically and
-   its uptime advances. Attach without loading, set a hardware breakpoint on
-   `vscode_lab_debug_checkpoint`, touch the button, and compare the arguments
-   with `g_vscode_lab_debug_state`.
-10. For every project-script forwarding boundary, assert named hashtable
+8. For VelaGuard, build `test/debug`, `test/release`, and
+   `production/release`. Assert the generated config selects `velaguard_main`,
+   keeps product/compiler modes independent, disables the Lab and stock demos,
+   and exports the documented identity, startup, and uptime symbols.
+9. Run both `harness/velaguard_issue1_check.py` and
+   `harness/qspi_boot_flow_check.py` against every retained variant. Confirm the
+   QSPI/internal HEX ranges and run Cube `-NoBuild -ValidateOnly` on Windows.
+10. After Cube programming, assert the VelaGuard screen appears automatically,
+   its uptime advances, startup logs are visible on COM7/NSH, and touch
+   initialization does not remove the non-interactive ISSUE1 home. Attach
+   without loading and hit `vg_ui_home_uptime_checkpoint`.
+11. Flash `production/release`, perform two fully unpowered cold boots, and
+   require the same `vg-<24 lowercase hex>` Device ID on both boots.
+12. For every project-script forwarding boundary, assert named hashtable
     splatting and reject string-array construction of named arguments. Run the
     Windows debug-flash task and confirm it reports the configured WSL distro
     and a debug build independently.
@@ -254,7 +293,18 @@ info.fb_path = "/dev/lcd0";
 
 /* Correct: let the selected backend choose /dev/fb0 or /dev/lcd0. */
 lv_nuttx_dsc_init(&info);
-info.input_path = CONFIG_LVX_USE_DEMO_CONTEST2026_004_VSCODE_LAB_INPUT_PATH;
+info.input_path = CONFIG_LVX_VELAGUARD_INPUT_PATH;
+```
+
+For VelaGuard identity selection:
+
+```text
+# Wrong: production image accepts a UI/NSH command that replaces Device ID.
+set_device_id site-override
+
+# Correct: product mode is compile-time and production reads UID only.
+CONFIG_VG_BUILD_MODE=1
+device_id = "vg-" + 24 lowercase UID hex digits
 ```
 
 ## FT5X06 contract required by LVGL 9.2.1

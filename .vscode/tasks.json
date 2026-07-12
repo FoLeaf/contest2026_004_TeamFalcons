@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "openvela: build QSPI firmware",
+      "label": "openvela: build VelaGuard test QSPI firmware",
       "type": "process",
       "command": "powershell.exe",
       "args": [
@@ -19,7 +19,7 @@
       }
     },
     {
-      "label": "openvela: build debug QSPI firmware",
+      "label": "openvela: build VelaGuard test debug QSPI firmware",
       "type": "process",
       "command": "powershell.exe",
       "args": [
@@ -33,7 +33,22 @@
       "problemMatcher": "$gcc"
     },
     {
-      "label": "openvela: flash QSPI firmware (CubeProgrammer)",
+      "label": "openvela: build VelaGuard production QSPI firmware",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\windows_build_openvela.ps1",
+        "-VelaGuardMode",
+        "production"
+      ],
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "openvela: flash VelaGuard test QSPI firmware (CubeProgrammer)",
       "type": "process",
       "command": "powershell.exe",
       "args": [
@@ -46,7 +61,7 @@
       "problemMatcher": []
     },
     {
-      "label": "openvela: flash only (CubeProgrammer)",
+      "label": "openvela: flash current artifacts only (CubeProgrammer)",
       "type": "process",
       "command": "powershell.exe",
       "args": [
@@ -60,7 +75,7 @@
       "problemMatcher": []
     },
     {
-      "label": "openvela: flash debug firmware (CubeProgrammer)",
+      "label": "openvela: flash VelaGuard test debug firmware (CubeProgrammer)",
       "type": "process",
       "command": "powershell.exe",
       "args": [
@@ -70,6 +85,21 @@
         "-File",
         "${workspaceFolder}\\scripts\\windows_flash_cube.ps1",
         "-DebugBuild"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "openvela: flash VelaGuard production firmware (CubeProgrammer)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\windows_flash_cube.ps1",
+        "-VelaGuardMode",
+        "production"
       ],
       "problemMatcher": []
     }
