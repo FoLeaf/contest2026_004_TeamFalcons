@@ -39,3 +39,37 @@ Added and hardware-validated a project-owned LVGL debug lab, WSL build tasks, Cu
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Complete VelaGuard ISSUE1 hardware acceptance
+
+**Date**: 2026-07-13
+**Task**: Complete VelaGuard ISSUE1 hardware acceptance
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+Implemented and hardware-validated the bootable VelaGuard skeleton, production UID identity, startup JSONL, LVGL home, Cube QSPI programming, and OpenOCD attach-only source breakpoint workflow.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4b9d11c` | (see git log) |
+| `d72fe93` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
