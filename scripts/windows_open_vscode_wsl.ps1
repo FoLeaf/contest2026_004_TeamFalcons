@@ -39,7 +39,13 @@ if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
 }
 
 Write-Host "Opening $repoDirWsl in VS Code Remote - WSL ($WslDistro)..."
-& code --new-window --remote "wsl+$WslDistro" $repoDirWsl
-if ($LASTEXITCODE -ne 0) {
-  throw "VS Code failed to open the Remote - WSL workspace (exit $LASTEXITCODE)."
+Push-Location $env:SystemRoot
+try {
+  & code --new-window --remote "wsl+$WslDistro" $repoDirWsl
+  $codeExit = $LASTEXITCODE
+} finally {
+  Pop-Location
+}
+if ($codeExit -ne 0) {
+  throw "VS Code failed to open the Remote - WSL workspace (exit $codeExit)."
 }
