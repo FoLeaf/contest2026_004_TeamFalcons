@@ -85,6 +85,15 @@ address ranges. Run Windows `-ValidateOnly` after each generated artifact set.
   ranges without accessing hardware.
 - The final `.debug` hand-off contains `test/debug` symbols and is ready for
   Cube programming plus OpenOCD attach.
-- Hardware acceptance remains pending because ST-LINK was not enumerated by
-  Windows or WSL at the final flash attempt. No programming had started when
-  Cube reported `No debug probe detected`.
+- Hardware acceptance passed after reconnecting ST-LINK. Cube programmed and
+  verified the QSPI image and internal stub in both test/debug and
+  production/release modes.
+- COM7 confirmed the stable production Device ID
+  `vg-09001a800451383430303835`, `storage=READY`, framebuffer `480x272`,
+  touchscreen `/dev/input0` with one point, UI readiness, and NSH availability.
+- The board files contain a readable `latest.log` entry and valid JSONL boot
+  event with every required field. User-confirmed cold boots and physical Taste
+  review passed.
+- OpenOCD attached without loading. A hardware breakpoint hit
+  `vg_ui_home_uptime_checkpoint` at QSPI PC `0x9003efba` with
+  `uptime_seconds=105` and a complete source-level backtrace.

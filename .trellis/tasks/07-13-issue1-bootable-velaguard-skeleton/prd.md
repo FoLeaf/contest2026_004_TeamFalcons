@@ -68,21 +68,21 @@ must build on this baseline rather than reintroducing the old boot path.
 ## Acceptance Criteria
 
 - [x] Test and production QSPI images build from the team repository workflow.
-- [ ] The test image shows the configured override; the production image shows
+- [x] The test image shows the configured override; the production image shows
   a UID-derived stable Device ID with no runtime editor.
-- [ ] A cold boot reaches the VelaGuard home screen without a connected PC.
-- [ ] Repeated production cold boots show the same Device ID.
-- [ ] The display shows VelaGuard, build mode, firmware version, Device ID,
+- [x] A cold boot reaches the VelaGuard home screen without a connected PC.
+- [x] Repeated production cold boots show the same Device ID.
+- [x] The display shows VelaGuard, build mode, firmware version, Device ID,
   storage/event state, and all five required product status placeholders.
-- [ ] Startup creates/verifies the three directories and writes both log files,
+- [x] Startup creates/verifies the three directories and writes both log files,
   or shows a clear degraded state if the filesystem cannot provide them.
-- [ ] The structured boot event contains all required fields and valid JSONL.
-- [ ] Serial NSH remains available and reports the same identity/startup state.
-- [ ] Touch input initializes without breaking the non-interactive ISSUE1 home
+- [x] The structured boot event contains all required fields and valid JSONL.
+- [x] Serial NSH remains available and reports the same identity/startup state.
+- [x] Touch input initializes without breaking the non-interactive ISSUE1 home
   screen, and OpenOCD attach debugging loads symbols without programming QSPI.
-- [ ] Static harnesses, release/debug builds, HEX range checks, cold boot, and
+- [x] Static harnesses, release/debug builds, HEX range checks, cold boot, and
   source breakpoint validation pass.
-- [ ] The Taste pre-flight applicable to an embedded industrial screen passes:
+- [x] The Taste pre-flight applicable to an embedded industrial screen passes:
   hierarchy, color/shape consistency, copy audit, contrast, restrained motion,
   and absence of generic equal-card layout.
 
