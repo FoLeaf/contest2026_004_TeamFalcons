@@ -73,3 +73,36 @@ Implemented and hardware-validated the bootable VelaGuard skeleton, production U
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Fix OpenCode planning task resume
+
+**Date**: 2026-07-13
+**Task**: Fix OpenCode planning task resume
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+Added status-preserving task selection and OpenCode resume command, synchronized workflow guidance, added regression tests and lifecycle code-spec, and verified a fresh OpenCode session resumes a planning task without status change.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ffe1b26` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
