@@ -1,5 +1,12 @@
 {
   "cortex-debug.openocdPath.windows": "D:/Develop/xpack-openocd-0.12.0-7/bin/openocd.exe",
   "cortex-debug.armToolchainPath.windows": "D:/Develop/STM32CubeCLT/GNU-tools-for-STM32/bin",
-  "cortex-debug.gdbPath.windows": "D:/Develop/STM32CubeCLT/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe"
+  "cortex-debug.gdbPath.windows": "D:/Develop/STM32CubeCLT/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe",
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.autocomplete": "default",
+  "C_Cpp.errorSquiggles": "enabled",
+  "files.associations": {
+    "*.c": "c",
+    "*.h": "c"
+  }
 }

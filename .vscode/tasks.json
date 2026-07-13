@@ -2,6 +2,19 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "openvela: reopen workspace in WSL for IntelliSense",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\windows_open_vscode_wsl.ps1"
+      ],
+      "problemMatcher": []
+    },
+    {
       "label": "openvela: build VelaGuard test QSPI firmware",
       "type": "process",
       "command": "powershell.exe",

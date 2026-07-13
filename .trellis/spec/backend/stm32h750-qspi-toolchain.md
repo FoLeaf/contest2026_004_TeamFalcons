@@ -8,6 +8,13 @@ This contract applies when building, programming, or debugging openvela on the
 STM32H750B-DK from Windows VS Code, especially when the firmware exceeds the
 STM32H750XBH6 physical 128 KiB internal Flash.
 
+Source navigation and semantic IntelliSense must run in a VS Code Remote - WSL
+window. A Windows-local C/C++ extension opened on a `\\wsl.localhost\...` UNC
+folder cannot follow NuttX's Linux absolute symlinks and mixes the Windows
+newlib model with NuttX libc types. The supported editor configuration uses the
+workspace's Linux `arm-none-eabi-gcc`; do not mask the mismatch with forced
+compatibility macros, Windows stub headers, or `-idirafter` ordering tricks.
+
 The supported architecture is always two-stage:
 
 - `0x08000000..0x0801ffff`: internal-Flash QSPI boot stub.
@@ -21,6 +28,9 @@ to fit. OpenOCD is the GDB server only; CubeProgrammer owns programming.
 Supported entry points:
 
 ```powershell
+scripts\windows_open_vscode_wsl.ps1
+  [-WslDistro <string>]
+
 scripts\windows_build_openvela.ps1
   [-WslDistro <string>]
   [-OpenvelaDir <WSL path>]
@@ -151,6 +161,8 @@ null LVGL display.
 
 | Condition | Required result |
 |---|---|
+| Workspace is opened as a Windows-local UNC folder | Reopen it through Remote - WSL before relying on completion or source navigation. |
+| Remote window does not show `WSL: <distro>` or cpptools is only installed locally | Install cpptools in WSL, reset its IntelliSense database, and reload the window. |
 | `wsl.exe` is missing | Stop before build with an actionable error. |
 | Windows/UNC path cannot convert to WSL | Stop and name the failing path. |
 | QSPI patch is neither cleanly applicable nor already applied | Stop before configure/build. |

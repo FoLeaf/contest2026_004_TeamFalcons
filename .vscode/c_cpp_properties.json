@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "name": "VelaGuard STM32H750 (WSL)",
+      "compilerPath": "${workspaceFolder}/../prebuilts/gcc/linux-x86_64/arm-none-eabi/bin/arm-none-eabi-gcc",
+      "compilerArgs": [
+        "-mcpu=cortex-m7",
+        "-mthumb",
+        "-ffreestanding"
+      ],
+      "cStandard": "gnu11",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "linux-gcc-arm",
+      "forcedInclude": [
+        "${workspaceFolder}/../nuttx/include/nuttx/config.h"
+      ],
+      "includePath": [
+        "${workspaceFolder}/app/velaguard_app",
+        "${workspaceFolder}/app/velaguard_app/src",
+        "${workspaceFolder}/../nuttx/include",
+        "${workspaceFolder}/../nuttx/arch/arm/include",
+        "${workspaceFolder}/../nuttx/arch/arm/src/stm32h7",
+        "${workspaceFolder}/../nuttx/boards/arm/stm32h7/stm32h750b-dk/include",
+        "${workspaceFolder}/../apps/include",
+        "${workspaceFolder}/../apps/graphics/lvgl"
+      ],
+      "defines": [
+        "__NuttX__"
+      ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}/app/velaguard_app",
+          "${workspaceFolder}/../nuttx/include",
+          "${workspaceFolder}/../nuttx/arch/arm/include",
+          "${workspaceFolder}/../nuttx/arch/arm/src/stm32h7",
+          "${workspaceFolder}/../nuttx/boards/arm/stm32h7/stm32h750b-dk/include",
+          "${workspaceFolder}/../apps/include",
+          "${workspaceFolder}/../apps/graphics/lvgl"
+        ],
+        "limitSymbolsToIncludedHeaders": false
+      }
+    }
+  ],
+  "version": 4
+}

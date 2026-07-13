@@ -25,7 +25,8 @@ JEDEC probe/write 双 MT25TL01G，而上述 CubeProgrammer External Loader 可�
 
 在 Windows 安装：
 
-- VS Code，以及 `ms-vscode.cpptools`、`marus25.cortex-debug` 扩展；
+- VS Code，以及 `ms-vscode-remote.remote-wsl`、`ms-vscode.cpptools`、
+  `marus25.cortex-debug` 扩展；
 - WSL，完整 openvela 工作区位于 WSL 文件系统；
 - STM32CubeCLT/STM32CubeProgrammer；
 - Windows xPack OpenOCD。
@@ -34,16 +35,32 @@ JEDEC probe/write 双 MT25TL01G，而上述 CubeProgrammer External Loader 可�
 CubeProgrammer、OpenOCD 和 ST-LINK 都由 Windows 进程访问，不需要把 USB
 设备转发给 WSL。
 
-请用 Windows VS Code 直接打开：
+源码编辑、自动补全和函数跳转必须在 **Remote - WSL** 窗口中进行。不要把下面
+的 UNC 路径当作普通 Windows 文件夹长期开发：
 
 ```text
 \\wsl.localhost\Debian\home\<user>\openvela\contest2026_004_TeamFalcons
 ```
 
-不要在 WSL Remote 窗口启动 Windows Cortex-Debug。默认工具路径使用
-Cortex-Debug 正式注册的 Windows setting，位于 `.vscode/settings.json`；若安装
-位置不同，只需修改该文件。源码映射使用 `${workspaceFolder}/..` 指向 openvela
-根目录。
+Windows 本地 C/C++ 扩展无法正确跟随 NuttX 的 Linux 绝对符号链接，还会把
+Windows newlib 与 NuttX libc 混用，表现为 `velaguard_main.c` 没有可靠补全、
+不能跳转或出现大量错误类型提示。若当前已经打开 UNC 窗口，按
+`Ctrl+Shift+P` 运行 `Tasks: Run Task`，选择：
+
+```text
+openvela: reopen workspace in WSL for IntelliSense
+```
+
+新窗口左下角必须显示 `WSL: Debian`。首次进入时按扩展面板提示，把
+`ms-vscode.cpptools` 安装到 WSL；然后运行 `C/C++: Reset IntelliSense
+Database` 和 `Developer: Reload Window`。项目配置会使用 WSL 内的真实 ARM
+GCC、NuttX 头文件与 Linux 符号链接。
+
+当前硬件任务仍由 Windows 进程访问 CubeProgrammer、OpenOCD 与 ST-LINK。
+因此编辑/跳转使用 Remote - WSL 窗口；执行现有编译、烧录和 Cortex-Debug
+任务时保留原 Windows UNC 窗口。不要把 ST-LINK 转发到 WSL，也不要在尚未
+配置 Windows 工具桥接的 Remote 窗口直接启动 Cortex-Debug。Windows 工具路径
+位于 `.vscode/settings.json`；安装位置不同时只需修改该文件。
 
 PowerShell 脚本也支持环境变量：
 

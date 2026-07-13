@@ -205,6 +205,13 @@ def main() -> int:
     try:
         tasks = json.loads(read(REPO_ROOT / ".vscode/tasks.json"))
         launches = json.loads(read(REPO_ROOT / ".vscode/launch.json"))
+        cpp_properties = json.loads(
+            read(REPO_ROOT / ".vscode/c_cpp_properties.json")
+        )
+        vscode_settings = json.loads(read(REPO_ROOT / ".vscode/settings.json"))
+        vscode_extensions = json.loads(
+            read(REPO_ROOT / ".vscode/extensions.json")
+        )
     except json.JSONDecodeError as error:
         checks.check(False, "VSCode JSON parses", str(error))
     else:
@@ -215,8 +222,9 @@ def main() -> int:
                 "openvela: flash VelaGuard test QSPI firmware (CubeProgrammer)",
                 "openvela: flash VelaGuard test debug firmware (CubeProgrammer)",
                 "openvela: flash VelaGuard production firmware (CubeProgrammer)",
+                "openvela: reopen workspace in WSL for IntelliSense",
             }.issubset(labels),
-            "VSCode exposes VelaGuard test, debug, and production tasks",
+            "VSCode exposes VelaGuard firmware and Remote WSL tasks",
         )
         configurations = launches.get("configurations", [])
         checks.check(
@@ -229,6 +237,31 @@ def main() -> int:
                 for config in configurations
             ),
             "Cortex-Debug attaches through OpenOCD without loading Flash",
+        )
+        cpp_configurations = cpp_properties.get("configurations", [])
+        wsl_config = cpp_configurations[0] if cpp_configurations else {}
+        checks.check(
+            wsl_config.get("name") == "VelaGuard STM32H750 (WSL)"
+            and wsl_config.get("compilerPath", "").endswith(
+                "arm-none-eabi-gcc"
+            )
+            and wsl_config.get("intelliSenseMode") == "linux-gcc-arm"
+            and "-idirafter" not in wsl_config.get("compilerArgs", [])
+            and any(
+                path.endswith("../nuttx/include/nuttx/config.h")
+                for path in wsl_config.get("forcedInclude", [])
+            )
+            and any(
+                path.endswith("app/velaguard_app/src")
+                for path in wsl_config.get("includePath", [])
+            )
+            and vscode_settings.get("C_Cpp.intelliSenseEngine") == "default",
+            "Remote WSL workspace has VelaGuard IntelliSense configuration",
+        )
+        checks.check(
+            "ms-vscode-remote.remote-wsl"
+            in vscode_extensions.get("recommendations", []),
+            "VSCode recommends the Remote WSL extension",
         )
 
     checks.check(
