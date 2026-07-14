@@ -8,6 +8,9 @@ param(
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
+  [ValidateSet("incremental", "full")]
+  [string]$Rebuild = "incremental",
+  [switch]$FullClean,
   [switch]$ValidateOnly
 )
 
@@ -22,6 +25,8 @@ if ($NoBuild) { $parameters["NoBuild"] = $true }
 if ($DebugBuild) { $parameters["DebugBuild"] = $true }
 $parameters["VelaGuardMode"] = $VelaGuardMode
 $parameters["DeviceIdOverride"] = $DeviceIdOverride
+$parameters["Rebuild"] = $Rebuild
+if ($FullClean) { $parameters["FullClean"] = $true }
 if ($ValidateOnly) { $parameters["ValidateOnly"] = $true }
 
 & (Join-Path $PSScriptRoot "windows_flash_cube.ps1") @parameters

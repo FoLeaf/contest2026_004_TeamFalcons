@@ -10,5 +10,8 @@ if(CONFIG_LVX_USE_VELAGUARD)
     SRCS velaguard_main.c
          src/vg_identity.c
          src/vg_startup.c
+         src/vg_acq.c
+         src/vg_alarm.c
+         src/vg_log.c
          src/vg_ui_home.c)
 endif()

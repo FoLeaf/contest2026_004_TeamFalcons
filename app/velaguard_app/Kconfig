@@ -41,4 +41,28 @@ config VG_FIRMWARE_VERSION
 	string "VelaGuard firmware version"
 	default "0.1.0"
 
+choice
+	prompt "VelaGuard acquisition backend"
+	default VG_ACQ_BACKEND_MOCK
+	---help---
+		Mock generates live demo readings without RS485 hardware.
+		UART is reserved for issue #02 (/dev/rs485 + nanoMODBUS).
+
+config VG_ACQ_BACKEND_NONE
+	bool "None (acquisition not configured)"
+
+config VG_ACQ_BACKEND_MOCK
+	bool "Mock temperature (no hardware)"
+
+config VG_ACQ_BACKEND_UART
+	bool "UART RS485 (issue #02, not implemented yet)"
+
+endchoice
+
+config VG_ACQ_BACKEND
+	int
+	default 0 if VG_ACQ_BACKEND_NONE
+	default 1 if VG_ACQ_BACKEND_MOCK
+	default 2 if VG_ACQ_BACKEND_UART
+
 endif

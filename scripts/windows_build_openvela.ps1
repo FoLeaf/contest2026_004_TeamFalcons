@@ -7,7 +7,12 @@ param(
   [switch]$DebugBuild,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
-  [string]$DeviceIdOverride = "vg-test-001"
+  [string]$DeviceIdOverride = "vg-test-001",
+  # incremental (default): reuse existing nuttx/.config, no make clean unless kconfig actually changes
+  # full: re-run configure.sh and force make clean before build
+  [ValidateSet("incremental", "full")]
+  [string]$Rebuild = "incremental",
+  [switch]$FullClean
 )
 
 $ErrorActionPreference = "Stop"
@@ -112,15 +117,21 @@ if ([string]::IsNullOrWhiteSpace($OpenvelaDir)) {
   }
 }
 
+if ($FullClean) {
+  $Rebuild = "full"
+}
+
 $debugBuildFlag = if ($DebugBuild) { "1" } else { "0" }
 $productModeFlag = if ($VelaGuardMode -eq "production") { "1" } else { "0" }
 $buildKind = if ($DebugBuild) { "debug" } else { "release" }
+$rebuildMode = $Rebuild
 $buildCommand = @"
 set -euo pipefail
 OPENVELA_ROOT='$OpenvelaDir'
 NUTTX_ROOT='${OpenvelaDir}/nuttx'
 CONTEST_ROOT='$repoDirWsl'
 OUT_ROOT='$outDirWsl'
+REBUILD_MODE='$rebuildMode'
 
 export PATH="`$OPENVELA_ROOT/prebuilts/tools/python/bin:`$OPENVELA_ROOT/prebuilts/tools/linux/x86_64:`$OPENVELA_ROOT/prebuilts/kconfig-frontends/bin:`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin:`$OPENVELA_ROOT/prebuilts/build-tools/linux-x86_64/bin:`$PATH"
 export PYTHONPATH="`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages/kconfiglib:`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages:`${PYTHONPATH:-}"
@@ -133,7 +144,21 @@ bash "`$CONTEST_ROOT/scripts/ensure-openvela-links.sh" "`$OPENVELA_ROOT"
   "`$OPENVELA_ROOT/apps/tools/mkkconfig.sh" -m Demos
 )
 bash "`$CONTEST_ROOT/scripts/apply-openvela-qspi-patch.sh" "`$OPENVELA_ROOT"
-"`$NUTTX_ROOT/tools/configure.sh" -e '$BoardConfig'
+
+need_configure=0
+if [ "`$REBUILD_MODE" = 'full' ]; then
+  need_configure=1
+elif [ ! -f "`$NUTTX_ROOT/.config" ]; then
+  echo '[build] no nuttx/.config; running configure (first build)'
+  need_configure=1
+fi
+
+if [ "`$need_configure" = '1' ]; then
+  echo "[build] configure.sh -e $BoardConfig (rebuild=`$REBUILD_MODE)"
+  "`$NUTTX_ROOT/tools/configure.sh" -e '$BoardConfig'
+else
+  echo '[build] incremental: reuse existing nuttx/.config (skip configure.sh)'
+fi
 
 before_config=`$(mktemp)
 cp "`$NUTTX_ROOT/.config" "`$before_config"
@@ -173,10 +198,22 @@ else
 fi
 
 make -C "`$NUTTX_ROOT" olddefconfig
-if ! cmp -s "`$before_config" "`$NUTTX_ROOT/.config"; then
-  make -C "`$NUTTX_ROOT" clean
+
+force_clean=0
+if [ "`$REBUILD_MODE" = 'full' ]; then
+  force_clean=1
+  echo '[build] full rebuild: make clean'
+elif ! cmp -s "`$before_config" "`$NUTTX_ROOT/.config"; then
+  force_clean=1
+  echo '[build] .config changed after kconfig-tweak; make clean'
+else
+  echo '[build] .config unchanged; incremental make (no clean)'
 fi
 rm -f "`$before_config"
+
+if [ "`$force_clean" = '1' ]; then
+  make -C "`$NUTTX_ROOT" clean
+fi
 
 make -C "`$NUTTX_ROOT" -j`$(nproc)
 
@@ -210,8 +247,8 @@ printf 'product_mode=%s\ncompiler_mode=%s\n' \
 "`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin/arm-none-eabi-size" "`$OUT_ROOT/nuttx.elf" "`$OUT_ROOT/qspi_bootstub.elf"
 "@
 
-Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro'."
+Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro' (rebuild=$rebuildMode)."
 Write-Host "openvela root: $OpenvelaDir"
 Write-Host "artifacts: $OutDir"
 Invoke-CheckedWslScript $buildCommand $OutDir
-Write-Host "Build completed: $OutDir"
+Write-Host "Build completed: $OutDir (rebuild=$rebuildMode)"

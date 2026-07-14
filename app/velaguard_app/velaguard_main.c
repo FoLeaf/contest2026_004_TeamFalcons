@@ -19,6 +19,8 @@
 #include <lvgl/lvgl.h>
 #include <nshlib/nshlib.h>
 
+#include "src/vg_acq.h"
+#include "src/vg_alarm.h"
 #include "src/vg_identity.h"
 #include "src/vg_startup.h"
 #include "src/vg_ui_home.h"
@@ -45,7 +47,6 @@ static int velaguard_ui_main(int argc, FAR char *argv[])
   lv_nuttx_dsc_init(&info);
   info.input_path = CONFIG_LVX_VELAGUARD_INPUT_PATH;
   lv_nuttx_init(&info, &result);
-
   if (result.disp == NULL)
     {
       fprintf(stderr, "[velaguard] LVGL display initialization failed\n");
@@ -111,6 +112,18 @@ int velaguard_main(int argc, FAR char *argv[])
     {
       fprintf(stderr, "[velaguard] storage degraded (%d)\n", storage_result);
     }
+
+  if (vg_acq_init() < 0)
+    {
+      fprintf(stderr, "[velaguard] acquisition init failed\n");
+    }
+  else
+    {
+      printf("[velaguard] acquisition backend: %s\n",
+             vg_acq_backend_name());
+    }
+
+  vg_alarm_init();
 
   task_result = task_create("velaguard_ui",
                             CONFIG_LVX_VELAGUARD_PRIORITY,

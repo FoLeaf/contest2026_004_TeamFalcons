@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/07-14-velaguard-arduino-shield/prd.md", "reason": "Requirements, fanout inventory, decisions D1–D5, acceptance criteria"}
+{"file": ".trellis/tasks/07-14-velaguard-arduino-shield/design.md", "reason": "Electrical contracts RS485/ESP/DO, solder bridges, BOM, layout, trade-offs"}
+{"file": ".trellis/tasks/07-14-velaguard-arduino-shield/implement.md", "reason": "Ordered writing checklist and validation gates"}
+{"file": ".trellis/tasks/07-13-resolve-usart3-rs485-vcp-conflict/design.md", "reason": "Locked UART7 RS485 pin and /dev/rs485 firmware contract"}
+{"file": "VelaGuard_项目手册.md", "reason": "Product hardware resource list and network/RS485 constraints"}
+{"file": "VelaGuard_推进方案.md", "reason": "Phase goals for RS485 and ESP-01 dual-network"}
+{"file": ".scratch/velaguard-independent-edge-ai-gateway/PRD.md", "reason": "UART separation and ESP-01 power/reset requirements"}

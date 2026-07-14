@@ -61,6 +61,23 @@
       "problemMatcher": "$gcc"
     },
     {
+      "label": "openvela: FULL clean+build production QSPI firmware",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\windows_build_openvela.ps1",
+        "-VelaGuardMode",
+        "production",
+        "-Rebuild",
+        "full"
+      ],
+      "problemMatcher": "$gcc"
+    },
+    {
       "label": "openvela: flash VelaGuard test QSPI firmware (CubeProgrammer)",
       "type": "process",
       "command": "powershell.exe",
@@ -113,6 +130,23 @@
         "${workspaceFolder}\\scripts\\windows_flash_cube.ps1",
         "-VelaGuardMode",
         "production"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "openvela: FULL clean+flash production (CubeProgrammer)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\windows_flash_cube.ps1",
+        "-VelaGuardMode",
+        "production",
+        "-Rebuild",
+        "full"
       ],
       "problemMatcher": []
     }

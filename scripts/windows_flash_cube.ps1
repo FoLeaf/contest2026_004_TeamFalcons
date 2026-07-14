@@ -8,6 +8,9 @@ param(
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
+  [ValidateSet("incremental", "full")]
+  [string]$Rebuild = "incremental",
+  [switch]$FullClean,
   [switch]$ValidateOnly
 )
 
@@ -95,9 +98,13 @@ if (-not $NoBuild) {
     OutDir = $OutDir
     VelaGuardMode = $VelaGuardMode
     DeviceIdOverride = $DeviceIdOverride
+    Rebuild = $Rebuild
   }
   if ($DebugBuild) {
     $buildParameters["DebugBuild"] = $true
+  }
+  if ($FullClean) {
+    $buildParameters["FullClean"] = $true
   }
 
   & (Join-Path $PSScriptRoot "windows_build_openvela.ps1") @buildParameters

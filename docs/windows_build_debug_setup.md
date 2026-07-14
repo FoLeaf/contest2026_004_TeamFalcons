@@ -102,6 +102,31 @@ nuttx.config  build-info.txt
 `openvela: build VelaGuard production QSPI firmware`。产品模式
 test/production 与编译模式 debug/release 相互独立。
 
+### 增量 vs 全量
+
+默认 **incremental**（日常改 app 后 flash 应走这条）：
+
+- 已有 `nuttx/.config` 时 **跳过** `configure.sh`；
+- 仅在 kconfig-tweak 后 `.config` **真的变化** 时才 `make clean`；
+- 否则直接 `make -j`，只重编改动的目标。
+
+需要全量时用 `-Rebuild full` 或任务
+`openvela: FULL clean+build production QSPI firmware` /
+`openvela: FULL clean+flash production (CubeProgrammer)`（会重新
+`configure.sh` 并强制 `make clean`）。
+
+```powershell
+# 默认增量
+scripts\windows_flash_cube.ps1 -VelaGuardMode production
+
+# 强制全量
+scripts\windows_flash_cube.ps1 -VelaGuardMode production -Rebuild full
+# 或
+scripts\windows_build_openvela.ps1 -VelaGuardMode production -FullClean
+```
+
+从 test 切到 production（或改 debug 符号）时，`.config` 会变，**仍会 clean 一次**，属正常。
+
 判断编译正确不要只看任务退出码，还应确认 `.debug` 中六个产物都存在，且
 日志显示主镜像位于 `0x9000xxxx`、boot stub 位于 `0x0800xxxx`。
 

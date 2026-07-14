@@ -16,6 +16,8 @@
 
 #include <lvgl/lvgl.h>
 
+#include "vg_acq.h"
+#include "vg_alarm.h"
 #include "vg_identity.h"
 #include "vg_startup.h"
 #include "vg_ui_home.h"
@@ -45,6 +47,10 @@ volatile uint64_t g_velaguard_uptime_seconds;
  ****************************************************************************/
 
 static FAR lv_obj_t *g_uptime_label;
+static FAR lv_obj_t *g_acq_title_label;
+static FAR lv_obj_t *g_acq_value_label;
+static FAR lv_obj_t *g_alarm_title_label;
+static FAR lv_obj_t *g_alarm_value_label;
 
 /****************************************************************************
  * Private Functions
@@ -116,6 +122,97 @@ void vg_ui_home_uptime_checkpoint(uint64_t uptime_seconds)
  * Private Functions
  ****************************************************************************/
 
+static void vg_refresh_acquisition_labels(void)
+{
+  FAR const struct vg_acq_point *point = vg_acq_primary();
+  char title[40];
+  char value[48];
+
+  snprintf(title, sizeof(title), "ACQ [%s]", vg_acq_backend_name());
+  if (g_acq_title_label != NULL)
+    {
+      lv_label_set_text(g_acq_title_label, title);
+    }
+
+  if (point == NULL || point->quality == VG_ACQ_Q_NONE)
+    {
+      snprintf(value, sizeof(value), "Not configured");
+    }
+  else
+    {
+      int tenths = (int)(point->value * 10.0f + (point->value >= 0 ? 0.5f : -0.5f));
+
+      snprintf(value, sizeof(value), "%d.%d %s  %s",
+               tenths / 10, tenths < 0 ? (-tenths) % 10 : tenths % 10,
+               point->unit != NULL ? point->unit : "",
+               vg_acq_quality_string(point->quality));
+    }
+
+  if (g_acq_value_label != NULL)
+    {
+      lv_label_set_text(g_acq_value_label, value);
+      if (point != NULL && point->quality == VG_ACQ_Q_GOOD)
+        {
+          lv_obj_set_style_text_color(g_acq_value_label,
+                                      lv_color_hex(VG_COLOR_ACCENT),
+                                      LV_PART_MAIN);
+        }
+      else
+        {
+          lv_obj_set_style_text_color(g_acq_value_label,
+                                      lv_color_hex(VG_COLOR_TEXT),
+                                      LV_PART_MAIN);
+        }
+    }
+}
+
+static void vg_refresh_alarm_labels(void)
+{
+  FAR const struct vg_alarm_status *alarm = vg_alarm_get();
+  char value[48];
+  uint32_t color = VG_COLOR_TEXT;
+
+  if (alarm == NULL || !alarm->armed)
+    {
+      snprintf(value, sizeof(value), "Not armed");
+      color = VG_COLOR_TEXT;
+    }
+  else if (alarm->level == VG_ALARM_CRITICAL)
+    {
+      int tenths = (int)(alarm->current_c * 10.0f + 0.5f);
+
+      snprintf(value, sizeof(value), "CRITICAL  %d.%d C",
+               tenths / 10, tenths % 10);
+      color = VG_COLOR_ALARM;
+    }
+  else if (alarm->level == VG_ALARM_WARNING)
+    {
+      int tenths = (int)(alarm->current_c * 10.0f + 0.5f);
+
+      snprintf(value, sizeof(value), "WARNING  %d.%d C",
+               tenths / 10, tenths % 10);
+      color = VG_COLOR_WARNING;
+    }
+  else
+    {
+      snprintf(value, sizeof(value), "Normal  (< %.0f C)",
+               (double)alarm->threshold_c);
+      color = VG_COLOR_ACCENT;
+    }
+
+  if (g_alarm_title_label != NULL)
+    {
+      lv_label_set_text(g_alarm_title_label, "ALARM");
+    }
+
+  if (g_alarm_value_label != NULL)
+    {
+      lv_label_set_text(g_alarm_value_label, value);
+      lv_obj_set_style_text_color(g_alarm_value_label, lv_color_hex(color),
+                                  LV_PART_MAIN);
+    }
+}
+
 static void vg_uptime_timer(FAR lv_timer_t *timer)
 {
   char text[32];
@@ -125,6 +222,11 @@ static void vg_uptime_timer(FAR lv_timer_t *timer)
   vg_ui_home_uptime_checkpoint(uptime_seconds);
   vg_format_uptime(text, sizeof(text), uptime_seconds);
   lv_label_set_text(g_uptime_label, text);
+
+  vg_acq_poll();
+  vg_alarm_eval();
+  vg_refresh_acquisition_labels();
+  vg_refresh_alarm_labels();
 }
 
 static void vg_create_header(FAR lv_obj_t *screen)
@@ -197,9 +299,33 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
   FAR lv_obj_t *panel = vg_panel(screen, 8, 114, 304, 150,
                                  VG_COLOR_SURFACE);
   FAR lv_obj_t *divider;
+  FAR const struct vg_acq_point *point = vg_acq_primary();
+  char title[40];
+  char value[48];
+  uint32_t value_color = VG_COLOR_TEXT;
 
-  vg_add_state(panel, "ACQUISITION", "Not configured", 14, 14,
-               VG_COLOR_TEXT);
+  snprintf(title, sizeof(title), "ACQ [%s]", vg_acq_backend_name());
+  if (point != NULL && point->quality == VG_ACQ_Q_GOOD)
+    {
+      int tenths = (int)(point->value * 10.0f + 0.5f);
+
+      value_color = VG_COLOR_ACCENT;
+      snprintf(value, sizeof(value), "%d.%d %s  %s",
+               tenths / 10, tenths % 10,
+               point->unit != NULL ? point->unit : "",
+               vg_acq_quality_string(point->quality));
+    }
+  else
+    {
+      snprintf(value, sizeof(value), "Not configured");
+    }
+
+  g_acq_title_label = vg_label(panel, title, VG_COLOR_MUTED,
+                               &lv_font_montserrat_10);
+  lv_obj_set_pos(g_acq_title_label, 14, 14);
+  g_acq_value_label = vg_label(panel, value, value_color,
+                               &lv_font_montserrat_14);
+  lv_obj_set_pos(g_acq_value_label, 14, 32);
 
   divider = lv_obj_create(panel);
   lv_obj_set_pos(divider, 14, 75);
@@ -212,7 +338,12 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
   lv_obj_set_style_pad_all(divider, 0, LV_PART_MAIN);
   lv_obj_remove_flag(divider, LV_OBJ_FLAG_SCROLLABLE);
 
-  vg_add_state(panel, "ALARM", "Not armed", 14, 88, VG_COLOR_TEXT);
+  g_alarm_title_label = vg_label(panel, "ALARM", VG_COLOR_MUTED,
+                                 &lv_font_montserrat_10);
+  lv_obj_set_pos(g_alarm_title_label, 14, 88);
+  g_alarm_value_label = vg_label(panel, "Not armed", VG_COLOR_TEXT,
+                                 &lv_font_montserrat_14);
+  lv_obj_set_pos(g_alarm_value_label, 14, 106);
 }
 
 static void vg_create_supporting_states(FAR lv_obj_t *screen)

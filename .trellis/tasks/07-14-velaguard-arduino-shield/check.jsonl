@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/07-14-velaguard-arduino-shield/prd.md", "reason": "Verify acceptance criteria and out-of-scope against deliverable"}
+{"file": ".trellis/tasks/07-14-velaguard-arduino-shield/design.md", "reason": "Verify pin contracts, conflicts, solder bridges, BOM"}
+{"file": ".trellis/tasks/07-13-resolve-usart3-rs485-vcp-conflict/design.md", "reason": "Cross-check RS485 pins match UART7 design"}
+{"file": "VelaGuard_项目手册.md", "reason": "Product boundary: no AI direct control of DO; dual network"}
