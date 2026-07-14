@@ -33,6 +33,21 @@ static uint32_t g_above_crit_ms;
 static uint32_t g_below_restore_ms;
 static uint32_t g_last_eval_ms;
 
+static FAR const char *vg_alarm_level_cn(enum vg_alarm_level level)
+{
+  switch (level)
+    {
+      case VG_ALARM_WARNING:
+        return "注意";
+
+      case VG_ALARM_CRITICAL:
+        return "危险";
+
+      default:
+        return "正常";
+    }
+}
+
 static void vg_alarm_log_transition(enum vg_alarm_level previous,
                                     enum vg_alarm_level next)
 {
@@ -46,12 +61,20 @@ static void vg_alarm_log_transition(enum vg_alarm_level previous,
     }
 
   tenths = (int)(g_alarm.current_c * 10.0f + 0.5f);
+
+  /* Short Chinese line for 480px home; keep ASCII separators (in font). */
+
+  snprintf(g_alarm.last_event, sizeof(g_alarm.last_event),
+           "%s->%s %d.%dC",
+           vg_alarm_level_cn(previous),
+           vg_alarm_level_cn(next),
+           tenths / 10, tenths % 10);
+
   snprintf(human, sizeof(human), "alarm %s -> %s temp=%d.%dC thr=%.0f",
            vg_alarm_level_string(previous),
            vg_alarm_level_string(next),
            tenths / 10, tenths % 10,
            (double)g_alarm.threshold_c);
-  snprintf(g_alarm.last_event, sizeof(g_alarm.last_event), "%s", human);
   vg_log_human("ALARM", human);
 
   snprintf(extra, sizeof(extra),

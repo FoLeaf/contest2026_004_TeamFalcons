@@ -18,6 +18,7 @@ CSRCS = src/vg_identity.c \
         src/vg_config.c \
         src/vg_log.c \
         src/vg_ui_home.c \
-        src/fonts/vg_font_cn_16.c
+        src/fonts/vg_font_cn_16.c \
+        src/fonts/vg_font_cn_20.c
 
 include $(APPDIR)/Application.mk
