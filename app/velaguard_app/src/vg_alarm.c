@@ -18,20 +18,9 @@
 
 #include "vg_acq.h"
 #include "vg_alarm.h"
+#include "vg_config.h"
 #include "vg_log.h"
 #include "vg_startup.h"
-
-/****************************************************************************
- * Pre-processor Definitions
- ****************************************************************************/
-
-/* Demo thresholds: mock triangle reaches ~85 C so both levels fire. */
-
-#define VG_ALARM_WARN_C       70.0f
-#define VG_ALARM_CRIT_C       80.0f
-#define VG_ALARM_RESTORE_C    68.0f
-#define VG_ALARM_TRIGGER_MS   2000u
-#define VG_ALARM_RESTORE_MS   2000u
 
 /****************************************************************************
  * Private Data
@@ -62,6 +51,7 @@ static void vg_alarm_log_transition(enum vg_alarm_level previous,
            vg_alarm_level_string(next),
            tenths / 10, tenths % 10,
            (double)g_alarm.threshold_c);
+  snprintf(g_alarm.last_event, sizeof(g_alarm.last_event), "%s", human);
   vg_log_human("ALARM", human);
 
   snprintf(extra, sizeof(extra),
@@ -81,11 +71,14 @@ static void vg_alarm_log_transition(enum vg_alarm_level previous,
 
 void vg_alarm_init(void)
 {
+  FAR const struct vg_alarm_config *cfg = vg_config_alarm();
+
   g_alarm.level = VG_ALARM_OK;
   g_alarm.title = "Not armed";
-  g_alarm.threshold_c = VG_ALARM_WARN_C;
+  g_alarm.threshold_c = cfg->warn_c;
   g_alarm.current_c = 0.0f;
   g_alarm.armed = false;
+  g_alarm.last_event[0] = '\0';
   g_logged_level = VG_ALARM_OK;
   g_above_warn_ms = 0;
   g_above_crit_ms = 0;
@@ -96,6 +89,7 @@ void vg_alarm_init(void)
 void vg_alarm_eval(void)
 {
   FAR const struct vg_acq_point *point = vg_acq_primary();
+  FAR const struct vg_alarm_config *cfg = vg_config_alarm();
   uint32_t now_ms = (uint32_t)vg_uptime_ms();
   uint32_t dt_ms;
   enum vg_alarm_level previous = g_alarm.level;
@@ -129,21 +123,21 @@ void vg_alarm_eval(void)
 
   g_alarm.armed = true;
   g_alarm.current_c = point->value;
-  g_alarm.threshold_c = VG_ALARM_WARN_C;
+  g_alarm.threshold_c = cfg->warn_c;
 
-  if (point->value >= VG_ALARM_CRIT_C)
+  if (point->value >= cfg->crit_c)
     {
       g_above_crit_ms += dt_ms;
       g_above_warn_ms += dt_ms;
       g_below_restore_ms = 0;
     }
-  else if (point->value >= VG_ALARM_WARN_C)
+  else if (point->value >= cfg->warn_c)
     {
       g_above_warn_ms += dt_ms;
       g_above_crit_ms = 0;
       g_below_restore_ms = 0;
     }
-  else if (point->value < VG_ALARM_RESTORE_C)
+  else if (point->value < cfg->restore_c)
     {
       g_below_restore_ms += dt_ms;
       g_above_warn_ms = 0;
@@ -157,20 +151,20 @@ void vg_alarm_eval(void)
       g_above_crit_ms = 0;
     }
 
-  if (g_above_crit_ms >= VG_ALARM_TRIGGER_MS)
+  if (g_above_crit_ms >= cfg->trigger_ms)
     {
       g_alarm.level = VG_ALARM_CRITICAL;
       g_alarm.title = "Temp critical";
-      g_alarm.threshold_c = VG_ALARM_CRIT_C;
+      g_alarm.threshold_c = cfg->crit_c;
     }
-  else if (g_above_warn_ms >= VG_ALARM_TRIGGER_MS)
+  else if (g_above_warn_ms >= cfg->trigger_ms)
     {
       g_alarm.level = VG_ALARM_WARNING;
       g_alarm.title = "Temp high";
-      g_alarm.threshold_c = VG_ALARM_WARN_C;
+      g_alarm.threshold_c = cfg->warn_c;
     }
   else if (g_alarm.level != VG_ALARM_OK &&
-           g_below_restore_ms >= VG_ALARM_RESTORE_MS)
+           g_below_restore_ms >= cfg->restore_ms)
     {
       g_alarm.level = VG_ALARM_OK;
       g_alarm.title = "Normal";

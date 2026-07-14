@@ -16,6 +16,7 @@
 
 #include <lvgl/lvgl.h>
 
+#include "fonts/vg_font_cn_16.h"
 #include "vg_acq.h"
 #include "vg_alarm.h"
 #include "vg_identity.h"
@@ -35,6 +36,7 @@
 #define VG_COLOR_ALARM       0xe05b5b
 #define VG_COLOR_WARNING     0xd7a84a
 #define VG_PANEL_RADIUS      8
+#define VG_FONT_UI           (&vg_font_cn_16)
 
 /****************************************************************************
  * Public Data
@@ -51,6 +53,7 @@ static FAR lv_obj_t *g_acq_title_label;
 static FAR lv_obj_t *g_acq_value_label;
 static FAR lv_obj_t *g_alarm_title_label;
 static FAR lv_obj_t *g_alarm_value_label;
+static FAR lv_obj_t *g_alarm_event_label;
 
 /****************************************************************************
  * Private Functions
@@ -87,11 +90,10 @@ static void vg_add_state(FAR lv_obj_t *parent, FAR const char *title,
                          FAR const char *value, int32_t x, int32_t y,
                          uint32_t value_color)
 {
-  FAR lv_obj_t *label = vg_label(parent, title, VG_COLOR_MUTED,
-                                 &lv_font_montserrat_10);
+  FAR lv_obj_t *label = vg_label(parent, title, VG_COLOR_MUTED, VG_FONT_UI);
 
   lv_obj_set_pos(label, x, y);
-  label = vg_label(parent, value, value_color, &lv_font_montserrat_14);
+  label = vg_label(parent, value, value_color, VG_FONT_UI);
   lv_obj_set_pos(label, x, y + 18);
 }
 
@@ -102,10 +104,42 @@ static void vg_format_uptime(char *buffer, size_t buffer_size,
   uint64_t minutes = (uptime_seconds / 60u) % 60u;
   uint64_t seconds = uptime_seconds % 60u;
 
-  snprintf(buffer, buffer_size, "Uptime %02llu:%02llu:%02llu",
+  snprintf(buffer, buffer_size, "运行 %02llu:%02llu:%02llu",
            (unsigned long long)hours,
            (unsigned long long)minutes,
            (unsigned long long)seconds);
+}
+
+static FAR const char *vg_backend_label(void)
+{
+  FAR const char *name = vg_acq_backend_name();
+
+  if (strcmp(name, "MOCK") == 0)
+    {
+      return "模拟";
+    }
+
+  if (strcmp(name, "UART") == 0)
+    {
+      return "串口";
+    }
+
+  return "无";
+}
+
+static FAR const char *vg_quality_label(enum vg_acq_quality quality)
+{
+  switch (quality)
+    {
+      case VG_ACQ_Q_GOOD:
+        return "良好";
+
+      case VG_ACQ_Q_BAD:
+        return "异常";
+
+      default:
+        return "无";
+    }
 }
 
 /****************************************************************************
@@ -128,7 +162,7 @@ static void vg_refresh_acquisition_labels(void)
   char title[40];
   char value[48];
 
-  snprintf(title, sizeof(title), "ACQ [%s]", vg_acq_backend_name());
+  snprintf(title, sizeof(title), "采集 [%s]", vg_backend_label());
   if (g_acq_title_label != NULL)
     {
       lv_label_set_text(g_acq_title_label, title);
@@ -136,7 +170,7 @@ static void vg_refresh_acquisition_labels(void)
 
   if (point == NULL || point->quality == VG_ACQ_Q_NONE)
     {
-      snprintf(value, sizeof(value), "Not configured");
+      snprintf(value, sizeof(value), "未配置");
     }
   else
     {
@@ -145,7 +179,7 @@ static void vg_refresh_acquisition_labels(void)
       snprintf(value, sizeof(value), "%d.%d %s  %s",
                tenths / 10, tenths < 0 ? (-tenths) % 10 : tenths % 10,
                point->unit != NULL ? point->unit : "",
-               vg_acq_quality_string(point->quality));
+               vg_quality_label(point->quality));
     }
 
   if (g_acq_value_label != NULL)
@@ -174,14 +208,14 @@ static void vg_refresh_alarm_labels(void)
 
   if (alarm == NULL || !alarm->armed)
     {
-      snprintf(value, sizeof(value), "Not armed");
+      snprintf(value, sizeof(value), "未启用");
       color = VG_COLOR_TEXT;
     }
   else if (alarm->level == VG_ALARM_CRITICAL)
     {
       int tenths = (int)(alarm->current_c * 10.0f + 0.5f);
 
-      snprintf(value, sizeof(value), "CRITICAL  %d.%d C",
+      snprintf(value, sizeof(value), "危险  %d.%d C",
                tenths / 10, tenths % 10);
       color = VG_COLOR_ALARM;
     }
@@ -189,20 +223,20 @@ static void vg_refresh_alarm_labels(void)
     {
       int tenths = (int)(alarm->current_c * 10.0f + 0.5f);
 
-      snprintf(value, sizeof(value), "WARNING  %d.%d C",
+      snprintf(value, sizeof(value), "注意  %d.%d C",
                tenths / 10, tenths % 10);
       color = VG_COLOR_WARNING;
     }
   else
     {
-      snprintf(value, sizeof(value), "Normal  (< %.0f C)",
+      snprintf(value, sizeof(value), "正常  (< %.0f C)",
                (double)alarm->threshold_c);
       color = VG_COLOR_ACCENT;
     }
 
   if (g_alarm_title_label != NULL)
     {
-      lv_label_set_text(g_alarm_title_label, "ALARM");
+      lv_label_set_text(g_alarm_title_label, "告警");
     }
 
   if (g_alarm_value_label != NULL)
@@ -210,6 +244,18 @@ static void vg_refresh_alarm_labels(void)
       lv_label_set_text(g_alarm_value_label, value);
       lv_obj_set_style_text_color(g_alarm_value_label, lv_color_hex(color),
                                   LV_PART_MAIN);
+    }
+
+  if (g_alarm_event_label != NULL)
+    {
+      if (alarm != NULL && alarm->last_event[0] != '\0')
+        {
+          lv_label_set_text(g_alarm_event_label, alarm->last_event);
+        }
+      else
+        {
+          lv_label_set_text(g_alarm_event_label, "尚无事件");
+        }
     }
 }
 
@@ -234,19 +280,22 @@ static void vg_create_header(FAR lv_obj_t *screen)
   FAR const struct vg_identity *identity = vg_identity_get();
   FAR lv_obj_t *panel = vg_panel(screen, 8, 6, 464, 34, VG_COLOR_RAISED);
   FAR lv_obj_t *label = vg_label(panel, "VelaGuard", VG_COLOR_ACCENT,
-                                 &lv_font_montserrat_20);
-  char firmware[24];
+                                 VG_FONT_UI);
+  char firmware[32];
+  FAR const char *mode =
+    identity->build_mode == VG_BUILD_TEST ? "试验" : "量产";
 
   lv_obj_align(label, LV_ALIGN_LEFT_MID, 12, 0);
 
-  label = vg_label(panel, vg_build_mode_string(identity->build_mode),
+  label = vg_label(panel, mode,
                    identity->build_mode == VG_BUILD_TEST ?
                    VG_COLOR_WARNING : VG_COLOR_ACCENT,
-                   &lv_font_montserrat_12);
-  lv_obj_align(label, LV_ALIGN_RIGHT_MID, -84, 0);
+                   VG_FONT_UI);
+  lv_obj_align(label, LV_ALIGN_RIGHT_MID, -96, 0);
 
-  snprintf(firmware, sizeof(firmware), "FW %s", identity->firmware_version);
-  label = vg_label(panel, firmware, VG_COLOR_MUTED, &lv_font_montserrat_10);
+  snprintf(firmware, sizeof(firmware), "版本 %s",
+           identity->firmware_version);
+  label = vg_label(panel, firmware, VG_COLOR_MUTED, VG_FONT_UI);
   lv_obj_align(label, LV_ALIGN_RIGHT_MID, -12, 0);
 }
 
@@ -269,28 +318,26 @@ static void vg_create_identity(FAR lv_obj_t *screen)
   uint32_t storage_color = vg_startup_storage_ready() ?
                            VG_COLOR_ACCENT : VG_COLOR_WARNING;
 
-  label = vg_label(panel, "LOCAL GATEWAY", VG_COLOR_MUTED,
-                   &lv_font_montserrat_10);
+  label = vg_label(panel, "本地系统", VG_COLOR_MUTED, VG_FONT_UI);
   lv_obj_set_pos(label, 12, 6);
 
   label = vg_label(panel,
                    vg_identity_valid() ? identity->device_id :
-                   "IDENTITY ERROR",
-                   identity_color, &lv_font_montserrat_12);
+                   "设备标识异常",
+                   identity_color, VG_FONT_UI);
   lv_obj_set_pos(label, 12, 24);
 
-  snprintf(text, sizeof(text), "Boot %s", vg_boot_suffix(startup->boot_id));
-  label = vg_label(panel, text, VG_COLOR_MUTED, &lv_font_montserrat_10);
+  snprintf(text, sizeof(text), "开机 %s", vg_boot_suffix(startup->boot_id));
+  label = vg_label(panel, text, VG_COLOR_MUTED, VG_FONT_UI);
   lv_obj_set_pos(label, 12, 44);
 
-  snprintf(text, sizeof(text), "Storage: %s",
-           vg_startup_storage_ready() ? "READY" : "DEGRADED");
-  label = vg_label(panel, text, storage_color, &lv_font_montserrat_12);
+  snprintf(text, sizeof(text), "存储: %s",
+           vg_startup_storage_ready() ? "就绪" : "降级");
+  label = vg_label(panel, text, storage_color, VG_FONT_UI);
   lv_obj_align(label, LV_ALIGN_TOP_RIGHT, -12, 10);
 
   vg_format_uptime(text, sizeof(text), vg_uptime_ms() / 1000u);
-  g_uptime_label = vg_label(panel, text, VG_COLOR_MUTED,
-                            &lv_font_montserrat_10);
+  g_uptime_label = vg_label(panel, text, VG_COLOR_MUTED, VG_FONT_UI);
   lv_obj_align(g_uptime_label, LV_ALIGN_BOTTOM_RIGHT, -12, -8);
 }
 
@@ -304,7 +351,7 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
   char value[48];
   uint32_t value_color = VG_COLOR_TEXT;
 
-  snprintf(title, sizeof(title), "ACQ [%s]", vg_acq_backend_name());
+  snprintf(title, sizeof(title), "采集 [%s]", vg_backend_label());
   if (point != NULL && point->quality == VG_ACQ_Q_GOOD)
     {
       int tenths = (int)(point->value * 10.0f + 0.5f);
@@ -313,18 +360,16 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
       snprintf(value, sizeof(value), "%d.%d %s  %s",
                tenths / 10, tenths % 10,
                point->unit != NULL ? point->unit : "",
-               vg_acq_quality_string(point->quality));
+               vg_quality_label(point->quality));
     }
   else
     {
-      snprintf(value, sizeof(value), "Not configured");
+      snprintf(value, sizeof(value), "未配置");
     }
 
-  g_acq_title_label = vg_label(panel, title, VG_COLOR_MUTED,
-                               &lv_font_montserrat_10);
+  g_acq_title_label = vg_label(panel, title, VG_COLOR_MUTED, VG_FONT_UI);
   lv_obj_set_pos(g_acq_title_label, 14, 14);
-  g_acq_value_label = vg_label(panel, value, value_color,
-                               &lv_font_montserrat_14);
+  g_acq_value_label = vg_label(panel, value, value_color, VG_FONT_UI);
   lv_obj_set_pos(g_acq_value_label, 14, 32);
 
   divider = lv_obj_create(panel);
@@ -338,12 +383,14 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
   lv_obj_set_style_pad_all(divider, 0, LV_PART_MAIN);
   lv_obj_remove_flag(divider, LV_OBJ_FLAG_SCROLLABLE);
 
-  g_alarm_title_label = vg_label(panel, "ALARM", VG_COLOR_MUTED,
-                                 &lv_font_montserrat_10);
-  lv_obj_set_pos(g_alarm_title_label, 14, 88);
-  g_alarm_value_label = vg_label(panel, "Not armed", VG_COLOR_TEXT,
-                                 &lv_font_montserrat_14);
-  lv_obj_set_pos(g_alarm_value_label, 14, 106);
+  g_alarm_title_label = vg_label(panel, "告警", VG_COLOR_MUTED, VG_FONT_UI);
+  lv_obj_set_pos(g_alarm_title_label, 14, 82);
+  g_alarm_value_label = vg_label(panel, "未启用", VG_COLOR_TEXT, VG_FONT_UI);
+  lv_obj_set_pos(g_alarm_value_label, 14, 98);
+  g_alarm_event_label = vg_label(panel, "尚无事件", VG_COLOR_MUTED, VG_FONT_UI);
+  lv_obj_set_pos(g_alarm_event_label, 14, 122);
+  lv_label_set_long_mode(g_alarm_event_label, LV_LABEL_LONG_DOT);
+  lv_obj_set_width(g_alarm_event_label, 276);
 }
 
 static void vg_create_supporting_states(FAR lv_obj_t *screen)
@@ -352,11 +399,11 @@ static void vg_create_supporting_states(FAR lv_obj_t *screen)
   FAR lv_obj_t *panel = vg_panel(screen, 318, 114, 154, 150,
                                  VG_COLOR_SURFACE);
   FAR const char *time_value = startup->time_quality == VG_TIME_UNKNOWN ?
-                               "Unsynced" : "RTC available";
+                               "未同步" : "已同步";
 
-  vg_add_state(panel, "NETWORK", "Offline", 12, 10, VG_COLOR_TEXT);
-  vg_add_state(panel, "AUDIO", "Unavailable", 12, 58, VG_COLOR_TEXT);
-  vg_add_state(panel, "TIME", time_value, 12, 106, VG_COLOR_TEXT);
+  vg_add_state(panel, "网络", "离线", 12, 10, VG_COLOR_TEXT);
+  vg_add_state(panel, "声音", "不可用", 12, 58, VG_COLOR_TEXT);
+  vg_add_state(panel, "时刻", time_value, 12, 106, VG_COLOR_TEXT);
 }
 
 /****************************************************************************

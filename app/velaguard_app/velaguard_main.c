@@ -21,6 +21,7 @@
 
 #include "src/vg_acq.h"
 #include "src/vg_alarm.h"
+#include "src/vg_config.h"
 #include "src/vg_identity.h"
 #include "src/vg_startup.h"
 #include "src/vg_ui_home.h"
@@ -121,6 +122,11 @@ int velaguard_main(int argc, FAR char *argv[])
     {
       printf("[velaguard] acquisition backend: %s\n",
              vg_acq_backend_name());
+    }
+
+  if (vg_config_load() < 0)
+    {
+      fprintf(stderr, "[velaguard] alarm config defaults only\n");
     }
 
   vg_alarm_init();

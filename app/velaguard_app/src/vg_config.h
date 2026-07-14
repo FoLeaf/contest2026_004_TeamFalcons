@@ -1,13 +1,11 @@
 /****************************************************************************
- * app/velaguard_app/src/vg_alarm.h
+ * app/velaguard_app/src/vg_config.h
  *
  * SPDX-License-Identifier: Apache-2.0
- *
- * Minimal local threshold loop for mock/demo (issue #03 slice).
  ****************************************************************************/
 
-#ifndef APP_VELAGUARD_APP_SRC_VG_ALARM_H
-#define APP_VELAGUARD_APP_SRC_VG_ALARM_H
+#ifndef APP_VELAGUARD_APP_SRC_VG_CONFIG_H
+#define APP_VELAGUARD_APP_SRC_VG_CONFIG_H
 
 /****************************************************************************
  * Included Files
@@ -15,36 +13,29 @@
 
 #include <nuttx/config.h>
 
-#include <stdint.h>
+#include <stdbool.h>
 
 /****************************************************************************
  * Public Types
  ****************************************************************************/
 
-enum vg_alarm_level
+struct vg_alarm_config
 {
-  VG_ALARM_OK = 0,
-  VG_ALARM_WARNING,
-  VG_ALARM_CRITICAL
-};
-
-struct vg_alarm_status
-{
-  enum vg_alarm_level level;
-  FAR const char *title;
-  float threshold_c;
-  float current_c;
-  bool armed;
-  char last_event[64];
+  float warn_c;
+  float crit_c;
+  float restore_c;
+  unsigned int trigger_ms;
+  unsigned int restore_ms;
+  bool loaded_from_file;
 };
 
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
-void vg_alarm_init(void);
-void vg_alarm_eval(void);
-FAR const struct vg_alarm_status *vg_alarm_get(void);
-FAR const char *vg_alarm_level_string(enum vg_alarm_level level);
+/* Load /data/velaguard/configs/alarm.json or write defaults. */
 
-#endif /* APP_VELAGUARD_APP_SRC_VG_ALARM_H */
+int vg_config_load(void);
+FAR const struct vg_alarm_config *vg_config_alarm(void);
+
+#endif /* APP_VELAGUARD_APP_SRC_VG_CONFIG_H */

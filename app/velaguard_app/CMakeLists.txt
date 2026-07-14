@@ -12,6 +12,8 @@ if(CONFIG_LVX_USE_VELAGUARD)
          src/vg_startup.c
          src/vg_acq.c
          src/vg_alarm.c
+         src/vg_config.c
          src/vg_log.c
-         src/vg_ui_home.c)
+         src/vg_ui_home.c
+         src/fonts/vg_font_cn_16.c)
 endif()

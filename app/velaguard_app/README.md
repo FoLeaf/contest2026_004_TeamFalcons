@@ -16,12 +16,16 @@ Kconfig `VG_ACQ_BACKEND`:
 Home panel shows `ACQ [MOCK]` and the current value. Switch backend in menuconfig
 or build kconfig-tweak when the expansion board arrives.
 
-**Minimal alarm (demo):** `vg_alarm_*` evaluates mock temperature with
-warn ≥70 °C / crit ≥80 °C for 2 s, restore &lt;68 °C for 2 s. Home `ALARM` line
-turns yellow/red. Level changes append to `/data/velaguard/logs/latest.log` and
-`events.jsonl` via `vg_log_*`. Not the full issue #03 multi-alarm/ack UI.
+**Minimal alarm (demo):** `vg_alarm_*` uses thresholds from
+`/data/velaguard/configs/alarm.json` (auto-created defaults: warn 70 / crit 80 /
+restore 68, 2 s). Home shows level color + last event line. Transitions go to
+`latest.log` and `events.jsonl`. Edit the JSON on device to retune without rebuild.
+Not the full issue #03/#05 product store.
 
 Hardware pin contract for UART mode: `docs/velaguard-expansion-board.md`.
+
+**中文 UI：** 首页使用子集字体 `src/fonts/vg_font_cn_16`（NotoSansSC 裁剪）。
+新增中文文案前需把缺字补进字库后重新 `lv_font_conv`。
 
 Still no networking, MQTT, AI, full alarm engine, or OTA.
 
