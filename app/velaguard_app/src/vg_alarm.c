@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <stdio.h>
 
@@ -32,6 +33,8 @@ static uint32_t g_above_warn_ms;
 static uint32_t g_above_crit_ms;
 static uint32_t g_below_restore_ms;
 static uint32_t g_last_eval_ms;
+static char g_history[VG_ALARM_HISTORY_MAX][48];
+static unsigned int g_history_count;
 
 static FAR const char *vg_alarm_level_cn(enum vg_alarm_level level)
 {
@@ -70,6 +73,20 @@ static void vg_alarm_log_transition(enum vg_alarm_level previous,
            vg_alarm_level_cn(next),
            tenths / 10, tenths % 10);
 
+  /* Ring: shift older events down, insert newest at [0]. */
+
+  if (g_history_count < VG_ALARM_HISTORY_MAX)
+    {
+      g_history_count++;
+    }
+
+  for (unsigned int i = VG_ALARM_HISTORY_MAX - 1; i > 0; i--)
+    {
+      memcpy(g_history[i], g_history[i - 1], sizeof(g_history[i]));
+    }
+
+  snprintf(g_history[0], sizeof(g_history[0]), "%s", g_alarm.last_event);
+
   snprintf(human, sizeof(human), "alarm %s -> %s temp=%d.%dC thr=%.0f",
            vg_alarm_level_string(previous),
            vg_alarm_level_string(next),
@@ -107,6 +124,8 @@ void vg_alarm_init(void)
   g_above_crit_ms = 0;
   g_below_restore_ms = 0;
   g_last_eval_ms = 0;
+  g_history_count = 0;
+  memset(g_history, 0, sizeof(g_history));
 }
 
 void vg_alarm_eval(void)
@@ -221,4 +240,19 @@ FAR const char *vg_alarm_level_string(enum vg_alarm_level level)
       default:
         return "OK";
     }
+}
+
+unsigned int vg_alarm_history_count(void)
+{
+  return g_history_count;
+}
+
+FAR const char *vg_alarm_history_line(unsigned int newest_index)
+{
+  if (newest_index >= g_history_count)
+    {
+      return "";
+    }
+
+  return g_history[newest_index];
 }

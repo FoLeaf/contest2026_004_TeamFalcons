@@ -58,7 +58,7 @@ static FAR lv_obj_t *g_acq_value_label;
 static FAR lv_obj_t *g_acq_quality_label;
 static FAR lv_obj_t *g_alarm_title_label;
 static FAR lv_obj_t *g_alarm_value_label;
-static FAR lv_obj_t *g_alarm_event_label;
+static FAR lv_obj_t *g_alarm_hist_labels[VG_ALARM_HISTORY_MAX];
 
 /****************************************************************************
  * Private Functions
@@ -263,17 +263,32 @@ static void vg_refresh_alarm_labels(void)
                                   LV_PART_MAIN);
     }
 
-  if (g_alarm_event_label != NULL)
-    {
-      if (alarm != NULL && alarm->last_event[0] != '\0')
-        {
-          lv_label_set_text(g_alarm_event_label, alarm->last_event);
-        }
-      else
-        {
-          lv_label_set_text(g_alarm_event_label, "尚无事件");
-        }
-    }
+  {
+    unsigned int count = vg_alarm_history_count();
+    unsigned int i;
+
+    for (i = 0; i < VG_ALARM_HISTORY_MAX; i++)
+      {
+        if (g_alarm_hist_labels[i] == NULL)
+          {
+            continue;
+          }
+
+        if (i < count)
+          {
+            lv_label_set_text(g_alarm_hist_labels[i],
+                              vg_alarm_history_line(i));
+          }
+        else if (i == 0)
+          {
+            lv_label_set_text(g_alarm_hist_labels[i], "尚无事件");
+          }
+        else
+          {
+            lv_label_set_text(g_alarm_hist_labels[i], "");
+          }
+      }
+  }
 }
 
 static void vg_uptime_timer(FAR lv_timer_t *timer)
@@ -360,14 +375,15 @@ static void vg_create_identity(FAR lv_obj_t *screen)
 
 static void vg_create_primary_states(FAR lv_obj_t *screen)
 {
-  /* Full remaining height under identity; room for alarm event line. */
-  FAR lv_obj_t *panel = vg_panel(screen, 6, 96, 308, 170,
+  /* y=94..268 => height 174. Caption line_height=20, value=24. */
+  FAR lv_obj_t *panel = vg_panel(screen, 6, 94, 308, 174,
                                  VG_COLOR_SURFACE);
   FAR lv_obj_t *divider;
   FAR const struct vg_acq_point *point = vg_acq_primary();
   char title[40];
   char value[48];
   uint32_t value_color = VG_COLOR_TEXT;
+  unsigned int i;
 
   snprintf(title, sizeof(title), "采集/%s", vg_backend_label());
   if (point != NULL && point->quality == VG_ACQ_Q_GOOD)
@@ -384,18 +400,20 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
       snprintf(value, sizeof(value), "未配置");
     }
 
+  /* Acquisition block: title y8, value y28 (24px), quality y54. */
+
   g_acq_title_label = vg_label(panel, title, VG_COLOR_MUTED, VG_FONT_CAPTION);
-  lv_obj_set_pos(g_acq_title_label, 10, 8);
+  lv_obj_set_pos(g_acq_title_label, 10, 6);
   g_acq_value_label = vg_label(panel, value, value_color, VG_FONT_VALUE);
-  lv_obj_set_pos(g_acq_value_label, 10, 28);
+  lv_obj_set_pos(g_acq_value_label, 10, 26);
   g_acq_quality_label = vg_label(panel,
                                 point != NULL && point->quality != VG_ACQ_Q_NONE ?
                                 vg_quality_label(point->quality) : "",
                                 VG_COLOR_MUTED, VG_FONT_CAPTION);
-  lv_obj_set_pos(g_acq_quality_label, 10, 54);
+  lv_obj_set_pos(g_acq_quality_label, 10, 52);
 
   divider = lv_obj_create(panel);
-  lv_obj_set_pos(divider, 10, 76);
+  lv_obj_set_pos(divider, 10, 74);
   lv_obj_set_size(divider, 288, 1);
   lv_obj_set_style_bg_color(divider, lv_color_hex(0x2a3640), LV_PART_MAIN);
   lv_obj_set_style_bg_opa(divider, LV_OPA_COVER, LV_PART_MAIN);
@@ -404,26 +422,34 @@ static void vg_create_primary_states(FAR lv_obj_t *screen)
   lv_obj_set_style_pad_all(divider, 0, LV_PART_MAIN);
   lv_obj_remove_flag(divider, LV_OBJ_FLAG_SCROLLABLE);
 
+  /* Alarm: title y78, value y96 (24px ends ~120), history step 22 (>=20). */
+
   g_alarm_title_label = vg_label(panel, "告警", VG_COLOR_MUTED,
                                  VG_FONT_CAPTION);
-  lv_obj_set_pos(g_alarm_title_label, 10, 84);
+  lv_obj_set_pos(g_alarm_title_label, 10, 78);
   g_alarm_value_label = vg_label(panel, "未启用", VG_COLOR_TEXT,
                                  VG_FONT_VALUE);
-  lv_obj_set_pos(g_alarm_value_label, 10, 104);
+  lv_obj_set_pos(g_alarm_value_label, 10, 96);
   lv_label_set_long_mode(g_alarm_value_label, LV_LABEL_LONG_DOT);
   lv_obj_set_width(g_alarm_value_label, 288);
 
-  g_alarm_event_label = vg_label(panel, "尚无事件", VG_COLOR_MUTED,
-                                 VG_FONT_CAPTION);
-  lv_obj_set_pos(g_alarm_event_label, 10, 136);
-  lv_label_set_long_mode(g_alarm_event_label, LV_LABEL_LONG_DOT);
-  lv_obj_set_width(g_alarm_event_label, 288);
+  for (i = 0; i < VG_ALARM_HISTORY_MAX; i++)
+    {
+      int32_t y = 122 + (int32_t)i * 22;
+
+      g_alarm_hist_labels[i] =
+        vg_label(panel, i == 0 ? "尚无事件" : "", VG_COLOR_MUTED,
+                 VG_FONT_CAPTION);
+      lv_obj_set_pos(g_alarm_hist_labels[i], 10, y);
+      lv_label_set_long_mode(g_alarm_hist_labels[i], LV_LABEL_LONG_DOT);
+      lv_obj_set_width(g_alarm_hist_labels[i], 288);
+    }
 }
 
 static void vg_create_supporting_states(FAR lv_obj_t *screen)
 {
   FAR const struct vg_startup_state *startup = vg_startup_get();
-  FAR lv_obj_t *panel = vg_panel(screen, 320, 96, 154, 170,
+  FAR lv_obj_t *panel = vg_panel(screen, 320, 94, 154, 174,
                                  VG_COLOR_SURFACE);
   FAR const char *time_value = startup->time_quality == VG_TIME_UNKNOWN ?
                                "未同步" : "已同步";

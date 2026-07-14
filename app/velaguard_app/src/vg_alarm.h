@@ -35,8 +35,12 @@ struct vg_alarm_status
   float threshold_c;
   float current_c;
   bool armed;
-  char last_event[64];
+  char last_event[48];
 };
+
+/* Home dashboard shows newest-first history; keep short (no scroll). */
+
+#define VG_ALARM_HISTORY_MAX 2
 
 /****************************************************************************
  * Public Function Prototypes
@@ -46,5 +50,10 @@ void vg_alarm_init(void);
 void vg_alarm_eval(void);
 FAR const struct vg_alarm_status *vg_alarm_get(void);
 FAR const char *vg_alarm_level_string(enum vg_alarm_level level);
+
+/* Newest first; returns count of valid history lines (0..VG_ALARM_HISTORY_MAX). */
+
+unsigned int vg_alarm_history_count(void);
+FAR const char *vg_alarm_history_line(unsigned int newest_index);
 
 #endif /* APP_VELAGUARD_APP_SRC_VG_ALARM_H */
