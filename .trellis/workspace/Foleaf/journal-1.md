@@ -106,3 +106,36 @@ Added status-preserving task selection and OpenCode resume command, synchronized
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Migrate Claude Code workflow to Krill Grok 4.5
+
+**Date**: 2026-07-14
+**Task**: Migrate Claude Code workflow to Krill Grok 4.5
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+Switched Claude Code globally to Krill grok-4.5, installed the project-local Claude/Trellis adapter with planning-safe resume and per-session identity bridging, removed Superpowers while preserving Claude HUD and contest hooks, added credential-safe contest-log redaction, and validated real provider requests, interactive startup, task isolation, and all contest logs.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `95c686e` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
