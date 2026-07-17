@@ -188,3 +188,124 @@ In Claude Code, use the same user-facing entry after automatic SessionStart:
 
 Do not add a Claude `/trellis:start` alias: it duplicates the native hook and
 creates two initialization paths with different session-identity behavior.
+
+## Scenario: Idempotent OpenCode Task prompt injection
+
+### 1. Scope / Trigger
+
+Apply this contract whenever `.opencode/plugins/inject-subagent-context.js`
+handles `tool.execute.before` for a Trellis `task` dispatch. OpenCode persists
+the plugin's in-place `args.prompt` mutation in the parent conversation. A
+later implement/check dispatch can therefore reuse a complete or partial
+previously injected prompt.
+
+Without idempotent rebuilding, every dispatch can add another PRD/spec/task
+copy. This inflates context, weakens the current instruction signal, and can
+produce long-session routing drift.
+
+### 2. Signatures
+
+Hook boundary:
+
+```text
+tool.execute.before(
+  { tool: "task", sessionID, callID },
+  { args: { subagent_type, prompt } }
+)
+```
+
+Internal normalization:
+
+```text
+unwrapInjectedPrompt(prompt: string) -> caller-authored task body
+```
+
+Owned prompt markers:
+
+```text
+<!-- trellis-hook-injected -->
+## Your Task
+## Workflow                  # optional on model-reused partial prefixes
+```
+
+### 3. Contracts
+
+- A prompt without the exact leading marker is an unwrapped caller prompt.
+- A marked prompt must also contain the plugin-owned `## Your Task` boundary
+  before it can be unwrapped.
+- A complete wrapper ends the caller body before the plugin's `## Workflow`
+  suffix.
+- OpenCode may reuse only the marker/context/task prefix. When the Workflow
+  suffix is absent, the caller body runs from `## Your Task` to end-of-prompt.
+- Nested owned wrappers must converge to the innermost caller-authored task
+  body; normalization must make strict progress on every iteration.
+- After normalization, build one wrapper from the current JSONL, PRD, design,
+  and implementation artifacts. Do not reuse stale injected context.
+- Task-hint resolution and `[finish]` detection operate on the normalized task
+  body.
+- Diagnostic logging may record that unwrapping happened, but must not log the
+  raw prompt, PRD, credentials, or provider configuration.
+- Text containing a marker but lacking the owned task boundary is not stripped.
+
+### 4. Validation & Error Matrix
+
+| Input condition | Required result |
+| --- | --- |
+| Plain caller prompt | Preserve body; emit one fresh wrapper |
+| Complete owned wrapper | Extract task body; emit one fresh wrapper |
+| Partial marker/context/task prefix | Extract task body to EOF; emit one fresh wrapper |
+| Multiple nested owned wrappers | Fully converge; emit one fresh wrapper |
+| Marker without `## Your Task` | Do not strip caller text |
+| Empty/non-string prompt | Normalize to empty task body without throwing |
+| Current task/spec file changed since prior dispatch | Emit current disk content, not persisted stale context |
+| Unsupported sub-agent type | Preserve existing skip behavior |
+
+### 5. Good / Base / Bad Cases
+
+- **Good**: a second `trellis-check` dispatch reuses a partial injected prefix;
+  the final prompt contains one marker, one Context section, one PRD, and the
+  latest caller task.
+- **Base**: the first `trellis-implement` dispatch supplies a plain prompt; the
+  plugin adds the normal context wrapper once.
+- **Bad**: blindly passing an enhanced prompt back into `buildPrompt()`;
+  marker/context counts increase on every dispatch and historical prompt sizes
+  can grow to tens of kilobytes.
+- **Bad**: skipping all injection whenever a marker exists; persisted context
+  may be stale or incomplete and must not replace current JSONL/task artifacts.
+
+### 6. Tests Required
+
+Focused Node regression assertions:
+
+1. No-task/planning/in-progress breadcrumbs still select the correct state.
+2. Trellis sub-agent turns do not receive a main-session breadcrumb.
+3. Re-injecting a complete enhanced Task prompt leaves exactly one marker and
+   one copy of caller task, PRD, and spec content.
+4. Re-injecting the partial prefix observed from OpenCode removes stale context
+   and leaves exactly one current copy.
+5. Session-scoped task resolution and implement/check context injection still
+   work in an isolated OpenCode end-to-end probe.
+6. The shared `.trellis/workflow.md` hash remains unchanged by an
+   OpenCode-specific repair.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```javascript
+const originalPrompt = args.prompt || ""
+args.prompt = buildPrompt(subagentType, originalPrompt, context, isFinish)
+```
+
+This recursively nests any persisted Trellis wrapper.
+
+#### Correct
+
+```javascript
+const receivedPrompt = args.prompt || ""
+const originalPrompt = unwrapInjectedPrompt(receivedPrompt)
+args.prompt = buildPrompt(subagentType, originalPrompt, context, isFinish)
+```
+
+Normalization removes only the plugin-owned wrapper shape, then rebuilds one
+fresh prompt from the current source-of-truth files.

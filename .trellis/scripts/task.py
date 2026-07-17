@@ -8,8 +8,7 @@ Usage:
     python3 task.py add-context <dir> <file> <path> [reason] # Add jsonl entry
     python3 task.py validate <dir>              # Validate jsonl files
     python3 task.py list-context <dir>          # List jsonl entries
-    python3 task.py select <dir>                # Select task without changing status
-    python3 task.py start <dir>                 # Activate task for implementation
+    python3 task.py start <dir>                 # Set active task
     python3 task.py current [--source]          # Show active task
     python3 task.py finish                      # Clear active task
     python3 task.py set-branch <dir> <branch>   # Set git branch
@@ -65,52 +64,11 @@ from common.task_context import (
 
 
 # =============================================================================
-# Command: select / start / finish
+# Command: start / finish
 # =============================================================================
 
-def cmd_select(args: argparse.Namespace) -> int:
-    """Select an active task for this session without changing task state."""
-    repo_root = get_repo_root()
-    task_input = args.dir
-
-    if not task_input:
-        print(colored("Error: task directory or name required", Colors.RED))
-        return 1
-
-    full_path = resolve_task_dir(task_input, repo_root).resolve()
-    tasks_dir = get_tasks_dir(repo_root).resolve()
-
-    if not full_path.is_dir():
-        print(colored(f"Error: Task not found: {task_input}", Colors.RED))
-        print("Hint: Select a live task by name or .trellis/tasks/<task> path.")
-        return 1
-
-    if full_path.parent != tasks_dir or not (full_path / FILE_TASK_JSON).is_file():
-        print(colored(f"Error: Not an active task: {task_input}", Colors.RED))
-        print("Hint: Select a live top-level task under .trellis/tasks/; archived tasks cannot be selected.")
-        return 1
-
-    if not resolve_context_key():
-        print(colored("Error: Session identity not available; task was not selected.", Colors.RED))
-        print(
-            "Hint: run inside an AI session that exposes TRELLIS_CONTEXT_ID "
-            "or a recognized platform session ID."
-        )
-        return 1
-
-    task_dir = full_path.relative_to(repo_root.resolve()).as_posix()
-    active = set_active_task(task_dir, repo_root)
-    if not active:
-        print(colored("Error: Failed to select task for this session", Colors.RED))
-        return 1
-
-    print(colored(f"✓ Selected task for this session: {task_dir}", Colors.GREEN))
-    print(f"Source: {active.source}")
-    print("Task status and lifecycle hooks were left unchanged.")
-    return 0
-
 def cmd_start(args: argparse.Namespace) -> int:
-    """Activate a task for implementation."""
+    """Set active task."""
     repo_root = get_repo_root()
     task_input = args.dir
 
@@ -353,8 +311,7 @@ Usage:
   python3 task.py add-context <dir> <jsonl> <path> [reason]  Add entry to jsonl
   python3 task.py validate <dir>                     Validate jsonl files
   python3 task.py list-context <dir>                 List jsonl entries
-  python3 task.py select <dir>                       Select task without changing status or running hooks
-  python3 task.py start <dir>                        Activate task for implementation
+  python3 task.py start <dir>                        Set active task
   python3 task.py current [--source]                 Show active task
   python3 task.py finish                             Clear active task
   python3 task.py set-branch <dir> <branch>          Set git branch
@@ -379,7 +336,6 @@ Examples:
   python3 task.py create "Child task" --slug child --parent .trellis/tasks/01-21-parent
   python3 task.py add-context <dir> implement .trellis/spec/cli/backend/auth.md "Auth guidelines"
   python3 task.py set-branch <dir> task/add-login
-  python3 task.py select .trellis/tasks/01-21-add-login
   python3 task.py start .trellis/tasks/01-21-add-login
   python3 task.py current --source
   python3 task.py finish
@@ -464,12 +420,8 @@ def main() -> int:
     p_listctx = subparsers.add_parser("list-context", help="List context entries")
     p_listctx.add_argument("dir", help="Task directory")
 
-    # select
-    p_select = subparsers.add_parser("select", help="Select task without changing status")
-    p_select.add_argument("dir", help="Active task directory or name")
-
     # start
-    p_start = subparsers.add_parser("start", help="Activate task for implementation")
+    p_start = subparsers.add_parser("start", help="Set active task")
     p_start.add_argument("dir", help="Task directory")
 
     # current
@@ -530,7 +482,6 @@ def main() -> int:
         "add-context": cmd_add_context,
         "validate": cmd_validate,
         "list-context": cmd_list_context,
-        "select": cmd_select,
         "start": cmd_start,
         "current": cmd_current,
         "finish": cmd_finish,

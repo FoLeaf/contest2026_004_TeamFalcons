@@ -1,10 +1,6 @@
 # Start Session
 
-Initialize a Trellis-managed OpenCode session and load its compact context.
-This command does not attach an existing task and does not activate
-implementation. To attach an existing task without changing its status, use
-`/trellis:resume <task>` after initialization. `task.py start` remains the
-separate, review-gated transition into implementation.
+Initialize a Trellis-managed development session. This platform has no session-start hook, so manually load the equivalent compact context by following these steps.
 
 ---
 
@@ -46,8 +42,7 @@ From Step 1 you know the current task and status. Check the task directory:
   ```bash
   python3 ./.trellis/scripts/get_context.py --mode phase --step 2.1 --platform opencode
   ```
-- **No active task, but the user names an existing task** → tell the user to run `/trellis:resume <task>`; do not call `task.py start`.
-- **No active task and this is new work** → classify first. For simple conversation / small task, ask only whether this turn should create a Trellis task. For complex work, ask whether you may create a Trellis task and enter planning. If the user says no, skip Trellis for this session.
+- **No active task** → classify first. For simple conversation / small task, ask only whether this turn should create a Trellis task. For complex work, ask whether you may create a Trellis task and enter planning. If the user says no, skip Trellis for this session.
 
 ---
 

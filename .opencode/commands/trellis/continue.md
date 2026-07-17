@@ -1,8 +1,6 @@
 # Continue Current Task
 
-Continue the task already selected in this OpenCode session and pick up at the
-right phase/step in `.trellis/workflow.md`. This command does not select a task
-and does not activate implementation.
+Resume work on the current task — pick up at the right phase/step in `.trellis/workflow.md`.
 
 ---
 
@@ -13,13 +11,6 @@ python3 ./.trellis/scripts/get_context.py
 ```
 
 Confirms: current task, git state, recent commits.
-
-If there is no current task:
-
-- Existing task: stop and ask the user to run `/trellis:resume <task>`.
-- New work: return to the normal task-classification and creation-consent flow.
-
-Do not use `task.py start` merely to attach an existing planning task.
 
 ## Step 2: Load the Phase Index
 

@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend guideline index for board/build work"}
+{"file": ".trellis/spec/backend/stm32h750-qspi-toolchain.md", "reason": "Existing QSPI patch/build/flash contracts; UART7 patch must stay independent"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Where scripts/docs/harness assets belong in this repo"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Pin/config/device-path contracts span board, build, and docs layers"}
+{"file": ".trellis/tasks/07-13-resolve-usart3-rs485-vcp-conflict/design.md", "reason": "Technical design: pin map, /dev/rs485, patch split, config matrix"}
+{"file": ".trellis/tasks/07-13-resolve-usart3-rs485-vcp-conflict/implement.md", "reason": "Ordered implementation checklist and validation commands"}

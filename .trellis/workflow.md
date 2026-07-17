@@ -44,8 +44,7 @@ Every task has its own directory under `.trellis/tasks/{MM-DD-name}/` holding `t
 ```bash
 # Task lifecycle
 python3 ./.trellis/scripts/task.py create "<title>" [--slug <name>] [--parent <dir>]
-python3 ./.trellis/scripts/task.py select <name>         # select for this session; status/hooks unchanged
-python3 ./.trellis/scripts/task.py start <name>          # activate reviewed work; status → in_progress
+python3 ./.trellis/scripts/task.py start <name>          # set active task (session-scoped when available)
 python3 ./.trellis/scripts/task.py current --source      # show active task and source
 python3 ./.trellis/scripts/task.py finish                # clear active task (triggers after_finish hooks)
 python3 ./.trellis/scripts/task.py archive <name>        # move to archive/{year-month}/
@@ -74,7 +73,7 @@ python3 ./.trellis/scripts/task.py create-pr [name] [--dry-run]
 
 > Run `python3 ./.trellis/scripts/task.py --help` to see the authoritative, up-to-date list.
 
-**Current-task mechanism**: `/trellis:start` initializes an AI session and loads context; it does not attach an existing task. `task.py create` creates the task directory and (when session identity is available) auto-sets the per-session active-task pointer so the planning breadcrumb fires immediately. `task.py select` attaches the current session to an existing live task without changing `task.json.status` or running lifecycle hooks; OpenCode exposes this as `/trellis:resume <task>`. `task.py start` activates reviewed work for implementation: it writes the pointer when possible, flips `planning` to `in_progress`, and runs `after_start` hooks. State is stored under `.trellis/.runtime/sessions/`. `task.py select` requires a context key from hook input, `TRELLIS_CONTEXT_ID`, or a platform-native session environment variable and fails visibly when none is available; it never falls back to shared state. `task.py finish` deletes the current session file (status unchanged). `task.py archive <task>` writes `status=completed`, moves the directory to `archive/`, and deletes any runtime session files that still point at the archived task.
+**Current-task mechanism**: `task.py create` creates the task directory and (when session identity is available) auto-sets the per-session active-task pointer so the planning breadcrumb fires immediately. `task.py start` writes the same pointer (idempotent if already set) and flips `task.json.status` from `planning` to `in_progress`. State is stored under `.trellis/.runtime/sessions/`. If no context key is available from hook input, `TRELLIS_CONTEXT_ID`, or a platform-native session environment variable, there is no active task and `task.py start` fails with a session identity hint. `task.py finish` deletes the current session file (status unchanged). `task.py archive <task>` writes `status=completed`, moves the directory to `archive/`, and deletes any runtime session files that still point at the archived task.
 
 ### Workspace System
 
@@ -446,7 +445,7 @@ For lightweight tasks, `prd.md` can be enough. For complex tasks, `prd.md`, `des
 
 After this command succeeds, the breadcrumb auto-switches to `[workflow-state:in_progress]`, and the rest of Phase 2 / 3 follows.
 
-If `task.py start` reports degraded mode because no session identity is available, its lifecycle transition may still succeed while the session pointer is not persisted. Configure session identity before relying on an active-task breadcrumb. Use `task.py select` only when a status-preserving attachment is intended; unlike `start`, `select` fails without writing anything when identity is unavailable.
+If `task.py start` errors with a session-identity message (no context key from hook input, `TRELLIS_CONTEXT_ID`, or platform-native session env), follow the hint in the error to set up session identity, then retry.
 
 #### 1.5 Completion criteria
 

@@ -130,6 +130,8 @@ Windows 侧构建/烧录/调试见 [`docs/windows_build_debug_setup.md`](docs/wi
 | [`VelaGuard_项目手册.md`](VelaGuard_项目手册.md) | 产品目标、架构、模块、验收 |
 | [`VelaGuard_推进方案.md`](VelaGuard_推进方案.md) | 分阶段推进与里程碑 |
 | [`docs/velaguard-expansion-board.md`](docs/velaguard-expansion-board.md) | 扩展板引脚/焊桥/BOM/验收（硬件合同） |
+| [`docs/velaguard-mqtt-contract.md`](docs/velaguard-mqtt-contract.md) | MQTT topic/鉴权/AI Bridge 合同 |
+| [`tools/ai_bridge_stub/`](tools/ai_bridge_stub/) | 主机侧 MQTT AI Bridge 假服务（无网线可测协议） |
 | [`docs/adr/`](docs/adr/) | 架构决策（独立网关、MQTT AI Bridge、OTA 等） |
 | [`docs/agents/BOUNDARY.md`](docs/agents/BOUNDARY.md) | 竞赛边界本地摘要 |
 | [`docs/windows_build_debug_setup.md`](docs/windows_build_debug_setup.md) | Windows/WSL 构建调试 |

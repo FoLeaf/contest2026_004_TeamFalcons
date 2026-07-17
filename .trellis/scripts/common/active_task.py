@@ -25,7 +25,7 @@ DIR_RUNTIME = ".runtime"
 DIR_SESSIONS = "sessions"
 DIR_CURSOR_SHELL = "cursor-shell"
 CURSOR_SHELL_TICKET_TTL_SECONDS = 30
-TASK_SESSION_COMMANDS = {"select", "start", "current", "finish"}
+TASK_SESSION_COMMANDS = {"start", "current", "finish"}
 
 _SESSION_KEYS = ("session_id", "sessionId", "sessionID")
 _CONVERSATION_KEYS = ("conversation_id", "conversationId", "conversationID")
@@ -298,7 +298,7 @@ def _pending_ticket_matches_args(ticket: dict[str, Any], repo_root: Path) -> boo
             continue
         if _string_value(subcommand.get("name")) != command_name:
             continue
-        if command_name not in {"select", "start"}:
+        if command_name != "start":
             return True
         task_ref = args[1] if len(args) > 1 else None
         if _task_refs_match(_string_value(subcommand.get("task_ref")), task_ref, repo_root):
