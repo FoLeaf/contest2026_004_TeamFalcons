@@ -342,3 +342,103 @@ write the configured FT5X06 point count before returning success. The static
 QSPI harness must assert that the maintained upstream patch contains this
 case, and the final acceptance test must include real press/release and drag
 interaction rather than relying only on the successful-open log.
+
+## Scenario: MB1381 H750XB-B01 MII Ethernet with QSPI-XIP
+
+### 1. Scope / Trigger
+
+Apply this contract whenever enabling or modifying onboard Ethernet for the
+MB1381 H750XB-B01 while the firmware executes from dual-QSPI XIP. The B01
+schematic is authoritative: U9 is a LAN8740A on full MII at PHY address 1.
+Generic STM32H750B-DK documentation that describes LAN8742A/RMII does not
+describe this hardware revision.
+
+### 2. Signatures
+
+The Windows build must invoke this idempotent helper before NuttX configure:
+
+```bash
+scripts/apply-openvela-eth-mii-patch.sh <openvela-root>
+```
+
+`<openvela-root>` must contain the `nuttx` checkout. Omitting it defaults to
+the contest repository's parent directory. A successful `stm32_ifup()` must
+publish the network-device state through:
+
+```c
+netdev_carrier_on(dev);
+```
+
+### 3. Contracts
+
+- Select `CONFIG_STM32H7_MII=y`, `CONFIG_STM32H7_MII_EXTCLK=y`,
+  `CONFIG_ETH0_PHY_LAN8740A=y`, and `CONFIG_STM32H7_PHYADDR=1`.
+- Explicitly disable `CONFIG_ETH0_PHY_LAN8742A`; do not select RMII.
+- The LAN8740A supplies the external MII clocks.
+- PH2/MII_CRS and PH3/MII_COL share QSPI bank 2 IO0/IO1. When
+  `CONFIG_STM32H750B_DK_QSPI_BOOT=y`, define
+  `BOARD_ETH_MII_NO_CRS_COL` and leave both pins configured for QSPI.
+- Full-duplex Ethernet does not use CRS/COL. The driver must still configure
+  the remaining MII pins.
+- After a successful hardware `ifup`, `eth0` must be both `UP` and `RUNNING`.
+  Merely setting `IFF_UP` is insufficient: UDP/DHCP routing can fail with
+  `EHOSTUNREACH` before a packet reaches the MAC.
+- Run DHCP through the network-init thread so missing cable or DHCP service
+  does not block VelaGuard UI and serial NSH startup.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required result |
+|---|---|
+| Hardware is MB1381 H750XB-B01 | Configure LAN8740A, full MII, external clocks, PHY address 1. |
+| README says LAN8742A/RMII | Reject that generic mapping and verify against the B01 schematic. |
+| QSPI-XIP is enabled | Preserve PH2/PH3 as QSPI IO; skip only MII CRS/COL GPIO setup. |
+| MII `ifup` succeeds but `ifconfig` lacks `RUNNING` | Treat carrier publication as broken; call `netdev_carrier_on()` before returning success. |
+| DHCP `sendto()` returns `EHOSTUNREACH` and capture sees no packet | Inspect `IFF_RUNNING`/carrier before PHY traffic or DHCP payload debugging. |
+| MII patch is missing, conflicts, or only partially applied | Stop before configure/build and report the exact NuttX checkout. |
+| Cable is absent at cold boot | UI and NSH must still start; DHCP may remain pending without blocking them. |
+| Cable and DHCP service are present | `eth0` obtains a non-`0.0.0.0` IPv4 address and supports bidirectional ping. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: B01 boots from QSPI with LAN8740A/MII, `ifconfig` reports `eth0` as
+  `RUNNING` with a DHCP address, PC-to-board and board-to-PC ping both pass,
+  and LVGL/touch/NSH remain operational.
+- Base: the cable is unplugged; QSPI-XIP, VelaGuard UI, and NSH still start,
+  while `eth0` has no leased IPv4 address.
+- Bad: configure RMII/LAN8742A from the generic README, switch PH2/PH3 away
+  from QSPI, or report `UP` without `RUNNING` after a successful `ifup`.
+
+### 6. Tests Required
+
+13. For every B01 Ethernet change:
+    - reverse-check the maintained patch against the target NuttX checkout;
+    - assert the generated config selects MII, external clocks, LAN8740A, and
+      PHY address 1 while disabling LAN8742A;
+    - run `harness/qspi_boot_flow_check.py --artifacts .debug` and assert it
+      checks both QSPI pin preservation and `netdev_carrier_on()`;
+    - flash and cold boot with cable connected, then require a DHCP address
+      plus bidirectional ping;
+    - cold boot once with the cable unplugged and require UI plus NSH startup.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+CONFIG_STM32H7_RMII=y
+CONFIG_ETH0_PHY_LAN8742A=y
+configure PH2=MII_CRS and PH3=MII_COL during QSPI-XIP
+successful ifup returns with eth0 only UP
+```
+
+#### Correct
+
+```text
+CONFIG_STM32H7_MII=y
+CONFIG_STM32H7_MII_EXTCLK=y
+CONFIG_ETH0_PHY_LAN8740A=y
+CONFIG_STM32H7_PHYADDR=1
+QSPI-XIP preserves PH2/PH3; full-duplex MII skips CRS/COL
+successful ifup calls netdev_carrier_on(dev), so eth0 is UP and RUNNING
+```

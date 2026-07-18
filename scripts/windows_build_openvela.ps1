@@ -144,6 +144,7 @@ bash "`$CONTEST_ROOT/scripts/ensure-openvela-links.sh" "`$OPENVELA_ROOT"
   "`$OPENVELA_ROOT/apps/tools/mkkconfig.sh" -m Demos
 )
 bash "`$CONTEST_ROOT/scripts/apply-openvela-qspi-patch.sh" "`$OPENVELA_ROOT"
+bash "`$CONTEST_ROOT/scripts/apply-openvela-eth-mii-patch.sh" "`$OPENVELA_ROOT"
 
 need_configure=0
 if [ "`$REBUILD_MODE" = 'full' ]; then
@@ -196,6 +197,50 @@ else
     --disable CONFIG_DEBUG_NOOPT \
     --enable CONFIG_DEBUG_FULLOPT
 fi
+
+# MB1381 H750XB-B01 onboard RJ45 (LAN8740A / MII) + DHCP bring-up.
+# Keep this minimal: no Telnet/webclient; NETINIT_THREAD so no-cable boot
+# does not block UI/NSH.  The PHY provides the external MII clocks.
+kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+  --enable CONFIG_NET \
+  --enable CONFIG_NET_ETHERNET \
+  --enable CONFIG_NET_IPv4 \
+  --enable CONFIG_NET_ARP \
+  --enable CONFIG_NET_TCP \
+  --enable CONFIG_NET_UDP \
+  --enable CONFIG_NET_BROADCAST \
+  --enable CONFIG_NET_UDP_CHECKSUMS \
+  --enable CONFIG_NET_ICMP \
+  --enable CONFIG_NET_ICMP_SOCKET \
+  --enable CONFIG_NET_SOCKOPTS \
+  --set-val CONFIG_NET_ETH_PKTSIZE 1500 \
+  --enable CONFIG_STM32H7_ETHMAC \
+  --enable CONFIG_STM32H7_MII \
+  --enable CONFIG_STM32H7_MII_EXTCLK \
+  --enable CONFIG_ETH0_PHY_LAN8740A \
+  --disable CONFIG_ETH0_PHY_LAN8742A \
+  --set-val CONFIG_STM32H7_PHYADDR 1 \
+  --enable CONFIG_STM32H7_AUTONEG \
+  --set-val CONFIG_STM32H7_PHYSR 31 \
+  --enable CONFIG_STM32H7_PHYSR_ALTCONFIG \
+  --set-val CONFIG_STM32H7_PHYSR_ALTMODE 0x001c \
+  --set-val CONFIG_STM32H7_PHYSR_10HD 0x0004 \
+  --set-val CONFIG_STM32H7_PHYSR_100HD 0x0008 \
+  --set-val CONFIG_STM32H7_PHYSR_10FD 0x0014 \
+  --set-val CONFIG_STM32H7_PHYSR_100FD 0x0018 \
+  --enable CONFIG_SCHED_LPWORK \
+  --enable CONFIG_NSH_NETINIT \
+  --enable CONFIG_NETUTILS_NETINIT \
+  --enable CONFIG_NETUTILS_DHCPC \
+  --set-val CONFIG_NETUTILS_DHCPC_BOOTP_FLAGS 0x8000 \
+  --enable CONFIG_NETINIT_DHCPC \
+  --enable CONFIG_NETINIT_THREAD \
+  --enable CONFIG_NETINIT_NOMAC \
+  --enable CONFIG_NETINIT_SWMAC \
+  --set-val CONFIG_NETINIT_MACADDR_2 0x00e0 \
+  --set-val CONFIG_NETINIT_MACADDR_1 0xde00a750 \
+  --enable CONFIG_SYSTEM_PING \
+  --enable CONFIG_SYSTEM_DHCPC_RENEW
 
 make -C "`$NUTTX_ROOT" olddefconfig
 

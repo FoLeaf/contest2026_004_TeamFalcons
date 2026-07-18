@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance: build reproducibility, no crash offline, ping online"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Verify edits stay in contest build/patch surface"}
+{"file": "docs/windows_build_debug_setup.md", "reason": "Hardware flash/debug constraints for validation"}
+{"file": "VelaGuard_项目手册.md", "reason": "RJ45 primary / offline local loop must not regress"}

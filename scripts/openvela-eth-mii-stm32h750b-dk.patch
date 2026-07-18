@@ -1,0 +1,44 @@
+diff --git a/arch/arm/src/stm32h7/stm32_ethernet.c b/arch/arm/src/stm32h7/stm32_ethernet.c
+index d685f27b28f..eb0275e04ea 100644
+--- a/arch/arm/src/stm32h7/stm32_ethernet.c
++++ b/arch/arm/src/stm32h7/stm32_ethernet.c
+@@ -2443,6 +2443,7 @@ static int stm32_ifup(struct net_driver_s *dev)
+   up_enable_irq(STM32_IRQ_ETH);
+
+   stm32_checksetup();
++  netdev_carrier_on(dev);
+   return OK;
+ }
+
+@@ -3651,8 +3652,10 @@ static inline void stm32_ethgpioconfig(struct stm32_ethmac_s *priv)
+    * MII_RX_ER, MII_RX_DV, MII_CRS, MII_COL, MDC, MDIO
+    */
+
++#    ifndef BOARD_ETH_MII_NO_CRS_COL
+   stm32_configgpio(GPIO_ETH_MII_COL);
+   stm32_configgpio(GPIO_ETH_MII_CRS);
++#    endif
+   stm32_configgpio(GPIO_ETH_MII_RXD0);
+   stm32_configgpio(GPIO_ETH_MII_RXD1);
+   stm32_configgpio(GPIO_ETH_MII_RXD2);
+diff --git a/boards/arm/stm32h7/stm32h750b-dk/include/board.h b/boards/arm/stm32h7/stm32h750b-dk/include/board.h
+index af5f8ed0bb6..3f4ed5da9f6 100644
+--- a/boards/arm/stm32h7/stm32h750b-dk/include/board.h
++++ b/boards/arm/stm32h7/stm32h750b-dk/include/board.h
+@@ -275,6 +275,16 @@
+
+ /* Ethernet definitions *****************************************************/
+
++/* MB1381 H750XB-B01 routes the LAN8740A through full MII.  PH2/MII_CRS and
++ * PH3/MII_COL share pins with QSPI bank 2 IO0/IO1.  QSPI-XIP builds must
++ * leave those pins in their QSPI alternate function; negotiated full-duplex
++ * Ethernet does not use CRS/COL.
++ */
++
++#ifdef CONFIG_STM32H750B_DK_QSPI_BOOT
++#  define BOARD_ETH_MII_NO_CRS_COL 1
++#endif
++
+ /* The STM32H7 connects to a LAN8740A PHY using these pins:
+  *
+  *   STM32H7  BOARD        LAN8740A

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Change placement: contest build script vs upstream board tree"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Keep surgical config/board changes and validation bar"}
+{"file": ".trellis/spec/backend/velaguard-mqtt-ai-bridge-contract.md", "reason": "Network is prerequisite; avoid pulling MQTT into this slice"}
+{"file": "docs/velaguard-mqtt-contract.md", "reason": "Product checklist still lists Ethernet DHCP as open item"}
+{"file": "docs/windows_build_debug_setup.md", "reason": "Build/flash path for H750 QSPI + verification on hardware"}

@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "team_id": "contest2026_004_TeamFalcons",
   "github_login": "Foleaf",
-  "generator": "opencode-collector@1.3.0",
-  "updated_at": "2026-07-16T09:10:32.852Z",
+  "generator": "codex-collector@1.2.0",
+  "updated_at": "2026-07-18T14:56:28.861Z",
   "sessions": [
     {
       "session_id": "ses_11810bbcfffe563TbgE0tykfVz",
@@ -1524,6 +1524,56 @@
       "health": "ok",
       "title": "VelaGuard扩展板文档交叉验证",
       "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_090e101c9ffeqQk43yn2tgwr4g",
+      "tool": "opencode",
+      "started_at": "2026-07-17T08:08:49.974Z",
+      "last_event_at": "2026-07-18T13:04:01.706Z",
+      "event_count": 141,
+      "raw_message_count": 80,
+      "file_path": "logs/Foleaf/2026-07-18/opencode__ses_090e101c9ffeqQk43yn2tgwr4g.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "用中文提交最近更改",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_08ad52f64ffevpLIK1tlPmD542",
+      "tool": "opencode",
+      "started_at": "2026-07-18T12:19:28.027Z",
+      "last_event_at": "2026-07-18T12:43:03.904Z",
+      "event_count": 121,
+      "raw_message_count": 75,
+      "file_path": "logs/Foleaf/2026-07-18/opencode__ses_08ad52f64ffevpLIK1tlPmD542.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Implement RJ45 DHCP bringup (@trellis-implement subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_08abee2a8ffeLM53FNLH8sUVKn",
+      "tool": "opencode",
+      "started_at": "2026-07-18T12:43:49.466Z",
+      "last_event_at": "2026-07-18T12:51:28.548Z",
+      "event_count": 40,
+      "raw_message_count": 20,
+      "file_path": "logs/Foleaf/2026-07-18/opencode__ses_08abee2a8ffeLM53FNLH8sUVKn.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Quality check RJ45 DHCP (@trellis-check subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "019f7578-1532-70e0-a0c2-5e26a481a818",
+      "tool": "codex",
+      "started_at": "2026-07-18T13:44:04.977Z",
+      "last_event_at": "2026-07-18T14:56:28.856Z",
+      "event_count": 318,
+      "raw_event_count": 1092,
+      "file_path": "logs/Foleaf/2026-07-18/codex__019f7578-1532-70e0-a0c2-5e26a481a818.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
     }
   ]
 }
