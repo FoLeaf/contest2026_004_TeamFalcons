@@ -139,3 +139,36 @@ Switched Claude Code globally to Krill grok-4.5, installed the project-local Cla
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: MB1381 B01 MII 以太网与 DHCP 联调
+
+**Date**: 2026-07-18
+**Task**: MB1381 B01 MII 以太网与 DHCP 联调
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+依据 MB1381 H750XB-B01 原理图改为 LAN8740A 全 MII/PHY 地址 1，保留 QSPI-XIP 共脚并补齐 carrier 状态；完成 DHCP、双向 ping、拔线冷启动 UI/NSH 验收，同时固化规范、回归检查、协作型 .gitignore 与比赛日志。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0272436` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
