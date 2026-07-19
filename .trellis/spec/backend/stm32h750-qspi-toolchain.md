@@ -361,12 +361,14 @@ The Windows build must invoke this idempotent helper before NuttX configure:
 scripts/apply-openvela-eth-mii-patch.sh <openvela-root>
 ```
 
-`<openvela-root>` must contain the `nuttx` checkout. Omitting it defaults to
-the contest repository's parent directory. A successful `stm32_ifup()` must
-publish the network-device state through:
+`<openvela-root>` must contain both the `nuttx` and `apps` checkouts. Omitting
+it defaults to the contest repository's parent directory. The helper applies
+the NuttX MAC/PHY patch and apps netinit patch independently and idempotently.
+Physical link edges are published through:
 
 ```c
 netdev_carrier_on(dev);
+netdev_carrier_off(dev);
 ```
 
 ### 3. Contracts
@@ -380,11 +382,23 @@ netdev_carrier_on(dev);
   `BOARD_ETH_MII_NO_CRS_COL` and leave both pins configured for QSPI.
 - Full-duplex Ethernet does not use CRS/COL. The driver must still configure
   the remaining MII pins.
-- After a successful hardware `ifup`, `eth0` must be both `UP` and `RUNNING`.
-  Merely setting `IFF_UP` is insufficient: UDP/DHCP routing can fail with
-  `EHOSTUNREACH` before a packet reaches the MAC.
-- Run DHCP through the network-init thread so missing cable or DHCP service
-  does not block VelaGuard UI and serial NSH startup.
+- `IFF_UP` is administrative state and must remain set while the cable is
+  absent. `IFF_RUNNING` follows the debounced LAN8740A carrier only.
+- For QSPI builds, define `BOARD_ETH_PHY_POLL`. Poll BMSR from LPWORK every
+  500 ms, read the latch-low register twice per sample, and require two
+  matching samples before publishing an edge. Do not use the incomplete
+  STM32H7 PHY-interrupt path or assume a GPIO for `MII_TX_ER_nINT`.
+- On a rising edge, rerun PHY negotiation, synchronize the MAC speed/duplex
+  bits, then call `netdev_carrier_on()`. On a falling edge, cancel the TX
+  watchdog and call `netdev_carrier_off()` without clearing `IFF_UP`.
+- Enable `CONFIG_NETINIT_CARRIER_POLL=y`. The netinit thread observes
+  `IFF_RUNNING`; carrier loss clears the active IPv4 address, netmask, and
+  default router, while carrier recovery starts/retries DHCP in the
+  background. Missing cable or DHCP service must not block VelaGuard UI or
+  serial NSH.
+- Clearing active state does not send DHCP RELEASE after physical loss. The
+  stable MAC remains the client identity, but a reconnect may receive either
+  the previous address or a different address.
 
 ### 4. Validation & Error Matrix
 
@@ -393,10 +407,13 @@ netdev_carrier_on(dev);
 | Hardware is MB1381 H750XB-B01 | Configure LAN8740A, full MII, external clocks, PHY address 1. |
 | README says LAN8742A/RMII | Reject that generic mapping and verify against the B01 schematic. |
 | QSPI-XIP is enabled | Preserve PH2/PH3 as QSPI IO; skip only MII CRS/COL GPIO setup. |
-| MII `ifup` succeeds but `ifconfig` lacks `RUNNING` | Treat carrier publication as broken; call `netdev_carrier_on()` before returning success. |
+| Cable is absent after `ifup` | Keep `UP`, clear `RUNNING`, and continue LPWORK polling; do not fail boot. |
+| BMSR read fails | Retain the last confirmed carrier state, log the error, and reschedule polling. |
+| Initial LPWORK scheduling fails | Log the error, roll the interface down cleanly, and return the failure. |
 | DHCP `sendto()` returns `EHOSTUNREACH` and capture sees no packet | Inspect `IFF_RUNNING`/carrier before PHY traffic or DHCP payload debugging. |
 | MII patch is missing, conflicts, or only partially applied | Stop before configure/build and report the exact NuttX checkout. |
-| Cable is absent at cold boot | UI and NSH must still start; DHCP may remain pending without blocking them. |
+| Confirmed carrier loss | Preserve `IFF_UP`; clear IPv4, netmask, and the old default route. |
+| Carrier returns but DHCP fails | Keep `UP + RUNNING + 0.0.0.0` and retry at the configured interval. |
 | Cable and DHCP service are present | `eth0` obtains a non-`0.0.0.0` IPv4 address and supports bidirectional ping. |
 
 ### 5. Good / Base / Bad Cases
@@ -404,10 +421,12 @@ netdev_carrier_on(dev);
 - Good: B01 boots from QSPI with LAN8740A/MII, `ifconfig` reports `eth0` as
   `RUNNING` with a DHCP address, PC-to-board and board-to-PC ping both pass,
   and LVGL/touch/NSH remain operational.
-- Base: the cable is unplugged; QSPI-XIP, VelaGuard UI, and NSH still start,
-  while `eth0` has no leased IPv4 address.
+- Base: the cable is unplugged; QSPI-XIP, VelaGuard UI, and NSH still run,
+  while `eth0` is `UP` without `RUNNING` and reports address/router/netmask as
+  `0.0.0.0`.
 - Bad: configure RMII/LAN8742A from the generic README, switch PH2/PH3 away
-  from QSPI, or report `UP` without `RUNNING` after a successful `ifup`.
+  from QSPI, preserve stale `RUNNING`/IPv4 after unplug, clear `IFF_UP` on a
+  physical edge, or require manual `renew` after reconnect.
 
 ### 6. Tests Required
 
@@ -415,11 +434,17 @@ netdev_carrier_on(dev);
     - reverse-check the maintained patch against the target NuttX checkout;
     - assert the generated config selects MII, external clocks, LAN8740A, and
       PHY address 1 while disabling LAN8742A;
+    - reverse-check both maintained NuttX and apps patches;
     - run `harness/qspi_boot_flow_check.py --artifacts .debug` and assert it
-      checks both QSPI pin preservation and `netdev_carrier_on()`;
+      checks QSPI pin preservation, double-read BMSR, debounce, both carrier
+      calls, IPv4/route cleanup, DHCP reconnect, and preserved `IFF_UP`;
     - flash and cold boot with cable connected, then require a DHCP address
       plus bidirectional ping;
-    - cold boot once with the cable unplugged and require UI plus NSH startup.
+    - cold boot once with the cable unplugged and require UI plus NSH startup;
+    - perform at least three unplug/replug cycles without manual `renew`.
+      Within about two seconds after unplug require `UP`, no `RUNNING`, and
+      zero IPv4/router/netmask; after replug require automatic DHCP and
+      bidirectional ping. Do not require the DHCP address to stay unchanged.
 
 ### 7. Wrong vs Correct
 
@@ -429,7 +454,8 @@ netdev_carrier_on(dev);
 CONFIG_STM32H7_RMII=y
 CONFIG_ETH0_PHY_LAN8742A=y
 configure PH2=MII_CRS and PH3=MII_COL during QSPI-XIP
-successful ifup returns with eth0 only UP
+physical unplug leaves stale RUNNING, IPv4, and default route
+netinit clears IFF_UP or reconnect requires manual renew
 ```
 
 #### Correct
@@ -440,5 +466,6 @@ CONFIG_STM32H7_MII_EXTCLK=y
 CONFIG_ETH0_PHY_LAN8740A=y
 CONFIG_STM32H7_PHYADDR=1
 QSPI-XIP preserves PH2/PH3; full-duplex MII skips CRS/COL
-successful ifup calls netdev_carrier_on(dev), so eth0 is UP and RUNNING
+IFF_UP remains administrative; debounced BMSR edges own IFF_RUNNING
+carrier-off clears active IPv4/route; carrier-on automatically retries DHCP
 ```

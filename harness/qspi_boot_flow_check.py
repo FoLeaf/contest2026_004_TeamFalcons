@@ -77,6 +77,7 @@ def main() -> int:
     patch_helper = read(REPO_ROOT / "scripts/apply-openvela-qspi-patch.sh")
     eth_patch = read(REPO_ROOT / "scripts/openvela-eth-mii-stm32h750b-dk.patch")
     eth_patch_helper = read(REPO_ROOT / "scripts/apply-openvela-eth-mii-patch.sh")
+    netinit_patch = read(REPO_ROOT / "scripts/openvela-netinit-carrier-poll.patch")
     win_build = read(REPO_ROOT / "scripts/windows_build_openvela.ps1")
     win_flash = read(REPO_ROOT / "scripts/windows_flash_cube.ps1")
     openocd_wrapper = read(REPO_ROOT / "scripts/windows_flash_openocd.ps1")
@@ -136,10 +137,24 @@ def main() -> int:
     checks.check(
         "BOARD_ETH_MII_NO_CRS_COL" in eth_patch
         and "netdev_carrier_on(dev)" in eth_patch
+        and "netdev_carrier_off(dev)" in eth_patch
+        and "stm32_phylinkread" in eth_patch
+        and eth_patch.count("MII_MSR, &phyval") >= 2
+        and "STM32_LINK_DEBOUNCE" in eth_patch
         and "QSPI bank 2 IO0/IO1" in eth_patch
         and "apply --reverse --check" in eth_patch_helper
         and "apply --check" in eth_patch_helper,
-        "B01 MII patch preserves QSPI XIP and marks the carrier running",
+        "B01 MII patch preserves QSPI XIP and follows real carrier edges",
+    )
+    checks.check(
+        "CONFIG_NETINIT_CARRIER_POLL" in netinit_patch
+        and "IFF_RUNNING" in netinit_patch
+        and "netinit_clear_ipv4" in netinit_patch
+        and "netlib_obtain_ipv4addr" in netinit_patch
+        and "addr->s_addr != INADDR_ANY" in netinit_patch
+        and "ifr.ifr_flags = 0" not in netinit_patch
+        and "openvela-netinit-carrier-poll.patch" in eth_patch_helper,
+        "netinit keeps IFF_UP while clearing stale IPv4 and restarting DHCP",
     )
     checks.check(
         "--enable CONFIG_STM32H7_MII" in win_build
@@ -147,6 +162,8 @@ def main() -> int:
         and "--enable CONFIG_ETH0_PHY_LAN8740A" in win_build
         and "--disable CONFIG_ETH0_PHY_LAN8742A" in win_build
         and "--set-val CONFIG_STM32H7_PHYADDR 1" in win_build
+        and "--enable CONFIG_NETINIT_CARRIER_POLL" in win_build
+        and "--disable CONFIG_NETINIT_MONITOR" in win_build
         and "apply-openvela-eth-mii-patch.sh" in win_build,
         "Windows build matches the MB1381 H750XB-B01 Ethernet wiring",
     )

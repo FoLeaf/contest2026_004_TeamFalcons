@@ -5,28 +5,42 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OPENVELA_ROOT="${1:-$(cd "$REPO_ROOT/.." && pwd)}"
 NUTTX_ROOT="$OPENVELA_ROOT/nuttx"
-PATCH_FILE="$SCRIPT_DIR/openvela-eth-mii-stm32h750b-dk.patch"
+APPS_ROOT="$OPENVELA_ROOT/apps"
+NUTTX_PATCH="$SCRIPT_DIR/openvela-eth-mii-stm32h750b-dk.patch"
+APPS_PATCH="$SCRIPT_DIR/openvela-netinit-carrier-poll.patch"
 
-if [[ ! -d "$NUTTX_ROOT/.git" && ! -f "$NUTTX_ROOT/.git" ]]; then
-  echo "error: NuttX git checkout not found: $NUTTX_ROOT" >&2
-  exit 1
-fi
+apply_patch_once() {
+  local checkout="$1"
+  local patch_file="$2"
+  local label="$3"
 
-if [[ ! -f "$PATCH_FILE" ]]; then
-  echo "error: ETH MII patch not found: $PATCH_FILE" >&2
-  exit 1
-fi
+  if [[ ! -d "$checkout/.git" && ! -f "$checkout/.git" ]]; then
+    echo "error: $label git checkout not found: $checkout" >&2
+    return 1
+  fi
 
-if git -C "$NUTTX_ROOT" apply --reverse --check "$PATCH_FILE" >/dev/null 2>&1; then
-  echo "ETH MII/QSPI pin-conflict patch is already applied."
-  exit 0
-fi
+  if [[ ! -f "$patch_file" ]]; then
+    echo "error: $label patch not found: $patch_file" >&2
+    return 1
+  fi
 
-if ! git -C "$NUTTX_ROOT" apply --check "$PATCH_FILE"; then
-  echo "error: ETH MII patch does not apply cleanly." >&2
-  echo "Inspect overlapping changes in $NUTTX_ROOT before retrying." >&2
-  exit 1
-fi
+  if git -C "$checkout" apply --reverse --check "$patch_file" \
+      >/dev/null 2>&1; then
+    echo "$label patch is already applied."
+    return 0
+  fi
 
-git -C "$NUTTX_ROOT" apply "$PATCH_FILE"
-echo "Applied STM32H750B-DK MII/QSPI pin-conflict patch."
+  if ! git -C "$checkout" apply --check "$patch_file"; then
+    echo "error: $label patch does not apply cleanly." >&2
+    echo "Inspect overlapping changes in $checkout before retrying." >&2
+    return 1
+  fi
+
+  git -C "$checkout" apply "$patch_file"
+  echo "Applied $label patch."
+}
+
+apply_patch_once "$NUTTX_ROOT" "$NUTTX_PATCH" \
+  "STM32H750B-DK MII/QSPI carrier"
+apply_patch_once "$APPS_ROOT" "$APPS_PATCH" \
+  "netinit carrier/DHCP reconnect"
