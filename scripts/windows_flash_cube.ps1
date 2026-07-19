@@ -5,6 +5,8 @@ param(
   [string]$OutDir = "",
   [switch]$NoBuild,
   [switch]$DebugBuild,
+  [switch]$UiPerfDiagnostics,
+  [switch]$FastTouchPoll,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
@@ -102,6 +104,12 @@ if (-not $NoBuild) {
   }
   if ($DebugBuild) {
     $buildParameters["DebugBuild"] = $true
+  }
+  if ($UiPerfDiagnostics) {
+    $buildParameters["UiPerfDiagnostics"] = $true
+  }
+  if ($FastTouchPoll) {
+    $buildParameters["FastTouchPoll"] = $true
   }
   if ($FullClean) {
     $buildParameters["FullClean"] = $true

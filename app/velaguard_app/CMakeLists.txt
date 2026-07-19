@@ -20,6 +20,7 @@ if(CONFIG_LVX_USE_VELAGUARD)
          src/vg_ui_home.c
          src/vg_ui_settings.c
          src/vg_ui_network.c
+         src/vg_ui_perf.c
          src/assets/vg_img_setting.c
          src/assets/vg_img_ethernet.c
          src/assets/vg_img_wifi.c

@@ -5,6 +5,8 @@ param(
   [string]$BoardConfig = "stm32h750b-dk:lvgl",
   [string]$OutDir = "",
   [switch]$DebugBuild,
+  [switch]$UiPerfDiagnostics,
+  [switch]$FastTouchPoll,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
@@ -122,6 +124,10 @@ if ($FullClean) {
 }
 
 $debugBuildFlag = if ($DebugBuild) { "1" } else { "0" }
+$uiPerfDiagnosticsFlag = if ($UiPerfDiagnostics) { "1" } else { "0" }
+$uiPerfKind = if ($UiPerfDiagnostics) { "enabled" } else { "disabled" }
+$fastTouchPollFlag = if ($FastTouchPoll) { "1" } else { "0" }
+$touchMode = if ($FastTouchPoll) { "fast-poll" } else { "interrupt" }
 $productModeFlag = if ($VelaGuardMode -eq "production") { "1" } else { "0" }
 $buildKind = if ($DebugBuild) { "debug" } else { "release" }
 $rebuildMode = $Rebuild
@@ -132,6 +138,8 @@ NUTTX_ROOT='${OpenvelaDir}/nuttx'
 CONTEST_ROOT='$repoDirWsl'
 OUT_ROOT='$outDirWsl'
 REBUILD_MODE='$rebuildMode'
+UI_PERF_DIAGNOSTICS='$uiPerfDiagnosticsFlag'
+FAST_TOUCH_POLL='$fastTouchPollFlag'
 
 export PATH="`$OPENVELA_ROOT/prebuilts/tools/python/bin:`$OPENVELA_ROOT/prebuilts/tools/linux/x86_64:`$OPENVELA_ROOT/prebuilts/kconfig-frontends/bin:`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin:`$OPENVELA_ROOT/prebuilts/build-tools/linux-x86_64/bin:`$PATH"
 export PYTHONPATH="`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages/kconfiglib:`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages:`${PYTHONPATH:-}"
@@ -145,6 +153,7 @@ bash "`$CONTEST_ROOT/scripts/ensure-openvela-links.sh" "`$OPENVELA_ROOT"
 )
 bash "`$CONTEST_ROOT/scripts/apply-openvela-qspi-patch.sh" "`$OPENVELA_ROOT"
 bash "`$CONTEST_ROOT/scripts/apply-openvela-eth-mii-patch.sh" "`$OPENVELA_ROOT"
+bash "`$CONTEST_ROOT/scripts/apply-openvela-ui-performance-patch.sh" "`$OPENVELA_ROOT"
 
 need_configure=0
 if [ "`$REBUILD_MODE" = 'full' ]; then
@@ -170,6 +179,9 @@ kconfig-tweak --file "`$NUTTX_ROOT/.config" \
   --disable CONFIG_EXAMPLES_LVGLDEMO \
   --disable CONFIG_LV_BUILD_EXAMPLES \
   --disable CONFIG_LV_USE_DEMO_WIDGETS \
+  --set-val CONFIG_LV_DEF_REFR_PERIOD 20 \
+  --set-val CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD 20 \
+  --set-val CONFIG_LVX_VELAGUARD_PRIORITY 120 \
   --enable CONFIG_PSEUDOFS_FILE \
   --enable CONFIG_LV_FONT_MONTSERRAT_10 \
   --enable CONFIG_LV_FONT_MONTSERRAT_12 \
@@ -180,6 +192,22 @@ kconfig-tweak --file "`$NUTTX_ROOT/.config" \
   --set-str CONFIG_VG_FIRMWARE_VERSION '0.1.0' \
   --set-str CONFIG_INIT_ENTRYPOINT 'velaguard_main'
 
+if [ "`$UI_PERF_DIAGNOSTICS" = '1' ]; then
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --enable CONFIG_VG_UI_PERF_DIAGNOSTICS
+else
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --disable CONFIG_VG_UI_PERF_DIAGNOSTICS
+fi
+
+if [ "`$FAST_TOUCH_POLL" = '1' ]; then
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --enable CONFIG_FT5X06_POLLMODE
+else
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --disable CONFIG_FT5X06_POLLMODE
+fi
+
 if [ '$productModeFlag' = '0' ]; then
   kconfig-tweak --file "`$NUTTX_ROOT/.config" \
     --set-str CONFIG_VG_DEVICE_ID_OVERRIDE '$DeviceIdOverride'
@@ -189,7 +217,9 @@ if [ '$debugBuildFlag' = '1' ]; then
   kconfig-tweak --file "`$NUTTX_ROOT/.config" \
     --enable CONFIG_DEBUG_SYMBOLS \
     --set-str CONFIG_DEBUG_SYMBOLS_LEVEL '-g3' \
-    --enable CONFIG_DEBUG_NOOPT \
+    --enable CONFIG_DEBUG_CUSTOMOPT \
+    --set-str CONFIG_DEBUG_OPTLEVEL '-Og' \
+    --disable CONFIG_DEBUG_NOOPT \
     --disable CONFIG_DEBUG_FULLOPT
 else
   kconfig-tweak --file "`$NUTTX_ROOT/.config" \
@@ -293,13 +323,14 @@ cp "`$bootstub_dir/qspi_bootstub.elf" "`$OUT_ROOT/qspi_bootstub.elf"
 cp "`$bootstub_dir/qspi_bootstub.hex" "`$OUT_ROOT/qspi_bootstub.hex"
 cp "`$bootstub_dir/qspi_bootstub.bin" "`$OUT_ROOT/qspi_bootstub.bin"
 cp "`$NUTTX_ROOT/.config" "`$OUT_ROOT/nuttx.config"
-printf 'product_mode=%s\ncompiler_mode=%s\n' \
-  '$VelaGuardMode' '$buildKind' > "`$OUT_ROOT/build-info.txt"
+printf 'product_mode=%s\ncompiler_mode=%s\nui_perf=%s\ntouch_mode=%s\n' \
+  '$VelaGuardMode' '$buildKind' '$uiPerfKind' '$touchMode' \
+  > "`$OUT_ROOT/build-info.txt"
 
 "`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin/arm-none-eabi-size" "`$OUT_ROOT/nuttx.elf" "`$OUT_ROOT/qspi_bootstub.elf"
 "@
 
-Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro' (rebuild=$rebuildMode)."
+Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro' (rebuild=$rebuildMode, ui_perf=$UiPerfDiagnostics, touch=$touchMode)."
 Write-Host "openvela root: $OpenvelaDir"
 Write-Host "artifacts: $OutDir"
 Invoke-CheckedWslScript $buildCommand $OutDir

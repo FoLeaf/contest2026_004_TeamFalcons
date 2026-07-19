@@ -26,6 +26,7 @@
 #include "src/vg_network.h"
 #include "src/vg_startup.h"
 #include "src/vg_ui_home.h"
+#include "src/vg_ui_perf.h"
 
 /****************************************************************************
  * Private Data
@@ -62,6 +63,8 @@ static int velaguard_ui_main(int argc, FAR char *argv[])
       fprintf(stderr,
               "[velaguard] touchscreen unavailable; home remains visible\n");
     }
+
+  vg_ui_perf_init(result.disp);
 
   vg_ui_home_create();
   printf("[velaguard] UI ready\n");

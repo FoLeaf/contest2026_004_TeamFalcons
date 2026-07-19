@@ -195,8 +195,9 @@ static void vg_refresh_field_labels(void)
     {
       if (g_field_labels[i] != NULL)
         {
-          lv_label_set_text(g_field_labels[i],
-                            values[i][0] != '\0' ? values[i] : "-");
+          FAR const char *value = values[i][0] != '\0' ? values[i] : "-";
+
+          vg_ui_label_set_text_if_changed(g_field_labels[i], value);
         }
     }
 }
@@ -545,24 +546,23 @@ void vg_ui_network_refresh(void)
 
   snprintf(text, sizeof(text), "状态  %s",
            status.message[0] != '\0' ? status.message : "-");
-  lv_label_set_text(g_status_label, text);
+  vg_ui_label_set_text_if_changed(g_status_label, text);
 
   if (g_carrier_label != NULL)
     {
-      lv_label_set_text(g_carrier_label,
-                        status.carrier ? "链路  已连接" : "链路  无链路");
-      lv_obj_set_style_text_color(g_carrier_label,
-                                  lv_color_hex(status.carrier ?
-                                               VG_COLOR_ACCENT :
-                                               VG_COLOR_MUTED),
-                                  LV_PART_MAIN);
+      vg_ui_label_set_text_if_changed(g_carrier_label,
+                                      status.carrier ? "链路  已连接" :
+                                      "链路  无链路");
+      vg_ui_label_set_color_if_changed(g_carrier_label,
+                                       status.carrier ? VG_COLOR_ACCENT :
+                                       VG_COLOR_MUTED);
     }
 
   if (g_ipv4_label != NULL)
     {
       snprintf(text, sizeof(text), "地址  %s",
                status.ipv4[0] != '\0' ? status.ipv4 : "-");
-      lv_label_set_text(g_ipv4_label, text);
+      vg_ui_label_set_text_if_changed(g_ipv4_label, text);
     }
 
   if (g_apply_btn != NULL)
@@ -598,12 +598,10 @@ void vg_ui_network_refresh(void)
           bool success = strncmp(status.feedback, "应用成功",
                                  strlen("应用成功")) == 0;
 
-          lv_label_set_text(g_feedback_label, status.feedback);
-          lv_obj_set_style_text_color(g_feedback_label,
-                                      lv_color_hex(success ?
-                                                   VG_COLOR_ACCENT :
-                                                   VG_COLOR_ALARM),
-                                      LV_PART_MAIN);
+          vg_ui_label_set_text_if_changed(g_feedback_label, status.feedback);
+          vg_ui_label_set_color_if_changed(g_feedback_label,
+                                           success ? VG_COLOR_ACCENT :
+                                           VG_COLOR_ALARM);
         }
     }
 }

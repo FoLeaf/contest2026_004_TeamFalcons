@@ -5,6 +5,8 @@ param(
   [string]$OutDir = "",
   [switch]$NoBuild,
   [switch]$DebugBuild,
+  [switch]$UiPerfDiagnostics,
+  [switch]$FastTouchPoll,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
@@ -23,6 +25,8 @@ if (-not [string]::IsNullOrWhiteSpace($ExternalLoader)) { $parameters["ExternalL
 if (-not [string]::IsNullOrWhiteSpace($OutDir)) { $parameters["OutDir"] = $OutDir }
 if ($NoBuild) { $parameters["NoBuild"] = $true }
 if ($DebugBuild) { $parameters["DebugBuild"] = $true }
+if ($UiPerfDiagnostics) { $parameters["UiPerfDiagnostics"] = $true }
+if ($FastTouchPoll) { $parameters["FastTouchPoll"] = $true }
 $parameters["VelaGuardMode"] = $VelaGuardMode
 $parameters["DeviceIdOverride"] = $DeviceIdOverride
 $parameters["Rebuild"] = $Rebuild

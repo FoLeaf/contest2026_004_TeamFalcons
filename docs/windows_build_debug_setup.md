@@ -98,7 +98,7 @@ nuttx.config  build-info.txt
 ```
 
 调试构建使用任务 `openvela: build VelaGuard test debug QSPI firmware`，它额外
-启用 `-g3` 和无优化构建。生产身份验证使用
+启用 `-g3` 和 `-Og` 调试优化构建。生产身份验证使用
 `openvela: build VelaGuard production QSPI firmware`。产品模式
 test/production 与编译模式 debug/release 相互独立。
 

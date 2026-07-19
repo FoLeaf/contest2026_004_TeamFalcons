@@ -37,6 +37,8 @@ scripts\windows_build_openvela.ps1
   [-BoardConfig <string>]
   [-OutDir <Windows path>]
   [-DebugBuild]
+  [-UiPerfDiagnostics]
+  [-FastTouchPoll]
   [-VelaGuardMode test|production]
   [-DeviceIdOverride <1-39 safe characters>]
 
@@ -46,6 +48,8 @@ scripts\windows_flash_cube.ps1
   [-OutDir <Windows path>]
   [-NoBuild]
   [-DebugBuild]
+  [-UiPerfDiagnostics]
+  [-FastTouchPoll]
   [-VelaGuardMode test|production]
   [-DeviceIdOverride <1-39 safe characters>]
   [-ValidateOnly]
@@ -59,6 +63,7 @@ The build must invoke the idempotent patch interface before configuring NuttX:
 
 ```bash
 scripts/apply-openvela-qspi-patch.sh <openvela-root>
+scripts/apply-openvela-ui-performance-patch.sh <openvela-root>
 ```
 
 VS Code debug configurations must use Cortex-Debug with `request: "attach"`,
@@ -118,8 +123,20 @@ The flash sequence is ordered and fail-fast:
 4. Reset the target.
 
 Release builds enable `CONFIG_DEBUG_FULLOPT` and disable debug symbols/no-opt.
-Debug builds enable `CONFIG_DEBUG_SYMBOLS`, `-g3`, and `CONFIG_DEBUG_NOOPT`.
+Debug builds enable `CONFIG_DEBUG_SYMBOLS`, `-g3`, `CONFIG_DEBUG_CUSTOMOPT`, and
+`CONFIG_DEBUG_OPTLEVEL="-Og"`; they must disable `CONFIG_DEBUG_NOOPT` so the
+debug image remains responsive while retaining source-level debugging.
 Both builds enable `CONFIG_STM32H750B_DK_QSPI_BOOT`.
+
+Both builds set `CONFIG_LV_DEF_REFR_PERIOD=20`,
+`CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD=20`, and
+`CONFIG_LVX_VELAGUARD_PRIORITY=120`. Touch defaults to the FT5X06 interrupt
+path with I2C4 at the board-validated 100 kHz. `-FastTouchPoll` is a
+hardware-validation fallback
+that enables 10 ms active / 20 ms idle polling. `-UiPerfDiagnostics` enables
+only the test animation and serial refresh summary; it defaults off. The build
+metadata records `ui_perf=enabled|disabled` and
+`touch_mode=interrupt|fast-poll`.
 
 For the project-owned product, both builds also select
 `CONFIG_LVX_USE_VELAGUARD`, set
@@ -166,6 +183,10 @@ null LVGL display.
 | `wsl.exe` is missing | Stop before build with an actionable error. |
 | Windows/UNC path cannot convert to WSL | Stop and name the failing path. |
 | QSPI patch is neither cleanly applicable nor already applied | Stop before configure/build. |
+| UI performance patch is neither cleanly applicable nor already applied | Stop before configure/build; do not rely on dirty NuttX state. |
+| QSPI reverse-check fails only because a later maintained patch edits the same file | Verify all QSPI feature markers and accept the QSPI patch as applied; do not apply it a second time. |
+| FT5X06 interrupt mode misses or sticks down/move/up events | Rebuild with `-FastTouchPoll` and repeat the complete touch matrix. |
+| FT5X06 reads are unreliable at 400 kHz | Restore the validated 100 kHz bus rate; reject samples with out-of-range coordinates during board validation. |
 | `nuttx.hex` has data below `0x90000000` or at/above `0x98000000` | Reject before CubeProgrammer starts. |
 | Boot-stub HEX has data below `0x08000000` or at/above `0x08020000` | Reject before CubeProgrammer starts. |
 | Required HEX file, Cube CLI, or External Loader is missing | Stop and identify the missing input. |
@@ -199,6 +220,14 @@ OpenOCD flash bank larger than the chip's physical internal Flash.
 - Bad: an oversized `0x08000000` image is sent to OpenOCD, an arbitrary QSPI
   driver is expected to probe the board's dual MT25TL01G arrangement, or an
   External Loader is used without checking the HEX address window.
+- Good UI-performance case: diagnostics are explicitly enabled for a test
+  build, interrupt touch is selected, and serial refresh summaries accompany
+  physical latency measurements.
+- Base UI-performance case: diagnostics remain disabled and the normal product
+  UI contains no marker or synthetic animation.
+- Bad UI-performance case: a dirty upstream checkout is the only carrier for
+  timing changes, or software-only checks are reported as physical FPS and
+  touch-latency acceptance.
 - Good VelaGuard case: test/debug boots from QSPI, uptime advances, storage state
   is honest, NSH remains available, and an attach-only hardware breakpoint hits
   `vg_ui_home_uptime_checkpoint` without downloading.
@@ -247,6 +276,13 @@ For any change to this workflow, assert all applicable points:
     splatting and reject string-array construction of named arguments. Run the
     Windows debug-flash task and confirm it reports the configured WSL distro
     and a debug build independently.
+13. Assert normal builds use 20 ms LVGL periods, UI priority 120, interrupt
+    FT5X06, and disabled diagnostics. Build once with each opt-in switch and
+    verify `nuttx.config`, `build-info.txt`, and the maintained patch's reverse
+    applicability.
+14. On hardware, capture 60 seconds after warm-up for Release FPS/frame time,
+    at least 100 press latencies, 20 drags, and 50 navigation cycles. Repeat
+    under network/service load and never infer these results from compilation.
 
 For a breakpoint in early QSPI-resident startup code, let the target reach the
 QSPI image once before asking GDB to resolve/read the source location. Set a

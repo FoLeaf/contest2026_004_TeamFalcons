@@ -162,9 +162,8 @@ static void vg_refresh_network_summary(void)
         break;
     }
 
-  lv_label_set_text(g_net_status_label, text);
-  lv_obj_set_style_text_color(g_net_status_label, lv_color_hex(color),
-                              LV_PART_MAIN);
+  vg_ui_label_set_text_if_changed(g_net_status_label, text);
+  vg_ui_label_set_color_if_changed(g_net_status_label, color);
 }
 
 static void vg_refresh_acquisition_labels(void)
@@ -176,7 +175,7 @@ static void vg_refresh_acquisition_labels(void)
   snprintf(title, sizeof(title), "采集/%s", vg_backend_label());
   if (g_acq_title_label != NULL)
     {
-      lv_label_set_text(g_acq_title_label, title);
+      vg_ui_label_set_text_if_changed(g_acq_title_label, title);
     }
 
   if (point == NULL || point->quality == VG_ACQ_Q_NONE)
@@ -194,18 +193,15 @@ static void vg_refresh_acquisition_labels(void)
 
   if (g_acq_value_label != NULL)
     {
-      lv_label_set_text(g_acq_value_label, value);
+      vg_ui_label_set_text_if_changed(g_acq_value_label, value);
       if (point != NULL && point->quality == VG_ACQ_Q_GOOD)
         {
-          lv_obj_set_style_text_color(g_acq_value_label,
-                                      lv_color_hex(VG_COLOR_ACCENT),
-                                      LV_PART_MAIN);
+          vg_ui_label_set_color_if_changed(g_acq_value_label,
+                                           VG_COLOR_ACCENT);
         }
       else
         {
-          lv_obj_set_style_text_color(g_acq_value_label,
-                                      lv_color_hex(VG_COLOR_TEXT),
-                                      LV_PART_MAIN);
+          vg_ui_label_set_color_if_changed(g_acq_value_label, VG_COLOR_TEXT);
         }
     }
 
@@ -213,12 +209,12 @@ static void vg_refresh_acquisition_labels(void)
     {
       if (point != NULL && point->quality != VG_ACQ_Q_NONE)
         {
-          lv_label_set_text(g_acq_quality_label,
-                            vg_quality_label(point->quality));
+          vg_ui_label_set_text_if_changed(g_acq_quality_label,
+                                          vg_quality_label(point->quality));
         }
       else
         {
-          lv_label_set_text(g_acq_quality_label, "");
+          vg_ui_label_set_text_if_changed(g_acq_quality_label, "");
         }
     }
 }
@@ -258,14 +254,13 @@ static void vg_refresh_alarm_labels(void)
 
   if (g_alarm_title_label != NULL)
     {
-      lv_label_set_text(g_alarm_title_label, "告警");
+      vg_ui_label_set_text_if_changed(g_alarm_title_label, "告警");
     }
 
   if (g_alarm_value_label != NULL)
     {
-      lv_label_set_text(g_alarm_value_label, value);
-      lv_obj_set_style_text_color(g_alarm_value_label, lv_color_hex(color),
-                                  LV_PART_MAIN);
+      vg_ui_label_set_text_if_changed(g_alarm_value_label, value);
+      vg_ui_label_set_color_if_changed(g_alarm_value_label, color);
     }
 
   {
@@ -281,16 +276,16 @@ static void vg_refresh_alarm_labels(void)
 
         if (i < count)
           {
-            lv_label_set_text(g_alarm_hist_labels[i],
-                              vg_alarm_history_line(i));
+            vg_ui_label_set_text_if_changed(g_alarm_hist_labels[i],
+                                            vg_alarm_history_line(i));
           }
         else if (i == 0)
           {
-            lv_label_set_text(g_alarm_hist_labels[i], "尚无事件");
+            vg_ui_label_set_text_if_changed(g_alarm_hist_labels[i], "尚无事件");
           }
         else
           {
-            lv_label_set_text(g_alarm_hist_labels[i], "");
+            vg_ui_label_set_text_if_changed(g_alarm_hist_labels[i], "");
           }
       }
   }
@@ -468,7 +463,7 @@ void vg_ui_home_refresh(void)
   if (g_uptime_label != NULL)
     {
       vg_format_uptime(text, sizeof(text), uptime_seconds);
-      lv_label_set_text(g_uptime_label, text);
+      vg_ui_label_set_text_if_changed(g_uptime_label, text);
     }
 
   vg_refresh_network_summary();

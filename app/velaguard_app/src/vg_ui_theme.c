@@ -54,6 +54,46 @@ FAR lv_obj_t *vg_ui_label(FAR lv_obj_t *parent, FAR const char *text,
   return label;
 }
 
+bool vg_ui_label_set_text_if_changed(FAR lv_obj_t *label,
+                                     FAR const char *text)
+{
+  FAR const char *current;
+
+  if (label == NULL)
+    {
+      return false;
+    }
+
+  current = lv_label_get_text(label);
+  text = text != NULL ? text : "";
+  if (current != NULL && strcmp(current, text) == 0)
+    {
+      return false;
+    }
+
+  lv_label_set_text(label, text);
+  return true;
+}
+
+bool vg_ui_label_set_color_if_changed(FAR lv_obj_t *label, uint32_t color)
+{
+  lv_color_t next;
+
+  if (label == NULL)
+    {
+      return false;
+    }
+
+  next = lv_color_hex(color);
+  if (lv_color_eq(lv_obj_get_style_text_color(label, LV_PART_MAIN), next))
+    {
+      return false;
+    }
+
+  lv_obj_set_style_text_color(label, next, LV_PART_MAIN);
+  return true;
+}
+
 void vg_ui_style_pressable(FAR lv_obj_t *obj)
 {
   lv_obj_set_style_bg_color(obj, lv_color_hex(VG_COLOR_RAISED),

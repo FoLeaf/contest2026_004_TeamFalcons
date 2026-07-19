@@ -47,6 +47,9 @@ FAR lv_obj_t *vg_ui_panel(FAR lv_obj_t *parent, int32_t x, int32_t y,
                           int32_t width, int32_t height, uint32_t color);
 FAR lv_obj_t *vg_ui_label(FAR lv_obj_t *parent, FAR const char *text,
                           uint32_t color, FAR const lv_font_t *font);
+bool vg_ui_label_set_text_if_changed(FAR lv_obj_t *label,
+                                     FAR const char *text);
+bool vg_ui_label_set_color_if_changed(FAR lv_obj_t *label, uint32_t color);
 FAR lv_obj_t *vg_ui_button(FAR lv_obj_t *parent, FAR const char *text);
 void vg_ui_style_pressable(FAR lv_obj_t *obj);
 FAR lv_obj_t *vg_ui_header_bar(FAR lv_obj_t *parent, FAR const char *title,
