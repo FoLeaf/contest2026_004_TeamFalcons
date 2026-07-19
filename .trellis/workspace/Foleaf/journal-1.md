@@ -238,3 +238,36 @@ Implemented and verified the settings UI/network configuration flow; fixed stale
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: LVGL touch performance first-stage close-out
+
+**Date**: 2026-07-19
+**Task**: LVGL touch performance first-stage close-out
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+Completed and validated first-stage LVGL scheduling, diagnostics, UI invalidation, and FT5X06 tuning; hardware feedback still showed poor scrolling, so the unmet DMA2D/50 FPS work moves to a new task.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ca35fc` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
