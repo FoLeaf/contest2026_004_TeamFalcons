@@ -205,3 +205,36 @@ Switched Claude Code globally to Krill grok-4.5, installed the project-local Cla
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: VelaGuard network settings UI and IPv4 race fix
+
+**Date**: 2026-07-19
+**Task**: VelaGuard network settings UI and IPv4 race fix
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+Implemented and verified the settings UI/network configuration flow; fixed stale in-flight DHCP overwriting a newer static policy with a generation guard. All software gates and firmware build passed; hardware-only validation was explicitly deferred by the user.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f6c75b3` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

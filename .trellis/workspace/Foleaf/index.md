@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
+- **Total Sessions**: 7
 - **Last Active**: 2026-07-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~207 | Active |
+| `journal-1.md` | ~240 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 7 | 2026-07-19 | VelaGuard network settings UI and IPv4 race fix | `f6c75b3` | `feat/velaguard-restart` |
 | 6 | 2026-07-19 | 完成 B01 以太网链路与 DHCP 重连 | `810aad6` | `feat/velaguard-restart` |
 | 5 | 2026-07-18 | MB1381 B01 MII 以太网与 DHCP 联调 | `0272436` | `feat/velaguard-restart` |
 | 4 | 2026-07-14 | Migrate Claude Code workflow to Krill Grok 4.5 | `95c686e` | `feat/velaguard-restart` |
