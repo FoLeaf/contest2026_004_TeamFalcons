@@ -1,0 +1,7 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify UI quality, touch targets, and no fake Wi-Fi features"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Verify page components match project UI conventions"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Verify no stale LVGL updates after navigation"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Verify validation, apply failure rollback, and user-visible errors"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify atomic config write and netinit policy ownership"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify UI does not call netlib/ioctl directly"}

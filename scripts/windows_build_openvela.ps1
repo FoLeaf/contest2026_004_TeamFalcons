@@ -233,6 +233,9 @@ kconfig-tweak --file "`$NUTTX_ROOT/.config" \
   --enable CONFIG_NETUTILS_NETINIT \
   --enable CONFIG_NETUTILS_DHCPC \
   --set-val CONFIG_NETUTILS_DHCPC_BOOTP_FLAGS 0x8000 \
+  --enable CONFIG_NETUTILS_CJSON \
+  --enable CONFIG_NETDB_DNSCLIENT \
+  --enable CONFIG_NETINIT_DNS \
   --enable CONFIG_NETINIT_DHCPC \
   --enable CONFIG_NETINIT_THREAD \
   --disable CONFIG_NETINIT_MONITOR \

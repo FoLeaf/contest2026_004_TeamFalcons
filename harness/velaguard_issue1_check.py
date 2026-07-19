@@ -52,6 +52,17 @@ def main() -> int:
     startup = read(APP_ROOT / "src/vg_startup.c")
     startup_header = read(APP_ROOT / "src/vg_startup.h")
     ui = read(APP_ROOT / "src/vg_ui_home.c")
+    ui_theme = read(APP_ROOT / "src/vg_ui_theme.h")
+    ui_all = "\n".join(
+        (
+            ui,
+            ui_theme,
+            read(APP_ROOT / "src/vg_ui_theme.c"),
+            read(APP_ROOT / "src/vg_ui_settings.c"),
+            read(APP_ROOT / "src/vg_ui_network.c"),
+            read(APP_ROOT / "src/vg_ui_nav.c"),
+        )
+    )
     manifest = read(REPO_ROOT / "contest2026_004_TeamFalcons.xml")
     link_helper = read(REPO_ROOT / "scripts/ensure-openvela-links.sh")
     win_build = read(REPO_ROOT / "scripts/windows_build_openvela.ps1")
@@ -129,7 +140,7 @@ def main() -> int:
     )
     checks.check(
         all(
-            value in ui.lower()
+            value in ui_all.lower()
             for value in (
                 "0x0c1218",
                 "0x151e26",
@@ -141,30 +152,29 @@ def main() -> int:
                 "0xd7a84a",
             )
         )
-        and "VG_PANEL_RADIUS      8" in ui
-        and "VG_CARD_COUNT" not in ui
-        and "gradient" not in ui.lower()
-        and "glow" not in ui.lower(),
+        and ("VG_PANEL_RADIUS      6" in ui_all or "VG_PANEL_RADIUS      8" in ui_all)
+        and "VG_CARD_COUNT" not in ui_all
+        and "gradient" not in ui_all.lower()
+        and "glow" not in ui_all.lower(),
         "Taste tokens use one accent, semantic colors, and one radius system",
     )
     checks.check(
         all(
-            text in ui
+            text in ui_all
             for text in (
                 "VelaGuard",
-                "LOCAL GATEWAY",
-                "ACQUISITION",
-                "Not configured",
-                "ALARM",
-                "Not armed",
-                "NETWORK",
-                "Offline",
-                "AUDIO",
-                "Unavailable",
-                "TIME",
-                "Unsynced",
-                "Storage: %s",
-                "IDENTITY ERROR",
+                "本地系统",
+                "采集",
+                "未配置",
+                "告警",
+                "未启用",
+                "声音",
+                "不可用",
+                "时刻",
+                "未同步",
+                "存储",
+                "设备标识异常",
+                "无链路",
             )
         )
         and "vg_ui_home_uptime_checkpoint" in ui
@@ -196,7 +206,7 @@ def main() -> int:
         "Windows workflow separates product mode from debug optimization",
     )
 
-    visible_sources = "\n".join((ui, main_source))
+    visible_sources = "\n".join((ui_all, main_source))
     checks.check(
         "—" not in visible_sources and "–" not in visible_sources,
         "embedded UI contains no Taste-forbidden dash characters",

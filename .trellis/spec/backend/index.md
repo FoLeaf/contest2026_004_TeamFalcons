@@ -22,6 +22,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [STM32H750 QSPI Toolchain](./stm32h750-qspi-toolchain.md) | Windows build/flash/debug plus MB1381 B01 MII Ethernet and QSPI-XIP contracts | Active |
 | [Trellis Session Task Lifecycle](./trellis-session-task-lifecycle.md) | Claude/OpenCode session lifecycle, planning-safe selection, activation, and idempotent OpenCode Task context injection | Active |
 | [VelaGuard MQTT / AI Bridge Contract](./velaguard-mqtt-ai-bridge-contract.md) | Topic tree, diagnosis JSON, host `ai_bridge_stub` CLI, req_id consistency | Active |
+| [VelaGuard IPv4 Policy](./velaguard-ipv4-policy.md) | Runtime DHCP/static ownership, generation guard, carrier recovery, and DNS replacement | Active |
 
 ---
 

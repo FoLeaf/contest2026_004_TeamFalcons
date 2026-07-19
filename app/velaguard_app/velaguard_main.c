@@ -23,6 +23,7 @@
 #include "src/vg_alarm.h"
 #include "src/vg_config.h"
 #include "src/vg_identity.h"
+#include "src/vg_network.h"
 #include "src/vg_startup.h"
 #include "src/vg_ui_home.h"
 
@@ -130,6 +131,11 @@ int velaguard_main(int argc, FAR char *argv[])
     }
 
   vg_alarm_init();
+
+  if (vg_network_start() < 0)
+    {
+      fprintf(stderr, "[velaguard] network service start failed\n");
+    }
 
   task_result = task_create("velaguard_ui",
                             CONFIG_LVX_VELAGUARD_PRIORITY,

@@ -13,13 +13,22 @@
 
 #include <nuttx/config.h>
 
+#include <lvgl/lvgl.h>
 #include <stdint.h>
 
 /****************************************************************************
  * Public Function Prototypes
  ****************************************************************************/
 
+/* Bootstrap entry used by velaguard_main. */
+
 void vg_ui_home_create(void);
+
+/* Build the home page on an existing screen object. */
+
+void vg_ui_home_build(FAR lv_obj_t *screen);
+void vg_ui_home_clear_refs(void);
+void vg_ui_home_refresh(void);
 void vg_ui_home_uptime_checkpoint(uint64_t uptime_seconds);
 
 /****************************************************************************

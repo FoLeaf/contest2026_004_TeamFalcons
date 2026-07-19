@@ -1,0 +1,11 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "UI layer index for LVGL page structure and navigation conventions"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Settings/network page component and interaction patterns"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Page lifecycle and non-blocking status refresh rules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Frontend quality bar for touch UI and Chinese font constraints"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend index for config and network service boundaries"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Config apply/rollback and error surfacing contracts"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "No credential leakage in logs for protected network config"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Backend quality for atomic config write and netinit policy API"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "UI vs vg_network vs netinit boundary checks"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing UI theme, config, and netinit paths"}
