@@ -172,3 +172,36 @@ Switched Claude Code globally to Krill grok-4.5, installed the project-local Cla
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: 完成 B01 以太网链路与 DHCP 重连
+
+**Date**: 2026-07-19
+**Task**: 完成 B01 以太网链路与 DHCP 重连
+**Branch**: `feat/velaguard-restart`
+
+### Summary
+
+完成 MB1381 H750XB-B01 PHY carrier 轮询、IPv4 清理和 DHCP 自动重连，三轮硬件拔插与双向 ping 验证通过；向 open-vela/nuttx#323 和 nuttx-apps#112 提交公共 PR，checkpatch 与 CLA 均通过。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `810aad6` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
