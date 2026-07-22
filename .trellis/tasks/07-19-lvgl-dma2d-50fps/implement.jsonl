@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/stm32h750-qspi-toolchain.md", "reason": "QSPI build matrix, DMA2D/monitor/touch rollback switches, build-info fields"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend spec index for package routing"}

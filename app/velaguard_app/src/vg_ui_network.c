@@ -490,6 +490,7 @@ static FAR lv_obj_t *vg_make_field_row(FAR lv_obj_t *parent, int32_t y,
                                     VG_COLOR_MUTED, VG_FONT_CAPTION);
   FAR lv_obj_t *value;
 
+  lv_obj_set_style_radius(row, 0, LV_PART_MAIN);
   lv_obj_align(title, LV_ALIGN_LEFT_MID, 10, 0);
   value = vg_ui_label(row, "-", VG_COLOR_TEXT, VG_FONT_BODY);
   lv_obj_align(value, LV_ALIGN_RIGHT_MID, -10, 0);

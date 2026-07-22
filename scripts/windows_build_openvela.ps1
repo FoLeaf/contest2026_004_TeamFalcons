@@ -7,6 +7,9 @@ param(
   [switch]$DebugBuild,
   [switch]$UiPerfDiagnostics,
   [switch]$FastTouchPoll,
+  [switch]$InterruptTouch,
+  [switch]$DisableDma2d,
+  [switch]$HidePerfMonitor,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
@@ -126,8 +129,12 @@ if ($FullClean) {
 $debugBuildFlag = if ($DebugBuild) { "1" } else { "0" }
 $uiPerfDiagnosticsFlag = if ($UiPerfDiagnostics) { "1" } else { "0" }
 $uiPerfKind = if ($UiPerfDiagnostics) { "enabled" } else { "disabled" }
-$fastTouchPollFlag = if ($FastTouchPoll) { "1" } else { "0" }
-$touchMode = if ($FastTouchPoll) { "fast-poll" } else { "interrupt" }
+$interruptTouchFlag = if ($InterruptTouch) { "1" } else { "0" }
+$touchMode = if ($InterruptTouch) { "interrupt" } else { "fast-poll" }
+$dma2dFlag = if ($DisableDma2d) { "0" } else { "1" }
+$renderBackend = if ($DisableDma2d) { "software" } else { "dma2d" }
+$perfMonitorFlag = if ($HidePerfMonitor) { "0" } else { "1" }
+$perfMonitorKind = if ($HidePerfMonitor) { "hidden" } else { "visible" }
 $productModeFlag = if ($VelaGuardMode -eq "production") { "1" } else { "0" }
 $buildKind = if ($DebugBuild) { "debug" } else { "release" }
 $rebuildMode = $Rebuild
@@ -139,7 +146,9 @@ CONTEST_ROOT='$repoDirWsl'
 OUT_ROOT='$outDirWsl'
 REBUILD_MODE='$rebuildMode'
 UI_PERF_DIAGNOSTICS='$uiPerfDiagnosticsFlag'
-FAST_TOUCH_POLL='$fastTouchPollFlag'
+INTERRUPT_TOUCH='$interruptTouchFlag'
+DMA2D_ENABLED='$dma2dFlag'
+PERF_MONITOR_ENABLED='$perfMonitorFlag'
 
 export PATH="`$OPENVELA_ROOT/prebuilts/tools/python/bin:`$OPENVELA_ROOT/prebuilts/tools/linux/x86_64:`$OPENVELA_ROOT/prebuilts/kconfig-frontends/bin:`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin:`$OPENVELA_ROOT/prebuilts/build-tools/linux-x86_64/bin:`$PATH"
 export PYTHONPATH="`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages/kconfiglib:`$OPENVELA_ROOT/prebuilts/tools/python/dist-packages:`${PYTHONPATH:-}"
@@ -154,6 +163,7 @@ bash "`$CONTEST_ROOT/scripts/ensure-openvela-links.sh" "`$OPENVELA_ROOT"
 bash "`$CONTEST_ROOT/scripts/apply-openvela-qspi-patch.sh" "`$OPENVELA_ROOT"
 bash "`$CONTEST_ROOT/scripts/apply-openvela-eth-mii-patch.sh" "`$OPENVELA_ROOT"
 bash "`$CONTEST_ROOT/scripts/apply-openvela-ui-performance-patch.sh" "`$OPENVELA_ROOT"
+bash "`$CONTEST_ROOT/scripts/apply-openvela-display-acceleration-patch.sh" "`$OPENVELA_ROOT"
 
 need_configure=0
 if [ "`$REBUILD_MODE" = 'full' ]; then
@@ -179,9 +189,11 @@ kconfig-tweak --file "`$NUTTX_ROOT/.config" \
   --disable CONFIG_EXAMPLES_LVGLDEMO \
   --disable CONFIG_LV_BUILD_EXAMPLES \
   --disable CONFIG_LV_USE_DEMO_WIDGETS \
-  --set-val CONFIG_LV_DEF_REFR_PERIOD 20 \
-  --set-val CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD 20 \
+  --set-val CONFIG_LV_DEF_REFR_PERIOD 16 \
+  --set-val CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD 16 \
   --set-val CONFIG_LVX_VELAGUARD_PRIORITY 120 \
+  --enable CONFIG_SCHED_CPULOAD_SYSCLK \
+  --disable CONFIG_SCHED_CPULOAD_NONE \
   --enable CONFIG_PSEUDOFS_FILE \
   --enable CONFIG_LV_FONT_MONTSERRAT_10 \
   --enable CONFIG_LV_FONT_MONTSERRAT_12 \
@@ -200,12 +212,32 @@ else
     --disable CONFIG_VG_UI_PERF_DIAGNOSTICS
 fi
 
-if [ "`$FAST_TOUCH_POLL" = '1' ]; then
-  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
-    --enable CONFIG_FT5X06_POLLMODE
-else
+if [ "`$INTERRUPT_TOUCH" = '1' ]; then
   kconfig-tweak --file "`$NUTTX_ROOT/.config" \
     --disable CONFIG_FT5X06_POLLMODE
+else
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --enable CONFIG_FT5X06_POLLMODE
+fi
+
+if [ "`$DMA2D_ENABLED" = '1' ]; then
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --enable CONFIG_VG_STM32H7_DMA2D
+else
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --disable CONFIG_VG_STM32H7_DMA2D
+fi
+
+if [ "`$PERF_MONITOR_ENABLED" = '1' ]; then
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --enable CONFIG_LV_USE_SYSMON \
+    --enable CONFIG_LV_USE_PERF_MONITOR \
+    --disable CONFIG_LV_PERF_MONITOR_SERVICE_ONLY \
+    --enable CONFIG_LV_PERF_MONITOR_ALIGN_TOP_LEFT \
+    --disable CONFIG_LV_USE_PERF_MONITOR_LOG_MODE
+else
+  kconfig-tweak --file "`$NUTTX_ROOT/.config" \
+    --disable CONFIG_LV_USE_PERF_MONITOR
 fi
 
 if [ '$productModeFlag' = '0' ]; then
@@ -323,14 +355,15 @@ cp "`$bootstub_dir/qspi_bootstub.elf" "`$OUT_ROOT/qspi_bootstub.elf"
 cp "`$bootstub_dir/qspi_bootstub.hex" "`$OUT_ROOT/qspi_bootstub.hex"
 cp "`$bootstub_dir/qspi_bootstub.bin" "`$OUT_ROOT/qspi_bootstub.bin"
 cp "`$NUTTX_ROOT/.config" "`$OUT_ROOT/nuttx.config"
-printf 'product_mode=%s\ncompiler_mode=%s\nui_perf=%s\ntouch_mode=%s\n' \
+printf 'product_mode=%s\ncompiler_mode=%s\nui_perf=%s\ntouch_mode=%s\nrender_backend=%s\nperf_monitor=%s\n' \
   '$VelaGuardMode' '$buildKind' '$uiPerfKind' '$touchMode' \
+  '$renderBackend' '$perfMonitorKind' \
   > "`$OUT_ROOT/build-info.txt"
 
 "`$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin/arm-none-eabi-size" "`$OUT_ROOT/nuttx.elf" "`$OUT_ROOT/qspi_bootstub.elf"
 "@
 
-Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro' (rebuild=$rebuildMode, ui_perf=$UiPerfDiagnostics, touch=$touchMode)."
+Write-Host "Building VelaGuard $VelaGuardMode/$buildKind QSPI-XIP firmware in WSL distro '$WslDistro' (rebuild=$rebuildMode, ui_perf=$UiPerfDiagnostics, monitor=$perfMonitorKind, render=$renderBackend, touch=$touchMode)."
 Write-Host "openvela root: $OpenvelaDir"
 Write-Host "artifacts: $OutDir"
 Invoke-CheckedWslScript $buildCommand $OutDir

@@ -7,6 +7,9 @@ param(
   [switch]$DebugBuild,
   [switch]$UiPerfDiagnostics,
   [switch]$FastTouchPoll,
+  [switch]$InterruptTouch,
+  [switch]$DisableDma2d,
+  [switch]$HidePerfMonitor,
   [ValidateSet("test", "production")]
   [string]$VelaGuardMode = "test",
   [string]$DeviceIdOverride = "vg-test-001",
@@ -27,6 +30,9 @@ if ($NoBuild) { $parameters["NoBuild"] = $true }
 if ($DebugBuild) { $parameters["DebugBuild"] = $true }
 if ($UiPerfDiagnostics) { $parameters["UiPerfDiagnostics"] = $true }
 if ($FastTouchPoll) { $parameters["FastTouchPoll"] = $true }
+if ($InterruptTouch) { $parameters["InterruptTouch"] = $true }
+if ($DisableDma2d) { $parameters["DisableDma2d"] = $true }
+if ($HidePerfMonitor) { $parameters["HidePerfMonitor"] = $true }
 $parameters["VelaGuardMode"] = $VelaGuardMode
 $parameters["DeviceIdOverride"] = $DeviceIdOverride
 $parameters["Rebuild"] = $Rebuild

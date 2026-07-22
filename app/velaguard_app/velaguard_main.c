@@ -26,6 +26,7 @@
 #include "src/vg_network.h"
 #include "src/vg_startup.h"
 #include "src/vg_ui_home.h"
+#include "src/vg_ui_dma2d.h"
 #include "src/vg_ui_perf.h"
 
 /****************************************************************************
@@ -47,6 +48,7 @@ static int velaguard_ui_main(int argc, FAR char *argv[])
   UNUSED(argv);
 
   lv_init();
+  vg_ui_dma2d_init();
   lv_nuttx_dsc_init(&info);
   info.input_path = CONFIG_LVX_VELAGUARD_INPUT_PATH;
   lv_nuttx_init(&info, &result);

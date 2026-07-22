@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "team_id": "contest2026_004_TeamFalcons",
   "github_login": "Foleaf",
-  "generator": "codex-collector@1.2.0",
-  "updated_at": "2026-07-19T04:54:07.139578+00:00",
+  "generator": "claude-code-collector@1.2.2",
+  "updated_at": "2026-07-22T00:50:39.892Z",
   "sessions": [
     {
       "session_id": "ses_11810bbcfffe563TbgE0tykfVz",
@@ -60,41 +60,6 @@
       "source_tool": "mimo-code",
       "source_title": "阅读文章后运行demo",
       "raw_event_count": 52
-    },
-    {
-      "session_id": "621833c5-1759-419b-a4aa-4a66d3a52ba5",
-      "tool": "claude-code",
-      "started_at": "2026-06-22T13:41:38.958Z",
-      "last_event_at": "2026-06-22T16:37:32.500Z",
-      "event_count": 4,
-      "raw_event_count": 4,
-      "file_path": "logs/Foleaf/2026-06-23/claude-code__621833c5-1759-419b-a4aa-4a66d3a52ba5.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
-    },
-    {
-      "session_id": "07135741-b0f6-4fd6-a3fe-ca4015285891",
-      "tool": "claude-code",
-      "started_at": "2026-06-22T14:14:23.113Z",
-      "last_event_at": "2026-06-22T14:14:23.113Z",
-      "event_count": 5,
-      "raw_event_count": 5,
-      "file_path": "logs/Foleaf/2026-06-22/claude-code__07135741-b0f6-4fd6-a3fe-ca4015285891.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "754e6edc-751c-4c05-8132-7bf8d4fab31d",
-      "tool": "claude-code",
-      "started_at": "2026-06-22T14:16:07.401Z",
-      "last_event_at": "2026-06-22T16:37:31.561Z",
-      "event_count": 1,
-      "raw_event_count": 1,
-      "file_path": "logs/Foleaf/2026-06-23/claude-code__754e6edc-751c-4c05-8132-7bf8d4fab31d.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
     },
     {
       "session_id": "ses_110e0d151ffeSSDeZls2o0spqq",
@@ -270,18 +235,6 @@
       "health": "ok"
     },
     {
-      "session_id": "b55d3043-2cbe-40a4-9e03-957c186576d4",
-      "tool": "claude-code",
-      "started_at": "2026-06-26T14:46:36.124Z",
-      "last_event_at": "2026-06-28T03:59:22.768Z",
-      "event_count": 10,
-      "raw_event_count": 10,
-      "file_path": "logs/Foleaf/2026-06-28/claude-code__b55d3043-2cbe-40a4-9e03-957c186576d4.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
-    },
-    {
       "session_id": "7e947224-8614-4e10-83dc-7c5386dee1a9",
       "tool": "claude-code",
       "started_at": "2026-06-28T01:41:22.584Z",
@@ -333,29 +286,6 @@
       "event_count": 232,
       "raw_event_count": 232,
       "file_path": "logs/Foleaf/2026-06-28/claude-code__10324e30-4aea-4790-96c9-2cff65f2fb18.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
-    },
-    {
-      "session_id": "f261b3c4-38ac-478f-ad50-89c2c544d0e9",
-      "tool": "claude-code",
-      "started_at": "2026-06-28T05:24:19.254Z",
-      "last_event_at": "2026-06-28T05:24:19.254Z",
-      "event_count": 3,
-      "raw_event_count": 3,
-      "file_path": "logs/Foleaf/2026-06-28/claude-code__f261b3c4-38ac-478f-ad50-89c2c544d0e9.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "8d7f105a-0103-4e1a-8b4a-682d97146d2c",
-      "tool": "claude-code",
-      "started_at": "2026-06-28T06:34:06.113Z",
-      "last_event_at": "2026-06-28T07:34:00.444Z",
-      "event_count": 13,
-      "raw_event_count": 13,
-      "file_path": "logs/Foleaf/2026-06-28/claude-code__8d7f105a-0103-4e1a-8b4a-682d97146d2c.jsonl",
       "collection_mode": "cli",
       "health": "ok",
       "model": "mimo-v2.5-pro"
@@ -417,30 +347,6 @@
       "model": "mimo-v2.5-pro"
     },
     {
-      "session_id": "621833c5-1759-419b-a4aa-4a66d3a52ba5",
-      "tool": "claude-code",
-      "started_at": "2026-06-22T13:40:48.701Z",
-      "last_event_at": "2026-06-22T14:11:22.118Z",
-      "event_count": 169,
-      "raw_event_count": 169,
-      "file_path": "logs/Foleaf/2026-06-22/claude-code__621833c5-1759-419b-a4aa-4a66d3a52ba5.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5"
-    },
-    {
-      "session_id": "754e6edc-751c-4c05-8132-7bf8d4fab31d",
-      "tool": "claude-code",
-      "started_at": "2026-06-22T14:14:32.727Z",
-      "last_event_at": "2026-06-22T15:12:55.145Z",
-      "event_count": 307,
-      "raw_event_count": 307,
-      "file_path": "logs/Foleaf/2026-06-22/claude-code__754e6edc-751c-4c05-8132-7bf8d4fab31d.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
-    },
-    {
       "session_id": "019ef508-0fad-7db2-993b-72021853b5ff",
       "tool": "codex",
       "started_at": "2026-06-23T15:10:14.071Z",
@@ -450,30 +356,6 @@
       "file_path": "logs/Foleaf/2026-06-23/codex__019ef508-0fad-7db2-993b-72021853b5ff.jsonl",
       "collection_mode": "cli",
       "health": "ok"
-    },
-    {
-      "session_id": "b55d3043-2cbe-40a4-9e03-957c186576d4",
-      "tool": "claude-code",
-      "started_at": "2026-06-26T14:11:58.761Z",
-      "last_event_at": "2026-06-26T15:17:12.549Z",
-      "event_count": 552,
-      "raw_event_count": 552,
-      "file_path": "logs/Foleaf/2026-06-26/claude-code__b55d3043-2cbe-40a4-9e03-957c186576d4.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
-    },
-    {
-      "session_id": "31adae55-3db4-420e-925a-b0f185d2af72",
-      "tool": "claude-code",
-      "started_at": "2026-06-28T15:00:00.192Z",
-      "last_event_at": "2026-06-28T15:06:11.495Z",
-      "event_count": 39,
-      "raw_event_count": 39,
-      "file_path": "logs/Foleaf/2026-06-28/claude-code__31adae55-3db4-420e-925a-b0f185d2af72.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "mimo-v2.5-pro"
     },
     {
       "session_id": "f39c5a54-1efa-42e1-87f5-d29865df7e48",
@@ -495,28 +377,6 @@
       "event_count": 483,
       "raw_event_count": 483,
       "file_path": "logs/Foleaf/2026-06-30/codex__019f0e79-810e-7280-adeb-83afce3051d3.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "40ea55ca-cd7d-4f2d-a74d-0679c98dd8ef",
-      "tool": "claude-code",
-      "started_at": "2026-07-01T01:09:04.378Z",
-      "last_event_at": "2026-07-01T01:09:07.702Z",
-      "event_count": 4,
-      "raw_event_count": 4,
-      "file_path": "logs/Foleaf/2026-07-01/claude-code__40ea55ca-cd7d-4f2d-a74d-0679c98dd8ef.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "f2a6b0f1-aae9-431b-a22f-c9c33edd5a33",
-      "tool": "claude-code",
-      "started_at": "2026-07-01T01:03:37.933Z",
-      "last_event_at": "2026-07-01T01:03:40.836Z",
-      "event_count": 4,
-      "raw_event_count": 4,
-      "file_path": "logs/Foleaf/2026-07-01/claude-code__f2a6b0f1-aae9-431b-a22f-c9c33edd5a33.jsonl",
       "collection_mode": "cli",
       "health": "ok"
     },
@@ -555,18 +415,6 @@
       "health": "ok"
     },
     {
-      "session_id": "13b377f7-365a-4755-b244-cfdb29840fdb",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T14:46:03.259Z",
-      "last_event_at": "2026-07-02T15:48:19.273Z",
-      "event_count": 79,
-      "raw_event_count": 79,
-      "file_path": "logs/Foleaf/2026-07-02/claude-code__13b377f7-365a-4755-b244-cfdb29840fdb.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "claude-fable-5"
-    },
-    {
       "session_id": "22abda73-152b-4d33-81c0-5a224d2a18a8",
       "tool": "claude-code",
       "started_at": "2026-07-02T15:07:42.194Z",
@@ -576,54 +424,6 @@
       "file_path": "logs/Foleaf/2026-07-02/claude-code__22abda73-152b-4d33-81c0-5a224d2a18a8.jsonl",
       "collection_mode": "cli",
       "health": "ok"
-    },
-    {
-      "session_id": "42748df5-3ca7-4763-97ef-3458c296ae03",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T04:36:27.621Z",
-      "last_event_at": "2026-07-02T07:30:12.787Z",
-      "event_count": 60,
-      "raw_event_count": 60,
-      "file_path": "logs/Foleaf/2026-07-02/claude-code__42748df5-3ca7-4763-97ef-3458c296ae03.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "<synthetic>"
-    },
-    {
-      "session_id": "43c6774c-2b80-4b3b-9a9a-5e7e503165f7",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T07:30:52.229Z",
-      "last_event_at": "2026-07-02T07:45:44.044Z",
-      "event_count": 7,
-      "raw_event_count": 7,
-      "file_path": "logs/Foleaf/2026-07-02/claude-code__43c6774c-2b80-4b3b-9a9a-5e7e503165f7.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "<synthetic>"
-    },
-    {
-      "session_id": "61f6e9a3-f735-4d6a-8889-8cb649349b83",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T02:59:50.014Z",
-      "last_event_at": "2026-07-02T02:59:50.156Z",
-      "event_count": 2,
-      "raw_event_count": 2,
-      "file_path": "logs/Foleaf/2026-07-02/claude-code__61f6e9a3-f735-4d6a-8889-8cb649349b83.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "<synthetic>"
-    },
-    {
-      "session_id": "7419b11a-ad6b-4cdc-b386-f9f148138156",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T03:15:49.595Z",
-      "last_event_at": "2026-07-02T04:21:18.733Z",
-      "event_count": 38,
-      "raw_event_count": 38,
-      "file_path": "logs/Foleaf/2026-07-02/claude-code__7419b11a-ad6b-4cdc-b386-f9f148138156.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "claude-sonnet-5"
     },
     {
       "session_id": "81e74571-b2e0-4275-ac4a-60e0d81fbf78",
@@ -690,18 +490,6 @@
       "file_path": "logs/Foleaf/2026-07-02/codex__019f235a-0bb9-7d23-8b72-f34cd8be40f1.jsonl",
       "collection_mode": "cli",
       "health": "ok"
-    },
-    {
-      "session_id": "13b377f7-365a-4755-b244-cfdb29840fdb",
-      "tool": "claude-code",
-      "started_at": "2026-07-02T15:49:32.624Z",
-      "last_event_at": "2026-07-03T03:36:14.068Z",
-      "event_count": 46,
-      "raw_event_count": 46,
-      "file_path": "logs/Foleaf/2026-07-03/claude-code__13b377f7-365a-4755-b244-cfdb29840fdb.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "claude-sonnet-5"
     },
     {
       "session_id": "610ed813-c06a-447b-af05-2f0cb7e1d22f",
@@ -816,18 +604,6 @@
       "collection_mode": "cli",
       "health": "ok",
       "model": "claude-sonnet-5"
-    },
-    {
-      "session_id": "9aaba221-a4c2-4bd4-a7f3-4121dbfc640e",
-      "tool": "claude-code",
-      "started_at": "2026-07-07T06:58:14.297Z",
-      "last_event_at": "2026-07-07T06:59:28.211Z",
-      "event_count": 9,
-      "raw_event_count": 9,
-      "file_path": "logs/Foleaf/2026-07-07/claude-code__9aaba221-a4c2-4bd4-a7f3-4121dbfc640e.jsonl",
-      "collection_mode": "cli",
-      "health": "ok",
-      "model": "claude-fable-5"
     },
     {
       "session_id": "e5717f04-316b-4330-9125-624f37303d55",
@@ -1355,28 +1131,6 @@
       "health": "ok"
     },
     {
-      "session_id": "f1eda656-968b-481a-9618-e84e318a3a3d",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T01:37:27.663Z",
-      "last_event_at": "2026-07-14T01:37:57.346Z",
-      "event_count": 3,
-      "raw_event_count": 20,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__f1eda656-968b-481a-9618-e84e318a3a3d.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "5349d2cc-a147-4beb-839e-3fbde10b6b50",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T01:45:16.648Z",
-      "last_event_at": "2026-07-14T01:46:50.372Z",
-      "event_count": 29,
-      "raw_event_count": 55,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__5349d2cc-a147-4beb-839e-3fbde10b6b50.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
       "session_id": "e41d2cb3-12a2-45ca-93a3-2dbba72af27a",
       "tool": "claude-code",
       "started_at": "2026-07-14T02:02:35.057Z",
@@ -1384,17 +1138,6 @@
       "event_count": 6,
       "raw_event_count": 14,
       "file_path": "logs/Foleaf/2026-07-14/claude-code__e41d2cb3-12a2-45ca-93a3-2dbba72af27a.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "f6a7894c-43c4-44f5-9569-27a66053c365",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T02:04:29.850Z",
-      "last_event_at": "2026-07-14T02:05:12.421Z",
-      "event_count": 6,
-      "raw_event_count": 23,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__f6a7894c-43c4-44f5-9569-27a66053c365.jsonl",
       "collection_mode": "cli",
       "health": "ok"
     },
@@ -1410,17 +1153,6 @@
       "health": "ok"
     },
     {
-      "session_id": "42ff88c6-dc82-4e16-8734-253b14cfb2cd",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T02:18:17.074Z",
-      "last_event_at": "2026-07-14T02:20:40.970Z",
-      "event_count": 5,
-      "raw_event_count": 27,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__42ff88c6-dc82-4e16-8734-253b14cfb2cd.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
       "session_id": "62448c18-6799-4779-a18a-5f8183d45c09",
       "tool": "claude-code",
       "started_at": "2026-07-14T02:23:26.128Z",
@@ -1432,17 +1164,6 @@
       "health": "ok"
     },
     {
-      "session_id": "31baf341-e10e-411f-b437-32ed8ff7eaf7",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T02:31:26.169Z",
-      "last_event_at": "2026-07-14T02:32:17.372Z",
-      "event_count": 22,
-      "raw_event_count": 41,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__31baf341-e10e-411f-b437-32ed8ff7eaf7.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
       "session_id": "a4838c67-54f4-4837-ad87-416f434c21d8",
       "tool": "claude-code",
       "started_at": "2026-07-14T02:39:29.519Z",
@@ -1450,17 +1171,6 @@
       "event_count": 37,
       "raw_event_count": 58,
       "file_path": "logs/Foleaf/2026-07-14/claude-code__a4838c67-54f4-4837-ad87-416f434c21d8.jsonl",
-      "collection_mode": "cli",
-      "health": "ok"
-    },
-    {
-      "session_id": "acd2a774-f5a4-43f0-beca-01ae937e40e5",
-      "tool": "claude-code",
-      "started_at": "2026-07-14T02:43:45.733Z",
-      "last_event_at": "2026-07-14T02:44:10.434Z",
-      "event_count": 7,
-      "raw_event_count": 25,
-      "file_path": "logs/Foleaf/2026-07-14/claude-code__acd2a774-f5a4-43f0-beca-01ae937e40e5.jsonl",
       "collection_mode": "cli",
       "health": "ok"
     },
@@ -1579,12 +1289,475 @@
       "session_id": "019f7854-9839-7162-aaf4-be33a53e648a",
       "tool": "codex",
       "started_at": "2026-07-19T03:04:04.825Z",
-      "last_event_at": "2026-07-19T04:53:37.592Z",
-      "event_count": 73,
-      "raw_event_count": 309,
+      "last_event_at": "2026-07-19T05:13:08.746Z",
+      "event_count": 139,
+      "raw_event_count": 566,
       "file_path": "logs/Foleaf/2026-07-19/codex__019f7854-9839-7162-aaf4-be33a53e648a.jsonl",
       "collection_mode": "cli",
       "health": "ok"
+    },
+    {
+      "session_id": "019f78cb-ce22-7d81-8218-c69dbf3f50a8",
+      "tool": "codex",
+      "started_at": "2026-07-19T05:14:25.233Z",
+      "last_event_at": "2026-07-19T08:23:00.569Z",
+      "event_count": 211,
+      "raw_event_count": 849,
+      "file_path": "logs/Foleaf/2026-07-19/codex__019f78cb-ce22-7d81-8218-c69dbf3f50a8.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "ses_087171f49ffewyvA41V5GjpdVV",
+      "tool": "opencode",
+      "started_at": "2026-07-19T05:45:55.638Z",
+      "last_event_at": "2026-07-19T07:44:18.735Z",
+      "event_count": 53,
+      "raw_message_count": 33,
+      "file_path": "logs/Foleaf/2026-07-19/opencode__ses_087171f49ffewyvA41V5GjpdVV.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "接续推进 ui-settings-network",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_086fd1308ffeur1TrINNgCHRvK",
+      "tool": "opencode",
+      "started_at": "2026-07-19T06:14:22.711Z",
+      "last_event_at": "2026-07-19T06:36:08.243Z",
+      "event_count": 135,
+      "raw_message_count": 82,
+      "file_path": "logs/Foleaf/2026-07-19/opencode__ses_086fd1308ffeur1TrINNgCHRvK.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Implement ui-settings-network (@trellis-implement subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_086e7c9c8ffes5yyiyUcaEdUfv",
+      "tool": "opencode",
+      "started_at": "2026-07-19T06:37:37.719Z",
+      "last_event_at": "2026-07-19T06:57:35.994Z",
+      "event_count": 85,
+      "raw_message_count": 52,
+      "file_path": "logs/Foleaf/2026-07-19/opencode__ses_086e7c9c8ffes5yyiyUcaEdUfv.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Check ui-settings-network (@trellis-check subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_086b965cbffe88cIm7BopcstF7",
+      "tool": "opencode",
+      "started_at": "2026-07-19T07:28:17.972Z",
+      "last_event_at": "2026-07-19T07:41:32.250Z",
+      "event_count": 100,
+      "raw_message_count": 56,
+      "file_path": "logs/Foleaf/2026-07-19/opencode__ses_086b965cbffe88cIm7BopcstF7.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Fix ui-settings-network blockers (@trellis-implement subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "ses_086ad2b71ffemkXl4vO5xZCOg1",
+      "tool": "opencode",
+      "started_at": "2026-07-19T07:41:39.342Z",
+      "last_event_at": "2026-07-19T07:42:12.200Z",
+      "event_count": 1,
+      "raw_message_count": 2,
+      "file_path": "logs/Foleaf/2026-07-19/opencode__ses_086ad2b71ffemkXl4vO5xZCOg1.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "title": "Re-check ui-settings fixes (@trellis-check subagent)",
+      "model": "krill/grok-4.5"
+    },
+    {
+      "session_id": "019f7979-b011-7c92-817a-9b778e5e8aa3",
+      "tool": "codex",
+      "started_at": "2026-07-19T08:25:03.383Z",
+      "last_event_at": "2026-07-19T08:31:08.417Z",
+      "event_count": 13,
+      "raw_event_count": 51,
+      "file_path": "logs/Foleaf/2026-07-19/codex__019f7979-b011-7c92-817a-9b778e5e8aa3.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "019f7980-7c8a-7c91-857d-bc6c40f81ccb",
+      "tool": "codex",
+      "started_at": "2026-07-19T08:31:42.267Z",
+      "last_event_at": "2026-07-19T08:36:31.045Z",
+      "event_count": 19,
+      "raw_event_count": 74,
+      "file_path": "logs/Foleaf/2026-07-19/codex__019f7980-7c8a-7c91-857d-bc6c40f81ccb.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "019f7987-3af5-7992-b348-de23706a2447",
+      "tool": "codex",
+      "started_at": "2026-07-19T08:39:52.509Z",
+      "last_event_at": "2026-07-19T15:15:49.133Z",
+      "event_count": 514,
+      "raw_event_count": 1895,
+      "file_path": "logs/Foleaf/2026-07-19/codex__019f7987-3af5-7992-b348-de23706a2447.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "07135741-b0f6-4fd6-a3fe-ca4015285891",
+      "tool": "claude-code",
+      "started_at": "2026-06-22T14:11:54.078Z",
+      "last_event_at": "2026-07-21T10:29:51.660Z",
+      "event_count": 5,
+      "raw_event_count": 18,
+      "file_path": "logs/Foleaf/2026-06-22/claude-code__07135741-b0f6-4fd6-a3fe-ca4015285891.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "13b377f7-365a-4755-b244-cfdb29840fdb",
+      "tool": "claude-code",
+      "started_at": "2026-07-02T14:45:53.633Z",
+      "last_event_at": "2026-07-21T10:29:51.713Z",
+      "event_count": 125,
+      "raw_event_count": 219,
+      "file_path": "logs/Foleaf/2026-07-02/claude-code__13b377f7-365a-4755-b244-cfdb29840fdb.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "claude-sonnet-5"
+    },
+    {
+      "session_id": "2ef73d43-214e-4c8b-8624-03440092282a",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T09:35:49.338Z",
+      "last_event_at": "2026-07-21T10:33:16.984Z",
+      "event_count": 183,
+      "raw_event_count": 292,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__2ef73d43-214e-4c8b-8624-03440092282a.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "31adae55-3db4-420e-925a-b0f185d2af72",
+      "tool": "claude-code",
+      "started_at": "2026-06-28T14:59:47.306Z",
+      "last_event_at": "2026-07-21T10:29:51.831Z",
+      "event_count": 39,
+      "raw_event_count": 79,
+      "file_path": "logs/Foleaf/2026-06-28/claude-code__31adae55-3db4-420e-925a-b0f185d2af72.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "mimo-v2.5-pro"
+    },
+    {
+      "session_id": "31baf341-e10e-411f-b437-32ed8ff7eaf7",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T02:29:59.636Z",
+      "last_event_at": "2026-07-21T10:29:51.878Z",
+      "event_count": 25,
+      "raw_event_count": 45,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__31baf341-e10e-411f-b437-32ed8ff7eaf7.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "40ea55ca-cd7d-4f2d-a74d-0679c98dd8ef",
+      "tool": "claude-code",
+      "started_at": "2026-07-01T01:08:59.789Z",
+      "last_event_at": "2026-07-21T10:29:51.921Z",
+      "event_count": 4,
+      "raw_event_count": 21,
+      "file_path": "logs/Foleaf/2026-07-01/claude-code__40ea55ca-cd7d-4f2d-a74d-0679c98dd8ef.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "42748df5-3ca7-4763-97ef-3458c296ae03",
+      "tool": "claude-code",
+      "started_at": "2026-07-02T04:36:20.883Z",
+      "last_event_at": "2026-07-21T10:29:51.970Z",
+      "event_count": 63,
+      "raw_event_count": 169,
+      "file_path": "logs/Foleaf/2026-07-02/claude-code__42748df5-3ca7-4763-97ef-3458c296ae03.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "<synthetic>"
+    },
+    {
+      "session_id": "42ff88c6-dc82-4e16-8734-253b14cfb2cd",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T02:17:48.348Z",
+      "last_event_at": "2026-07-21T10:29:52.013Z",
+      "event_count": 8,
+      "raw_event_count": 31,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__42ff88c6-dc82-4e16-8734-253b14cfb2cd.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "43c6774c-2b80-4b3b-9a9a-5e7e503165f7",
+      "tool": "claude-code",
+      "started_at": "2026-07-02T07:30:39.873Z",
+      "last_event_at": "2026-07-21T10:29:52.058Z",
+      "event_count": 7,
+      "raw_event_count": 23,
+      "file_path": "logs/Foleaf/2026-07-02/claude-code__43c6774c-2b80-4b3b-9a9a-5e7e503165f7.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "<synthetic>"
+    },
+    {
+      "session_id": "5349d2cc-a147-4beb-839e-3fbde10b6b50",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T01:44:29.558Z",
+      "last_event_at": "2026-07-21T10:29:52.104Z",
+      "event_count": 32,
+      "raw_event_count": 59,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__5349d2cc-a147-4beb-839e-3fbde10b6b50.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "61f6e9a3-f735-4d6a-8889-8cb649349b83",
+      "tool": "claude-code",
+      "started_at": "2026-07-02T02:59:50.014Z",
+      "last_event_at": "2026-07-21T10:29:52.146Z",
+      "event_count": 5,
+      "raw_event_count": 15,
+      "file_path": "logs/Foleaf/2026-07-02/claude-code__61f6e9a3-f735-4d6a-8889-8cb649349b83.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "<synthetic>"
+    },
+    {
+      "session_id": "621833c5-1759-419b-a4aa-4a66d3a52ba5",
+      "tool": "claude-code",
+      "started_at": "2026-06-22T13:40:48.701Z",
+      "last_event_at": "2026-07-21T10:29:52.201Z",
+      "event_count": 173,
+      "raw_event_count": 305,
+      "file_path": "logs/Foleaf/2026-06-22/claude-code__621833c5-1759-419b-a4aa-4a66d3a52ba5.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "<synthetic>"
+    },
+    {
+      "session_id": "7419b11a-ad6b-4cdc-b386-f9f148138156",
+      "tool": "claude-code",
+      "started_at": "2026-07-02T03:15:49.054Z",
+      "last_event_at": "2026-07-21T10:29:52.250Z",
+      "event_count": 38,
+      "raw_event_count": 92,
+      "file_path": "logs/Foleaf/2026-07-02/claude-code__7419b11a-ad6b-4cdc-b386-f9f148138156.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "claude-sonnet-5"
+    },
+    {
+      "session_id": "754e6edc-751c-4c05-8132-7bf8d4fab31d",
+      "tool": "claude-code",
+      "started_at": "2026-06-22T14:14:32.728Z",
+      "last_event_at": "2026-07-21T10:29:52.320Z",
+      "event_count": 308,
+      "raw_event_count": 509,
+      "file_path": "logs/Foleaf/2026-06-22/claude-code__754e6edc-751c-4c05-8132-7bf8d4fab31d.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "mimo-v2.5-pro"
+    },
+    {
+      "session_id": "8d7f105a-0103-4e1a-8b4a-682d97146d2c",
+      "tool": "claude-code",
+      "started_at": "2026-06-28T06:33:39.568Z",
+      "last_event_at": "2026-07-21T10:29:52.373Z",
+      "event_count": 13,
+      "raw_event_count": 45,
+      "file_path": "logs/Foleaf/2026-06-28/claude-code__8d7f105a-0103-4e1a-8b4a-682d97146d2c.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "mimo-v2.5-pro"
+    },
+    {
+      "session_id": "9aaba221-a4c2-4bd4-a7f3-4121dbfc640e",
+      "tool": "claude-code",
+      "started_at": "2026-07-07T06:58:22.933Z",
+      "last_event_at": "2026-07-21T10:29:52.420Z",
+      "event_count": 9,
+      "raw_event_count": 20,
+      "file_path": "logs/Foleaf/2026-07-07/claude-code__9aaba221-a4c2-4bd4-a7f3-4121dbfc640e.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "claude-fable-5"
+    },
+    {
+      "session_id": "acd2a774-f5a4-43f0-beca-01ae937e40e5",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T02:42:25.107Z",
+      "last_event_at": "2026-07-21T10:29:52.469Z",
+      "event_count": 10,
+      "raw_event_count": 29,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__acd2a774-f5a4-43f0-beca-01ae937e40e5.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "b55d3043-2cbe-40a4-9e03-957c186576d4",
+      "tool": "claude-code",
+      "started_at": "2026-06-26T14:11:55.144Z",
+      "last_event_at": "2026-07-21T10:29:52.558Z",
+      "event_count": 562,
+      "raw_event_count": 803,
+      "file_path": "logs/Foleaf/2026-06-26/claude-code__b55d3043-2cbe-40a4-9e03-957c186576d4.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "<synthetic>"
+    },
+    {
+      "session_id": "c8525d73-0d9c-4226-834c-8aee954dcc19",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T09:02:14.109Z",
+      "last_event_at": "2026-07-21T10:29:52.610Z",
+      "event_count": 3,
+      "raw_event_count": 19,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__c8525d73-0d9c-4226-834c-8aee954dcc19.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "f1eda656-968b-481a-9618-e84e318a3a3d",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T01:35:54.597Z",
+      "last_event_at": "2026-07-21T10:29:52.652Z",
+      "event_count": 6,
+      "raw_event_count": 24,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__f1eda656-968b-481a-9618-e84e318a3a3d.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "f261b3c4-38ac-478f-ad50-89c2c544d0e9",
+      "tool": "claude-code",
+      "started_at": "2026-06-28T05:07:01.797Z",
+      "last_event_at": "2026-07-21T10:29:52.692Z",
+      "event_count": 6,
+      "raw_event_count": 16,
+      "file_path": "logs/Foleaf/2026-06-28/claude-code__f261b3c4-38ac-478f-ad50-89c2c544d0e9.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "f2a6b0f1-aae9-431b-a22f-c9c33edd5a33",
+      "tool": "claude-code",
+      "started_at": "2026-07-01T01:03:33.152Z",
+      "last_event_at": "2026-07-21T10:29:52.732Z",
+      "event_count": 4,
+      "raw_event_count": 22,
+      "file_path": "logs/Foleaf/2026-07-01/claude-code__f2a6b0f1-aae9-431b-a22f-c9c33edd5a33.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "f6a7894c-43c4-44f5-9569-27a66053c365",
+      "tool": "claude-code",
+      "started_at": "2026-07-14T02:02:46.369Z",
+      "last_event_at": "2026-07-21T10:29:52.771Z",
+      "event_count": 6,
+      "raw_event_count": 23,
+      "file_path": "logs/Foleaf/2026-07-14/claude-code__f6a7894c-43c4-44f5-9569-27a66053c365.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "ac6f5612-e5fa-429a-a733-3b902fcfca25",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T12:35:26.169Z",
+      "last_event_at": "2026-07-21T12:50:17.305Z",
+      "event_count": 88,
+      "raw_event_count": 142,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__ac6f5612-e5fa-429a-a733-3b902fcfca25.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "redacted_count_total": 1
+    },
+    {
+      "session_id": "848a47a4-2b90-4e22-a359-267edecb6e4b",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T12:58:29.863Z",
+      "last_event_at": "2026-07-21T12:58:58.344Z",
+      "event_count": 1,
+      "raw_event_count": 14,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__848a47a4-2b90-4e22-a359-267edecb6e4b.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "869169ae-7726-4046-b0dc-1fb5f310f3a6",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T12:59:08.462Z",
+      "last_event_at": "2026-07-21T13:01:50.142Z",
+      "event_count": 1,
+      "raw_event_count": 14,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__869169ae-7726-4046-b0dc-1fb5f310f3a6.jsonl",
+      "collection_mode": "cli",
+      "health": "ok"
+    },
+    {
+      "session_id": "0c611b0a-b6ba-42d4-ade5-85d600286b81",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T13:01:55.291Z",
+      "last_event_at": "2026-07-21T13:12:01.016Z",
+      "event_count": 84,
+      "raw_event_count": 137,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__0c611b0a-b6ba-42d4-ade5-85d600286b81.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "f7b2540b-6c38-4e70-86ba-bd3d47c3a54c",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T13:14:18.374Z",
+      "last_event_at": "2026-07-21T13:16:45.518Z",
+      "event_count": 21,
+      "raw_event_count": 44,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__f7b2540b-6c38-4e70-86ba-bd3d47c3a54c.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "635a3b7d-1111-4cae-9143-103425d8b461",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T13:37:01.499Z",
+      "last_event_at": "2026-07-21T14:04:55.720Z",
+      "event_count": 179,
+      "raw_event_count": 288,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__635a3b7d-1111-4cae-9143-103425d8b461.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
+    },
+    {
+      "session_id": "1ef9eb83-f03c-4d15-b849-0a4e37f1c52b",
+      "tool": "claude-code",
+      "started_at": "2026-07-21T13:57:20.499Z",
+      "last_event_at": "2026-07-22T00:50:39.885Z",
+      "event_count": 118,
+      "raw_event_count": 242,
+      "file_path": "logs/Foleaf/2026-07-21/claude-code__1ef9eb83-f03c-4d15-b849-0a4e37f1c52b.jsonl",
+      "collection_mode": "cli",
+      "health": "ok",
+      "model": "grok-4.5-build-free"
     }
   ]
 }

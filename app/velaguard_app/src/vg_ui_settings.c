@@ -100,7 +100,7 @@ void vg_ui_settings_build(FAR lv_obj_t *screen)
                                 LV_PART_MAIN);
       lv_obj_set_style_bg_opa(row, LV_OPA_COVER, LV_PART_MAIN);
       lv_obj_set_style_border_width(row, 0, LV_PART_MAIN);
-      lv_obj_set_style_radius(row, VG_PANEL_RADIUS, LV_PART_MAIN);
+      lv_obj_set_style_radius(row, 0, LV_PART_MAIN);
       lv_obj_set_style_pad_all(row, 0, LV_PART_MAIN);
       lv_obj_remove_flag(row, LV_OBJ_FLAG_SCROLLABLE);
 

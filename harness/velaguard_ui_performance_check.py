@@ -70,8 +70,8 @@ def main() -> int:
         "fast-poll fallback crosses every build/flash boundary",
     )
     checks.check(
-        "CONFIG_LV_DEF_REFR_PERIOD 20" in build
-        and "CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD 20" in build
+        "CONFIG_LV_DEF_REFR_PERIOD 16" in build
+        and "CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD 16" in build
         and "CONFIG_LVX_VELAGUARD_PRIORITY 120" in build,
         "LVGL period and UI priority are explicitly configured",
     )
@@ -88,7 +88,8 @@ def main() -> int:
         "bool diagnostics use Kconfig enable/disable operations",
     )
     checks.check(
-        "--disable CONFIG_FT5X06_POLLMODE" in build
+        "INTERRUPT_TOUCH" in build
+        and "--disable CONFIG_FT5X06_POLLMODE" in build
         and "--enable CONFIG_FT5X06_POLLMODE" in build
         and "MSEC2TICK(10)" in patch
         and "MSEC2TICK(20)" in patch
@@ -118,8 +119,8 @@ def main() -> int:
         config = read(args.artifacts / "nuttx.config")
         info = read(args.artifacts / "build-info.txt")
         checks.check(
-            "CONFIG_LV_DEF_REFR_PERIOD=20" in config
-            and "CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD=20" in config
+            "CONFIG_LV_DEF_REFR_PERIOD=16" in config
+            and "CONFIG_LV_NUTTX_VSYNC_TIMER_PERIOD=16" in config
             and "CONFIG_LVX_VELAGUARD_PRIORITY=120" in config,
             "artifact contains optimized LVGL scheduling",
         )
