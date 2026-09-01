@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 2
-- **Last Active**: 2026-08-14
+- **Total Sessions**: 5
+- **Last Active**: 2026-08-30
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~54 | Active |
+| `journal-1.md` | ~137 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,9 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 5 | 2026-08-30 | stage0 frame stats MVP B | `86b694e` | `learn_vela` |
+| 4 | 2026-08-29 | stage0 RS485 DIR/TC board AC | `b7e41b1`, `e3106dd` | `learn_vela` |
+| 3 | 2026-08-29 | stage0 powerfail-store board AC | `3883537`, `f258dcf`, `f8be1eb` | `learn_vela` |
 | 2 | 2026-08-14 | 阶段1最小网络闭环：velaguard-net 预设 + vgmqtt（RJ45→MQTT→LWT） | `4954841` | `learn_vela` |
 | 1 | 2026-08-14 | VelaGuard minimal bring-up config: resident main entry + parallel NSH shell, Keil-style build tasks | `ac72b2a`, `ce52216`, `2eda6e5`, `6c82905`, `9621f15`, `b4bb152` | `learn_vela` |
 <!-- @@@/auto:session-history -->

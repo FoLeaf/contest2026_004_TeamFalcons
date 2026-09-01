@@ -4,14 +4,14 @@
 > **Priority**: Official contest rules **override** local docs (`CLAUDE.md`, Trellis, Superpowers, this note).  
 > **Scope**: This is the single local boundary summary, not an official compliance certificate.  
 > **Sources (canonical remote)**: team README + linked official docs below.  
-> **Last audited**: 2026-07-12 against the remote sources in §1.
+> **Last audited**: 2026-09-01 (aligned §4 with `VelaGuard_项目手册.md` v3.1); prior 2026-08-29 (V11 board pack); 2026-07-12 against the remote sources in §1.
 
 ---
 
 ## 0. Where am I?
 
 ```text
-/home/debian19y/openvela/                 # openvela workspace root (.repo/ present)
+<openvela-workspace>/                      # openvela workspace root (.repo/ present)
 ├── nuttx/ apps/ packages/ vendor/ ...    # PUBLIC — do not edit here for contest work
 ├── .claude/                              # official AI skills (open-vela ai-skills)
 └── contest2026_004_TeamFalcons/          # OUR ONLY contest repo (Team 004)
@@ -96,24 +96,29 @@ From official track guide — **not optional for final track bar**:
 
 **Out of track**: pure cloud app; pure chatbot with no proactivity/tools.
 
-Two allowed patterns (non-exclusive): cloud LLM + device protocols (e.g. ai_chat style); or ai_agent + LVGL/quickapp.
+Primary pattern for VelaGuard: **ai_agent + LVGL** on device (handbook §14.3). Official track also allows cloud LLM + device protocols (e.g. ai_chat style) — not our main path.
+
+VelaGuard contest evidence (handbook §14.3): `alarm_interpretation.md` + `operations_report.md` Skills; **event-driven** alarm interpretation + **scheduled** daily report as proactive+execute scenarios; NL data query as supplementary interaction channel (CLI/LVGL).
 
 ---
 
 ## 4. VelaGuard product boundaries (local, still binding)
 
+> Aligned with **`VelaGuard_项目手册.md` v3.1** (2026-08-30). Product detail, acceptance, and architecture decisions live in the handbook; this table is the agent-facing summary.
+
 | # | Rule |
 |---|------|
-| V1 | Independent gateway on **STM32H750B-DK** — not a long-running PC sidecar demo. |
-| V2 | **Local Safety Loop** must work offline (no network/MQTT/MiMo/TTS/ASR/OTA/PC). |
-| V3 | Board talks **MQTT Broker only**; **no direct MiMo HTTPS** on device. |
-| V4 | **AI Bridge** is separate cloud service (MQTT in/out, HTTPS to MiMo/etc.). |
-| V5 | AI **Candidate Config** never auto-applies: schema + risk + test read + **Local Confirmation**. |
-| V6 | OTA = **MQTT-only** chunk pull; no board-side HTTPS firmware downloader. |
-| V7 | Implement **one issue at a time** under `.scratch/.../issues/`; respect `Blocked by`. |
-| V8 | Canonical name **VelaGuard**. Glossary: root `CONTEXT.md`. |
-| V9 | Do not pull OTA / NL-config / TTS / manual-parse into early issues unless the issue says so. |
-| V10 | Clean restart (2026-07-12): issues 01–16 text kept, all incomplete until re-accepted on this tree. |
+| V1 | Independent gateway on **STM32H750B-DK** — not a long-running PC sidecar demo. USB CDC / UART are debug/rescue only. |
+| V2 | **Local deterministic loop** works offline: Modbus acquisition, frame stats, rule-engine alarms, UI (LED + screen), config/event logs, safe digital-output defaults. Continues without network, MQTT, MiMo, Agent, OTA, or a connected PC. **No ASR/TTS/voice** (removed). |
+| V3 | **Board runs openvela `ai_agent`** (`packages/ai_agent`): ReAct + custom **read-only** C tools + Markdown Skills under `/data/agent/skills/`. Agent is an **operations assistant** — alarm interpretation, daily/weekly reports, NL data query — **not** bus fault triage, Modbus writes, or probe experiments. |
+| V4 | **LLM via HTTPS** (OpenAI-compatible): board **direct MiMo** through ai_agent/`llm_proxy`. MiMo key **encrypted on eMMC** (`vgprovision`); never in firmware image. **MQTT** = telemetry / alarm / OTA only — not AI request/response. |
+| V5 | **Agent cannot mutate plant state**: no register writes, no config apply, no alarm clear, no DO control. Point-table / config changes require deterministic test-read + **Local Confirmation** on device. Agent output is schema-validated and shown as「AI 推测」. |
+| V6 | **Bus discovery is deterministic** (stage 1: NSH `vgdiscover` @9600). LVGL「Scan Bus」/「启用总线扫描」**default off**; user must enable before scan. Agent does not participate in scanning. |
+| V7 | OTA = **MQTT-only** chunk pull to **eMMC**; QSPI burn via on-chip boot stub; no board-side HTTPS firmware downloader. |
+| V8 | Implement **one issue at a time** under `.scratch/.../issues/`; respect `Blocked by`. |
+| V9 | Canonical name **VelaGuard**. Product handbook: `VelaGuard_项目手册.md`; glossary: `CONTEXT.md`. |
+| V10 | Do not pull deferred scope (prod OTA, stage-2 diag rules, Bridge prod, ASR/TTS, manual-parse, screen config editing) into issues unless the issue says so. |
+| V11 | **Board circuitry → local pack**: when work depends on the real STM32H750B-DK board circuit (drivers, pinmux, peripheral bring-up, expansion wiring, pin/net claims), consult hardware docs from the local official pack — `F:\Project\Embeded\H750B-DK\BOARD INFO\H750B-DK` (WSL: `/mnt/f/Project/Embeded/H750B-DK/BOARD INFO/H750B-DK`). Priority: **schematic PDF / SchDoc > ST BSP under `bsp/` > ST UM / data brief**. Files named `*_unofficial*` are search aids only; **cross-check** before coding. Non-hardware work need not open this pack. Do not use web-scraped UM / third-party pinmux alone when this pack is available. |
 
 ---
 
@@ -123,10 +128,11 @@ Two allowed patterns (non-exclusive): cloud LLM + device protocols (e.g. ai_chat
 |-------|------|--------------|
 | Official contest process | open-vela docs (URLs in §1) | Committee — canonical |
 | Team README (submission) | `README.md` | Judges — product description |
-| Product handbook / plan | `VelaGuard_*.md` | Product requirements |
+| Product handbook / plan | `VelaGuard_项目手册.md` v3.1, `VelaGuard_推进方案.md` v3 | Product requirements |
 | Domain glossary | `CONTEXT.md` | Language contracts |
 | Agent onboarding | `CLAUDE.md` | How agents work here (index) |
 | Agent contest boundary | `docs/agents/BOUNDARY.md` | Local summary; official sources override it |
+| Board hardware pack (local) | `F:\Project\Embeded\H750B-DK\BOARD INFO\H750B-DK` | Use when board circuitry is involved (V11) |
 | ADR | `docs/adr/` | Decisions |
 | Issue workflow | `docs/agents/*`, `.scratch/...` | Local backlog |
 | Trellis | `.trellis/` | Team AI workflow — not contest law |
@@ -155,19 +161,21 @@ Two allowed patterns (non-exclusive): cloud LLM + device protocols (e.g. ai_chat
 ## 7. Working loop (every non-trivial turn)
 
 1. Confirm work path is under **contest repo** (or explicit public-fork PR path).
-2. If product code: current issue in `.scratch/.../issues/` + ADR/CONTEXT if architecture.
-3. If process/skill: official `.claude/skills/` + Trellis only as team process.
-4. Validate AI logs with the official tool: `python3 ../.claude/skills/contest-log-collector/tools/validate-log.py logs/`.
-5. Manually review the applicable official requirements and evidence checklist below; there is no local one-command contest compliance gate.
-6. Logs: leave under `logs/`; human push; never rewrite JSONL bodies.
+2. If the work depends on **real board circuitry** (drivers, pinmux, peripheral bring-up, etc.): open **BOUNDARY V11** local pack (schematic > BSP > UM); do not rely on `*_unofficial*` alone.
+3. If product scope: confirm against **`VelaGuard_项目手册.md`** (handbook wins over this summary for product detail).
+4. If product code: current issue in `.scratch/.../issues/` + ADR/CONTEXT if architecture.
+5. If process/skill: official `.claude/skills/` + Trellis only as team process.
+6. Validate AI logs with the official tool: `python3 ../.claude/skills/contest-log-collector/tools/validate-log.py logs/`.
+7. Manually review the applicable official requirements and evidence checklist below; there is no local one-command contest compliance gate.
+8. Logs: leave under `logs/`; human push; never rewrite JSONL bodies.
 
 ### Manual pre-PR / submission evidence
 
 - Work and manifest mappings stay inside the team repository; public-tree changes use the required public-repo PR flow.
 - README is a product description with reproducible build/run instructions, not the committee template.
 - Required external deliverables are ready: work description, demo video no longer than five minutes, and repository address.
-- AI hardware evidence exists: device build/run, at least one custom Skill with demo, at least one proactive+execute scenario, and written user story/features/technical capabilities.
-- Apache 2.0/original-work obligations, conditional CLA, MiMo Token use, voice wake word, and server/demo stability have been reviewed where applicable.
+- AI hardware evidence exists: device build/run; Skills `alarm_interpretation.md` + `operations_report.md`; proactive scenarios = event-driven alarm interpretation + scheduled daily report; written user story/features/technical capabilities.
+- Apache 2.0/original-work obligations, conditional CLA, MiMo Token use, and server/demo stability have been reviewed where applicable.
 - Required code, artifacts and validated AI Coding logs have been committed and pushed before the deadline.
 
 ---

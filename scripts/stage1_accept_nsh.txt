@@ -1,0 +1,37 @@
+# Stage1 板端验收（net 预设 = 网络 + eMMC + vgcfg + vgstats）
+# 在 COM3 NSH 逐段粘贴；固件：bash scripts/build.sh net --clean && bash scripts/flash.sh
+# MThings：COM6 9600 8N1，从站仿真开、采集关（Modbus 段需要）
+
+# --- §1 /data 布局 ---
+mount
+ls -l /data
+ls /data/velaguard/config
+ls /data/agent
+
+# --- §2 eMMC 写读（经 /data 路径）---
+echo stage1-final > /data/velaguard/vg_ac.txt
+cat /data/velaguard/vg_ac.txt
+
+# --- §3 vgcfg（新 BASEDIR）---
+vgcfg probe
+vgcfg commit stage1
+vgcfg dump
+
+# --- §4 RS485 + 帧统计 + Modbus（同 stage0）---
+vgrs485 tx
+vgstats inject 1 crc
+vgstats inject 1 timeout
+vgstats dump 1
+
+vgstats reset 1
+vgmodbus -a 1 -r 0 -c 2 -n 5 -i 1
+vgstats dump 1
+
+# --- §5 网络（RJ45 就绪后再 ping；vgmqtt 需 -h）---
+ping 223.5.5.5
+# 等日志出现 vgnet: mqtt online network=rj45 后再测 ping
+vgmqtt -h 107.174.123.74
+
+# --- 冷复位后 ---
+# cat /data/velaguard/vg_ac.txt   # 期望 stage1-final
+# vgcfg dump                      # 期望 OK seq=N name=stage1

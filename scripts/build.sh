@@ -4,12 +4,15 @@
 #
 # 用法：
 #   bash scripts/build.sh [TARGET] [--clean] [--debug]
-#   TARGET: net | min | lvgl   （默认 net）
+#   TARGET: net | min | lvgl | velaguard-lvgl | ai-probe | emmc   （默认 net）
+#   net = stage1 日常入口（网络 + eMMC + vgcfg + vgstats，无 LVGL）
+#   velaguard-lvgl = 演示固件（net 能力 + LTDC HMI + Agent）
 #
 #   示例：
 #     bash scripts/build.sh               # 增量发布构建（net，无调试符号）
 #     bash scripts/build.sh --debug       # 增量调试构建（-g3 -Og，F5 走这条）
 #     bash scripts/build.sh --clean       # Rebuild 复位到 velaguard-net 发布配置
+#     bash scripts/build.sh emmc --clean  # eMMC bring-up 预设
 #     bash scripts/build.sh --clean --debug
 #
 # 产物：
@@ -18,7 +21,10 @@
 #   Download 固定烧 .debug 里的这两份 HEX。
 #
 # Rebuild（--clean）会 configure.sh -E 复位到所选预设：未 savedefconfig
-# 的本地 nuttx/.config / menuconfig 改动会被丢掉；参赛仓 defconfig 补丁保留。
+# 的本地 nuttx/.config / menuconfig 改动会被丢掉。
+#
+# 公共仓改动在 nuttx/apps/MQTT-C 的 feature 分支上，不再 apply patch。
+# 若树未就绪：bash scripts/build.sh --sync-upstream
 #
 # 防呆：构建开始前先清空 .debug 里的旧主镜像，构建失败时 Download 会因
 # 缺少 nuttx.hex 直接报错，而不是把上一次的旧固件烧到板子上。
@@ -27,6 +33,7 @@ set -euo pipefail
 TARGET="net"
 MODE="build"
 DEBUG=0
+SYNC_UPSTREAM=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -36,11 +43,14 @@ for arg in "$@"; do
     --clean)
       MODE="--clean"
       ;;
-    net|min|lvgl)
+    --sync-upstream)
+      SYNC_UPSTREAM=1
+      ;;
+    net|min|lvgl|velaguard-lvgl|ai-probe|emmc)
       TARGET="$arg"
       ;;
     *)
-      echo "error: 未知参数 '$arg'（用法: build.sh [net|min|lvgl] [--clean] [--debug]）" >&2
+      echo "error: 未知参数 '$arg'（用法: build.sh [net|min|lvgl|velaguard-lvgl|ai-probe|emmc] [--clean] [--debug]）" >&2
       exit 1
       ;;
   esac
@@ -51,6 +61,8 @@ CONTEST_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OPENVELA_ROOT="$(cd "$CONTEST_ROOT/.." && pwd)"
 NUTTX_ROOT="$OPENVELA_ROOT/nuttx"
 STAGE_DIR="$CONTEST_ROOT/.debug"
+
+# LLM 凭据走 eMMC 加密 provision（secrets/ + scripts/provision-llm-from-secrets.sh）
 
 export PATH="$OPENVELA_ROOT/prebuilts/tools/python/bin:$OPENVELA_ROOT/prebuilts/tools/linux/x86_64:$OPENVELA_ROOT/prebuilts/kconfig-frontends/bin:$OPENVELA_ROOT/prebuilts/gcc/linux-x86_64/arm-none-eabi/bin:$OPENVELA_ROOT/prebuilts/build-tools/linux-x86_64/bin:$PATH"
 export PYTHONPATH="$OPENVELA_ROOT/prebuilts/tools/python/dist-packages/kconfiglib:$OPENVELA_ROOT/prebuilts/tools/python/dist-packages:${PYTHONPATH:-}"
@@ -65,8 +77,17 @@ case "$TARGET" in
   lvgl)
     DEFCONFIG="lvgl"
     ;;
+  velaguard-lvgl)
+    DEFCONFIG="velaguard-lvgl"
+    ;;
+  ai-probe)
+    DEFCONFIG="velaguard-ai-probe"
+    ;;
+  emmc)
+    DEFCONFIG="velaguard-emmc"
+    ;;
   *)
-    echo "error: 未知目标 '$TARGET'（可选 net|min|lvgl）" >&2
+    echo "error: 未知目标 '$TARGET'（可选 net|min|lvgl|velaguard-lvgl|ai-probe|emmc）" >&2
     exit 1
     ;;
 esac
@@ -90,28 +111,74 @@ expect_dev_config()
     net)
       grep -q 'CONFIG_INIT_ENTRYPOINT="velaguard_app_main"' "$NUTTX_ROOT/.config" &&
         grep -q 'CONFIG_INIT_ENTRYNAME="velaguard_app_main"' "$NUTTX_ROOT/.config" &&
-        ! grep -q '^CONFIG_GRAPHICS_LVGL=' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_GRAPHICS_LVGL=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_NET=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_NETUTILS_MQTTC=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_NETUTILS_ESP8266=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_VG_NET_FAILOVER=y' "$NUTTX_ROOT/.config" &&
-        grep -q '^CONFIG_VG_BRINGUP_TOOLS=y' "$NUTTX_ROOT/.config"
+        grep -q '^CONFIG_VG_BRINGUP_TOOLS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H7_SDMMC1=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_MMCSD=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_MMCSD_MMCSUPPORT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_FS_FAT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_FAT_LFN=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_CONFIG_STORE=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_FRAME_STATS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_EXAMPLES_AI_AGENT_VELA=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_CRYPTO_MBEDTLS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_DEV_URANDOM=y' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_STM32H7_SDMMC_IDMA=y' "$NUTTX_ROOT/.config"
       ;;
 
     lvgl)
       grep -q '^CONFIG_GRAPHICS_LVGL=y' "$NUTTX_ROOT/.config" &&
         grep -q 'CONFIG_INIT_ENTRYPOINT="nsh_main"' "$NUTTX_ROOT/.config"
       ;;
+
+    velaguard-lvgl)
+      grep -q '^CONFIG_GRAPHICS_LVGL=y' "$NUTTX_ROOT/.config" &&
+        grep -q 'CONFIG_INIT_ENTRYPOINT="velaguard_app_main"' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_HMI=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_HMI_AUTOSTART=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H750B_DK_QSPI_BOOT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_NET=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_BRINGUP_TOOLS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_BUS_DISCOVER=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_EXAMPLES_AI_AGENT_VELA=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H7_LTDC=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_INPUT_FT5X06=y' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_EXAMPLES_LVGLDEMO=y' "$NUTTX_ROOT/.config"
+      ;;
+
+    ai-probe)
+      grep -q 'CONFIG_INIT_ENTRYPOINT="nsh_main"' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_EXAMPLES_AI_AGENT_VELA=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_CRYPTO_MBEDTLS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_NET=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_RAMMTD=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_FS_LITTLEFS=y' "$NUTTX_ROOT/.config"
+      ;;
+
+    emmc)
+      grep -q 'CONFIG_INIT_ENTRYPOINT="velaguard_app_main"' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H7_SDMMC1=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_MMCSD=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_MMCSD_MMCSUPPORT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_FS_FAT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_FAT_LFN=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_CONFIG_STORE=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_FRAME_STATS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_NET=y' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_STM32H7_SDMMC_IDMA=y' "$NUTTX_ROOT/.config"
+      ;;
   esac
 }
 
-apply_target_patches()
+prepare_build_trees()
 {
   echo "[build] ensure contest app link..."
   bash "$SCRIPT_DIR/ensure-openvela-links.sh" "$OPENVELA_ROOT"
 
-  # packages/demos/Kconfig 是生成文件，可能早于新创建的 manifest link。
-  # configure 前按 apps 惯例重生一次，干净树才能看到 VelaGuard。
   if [ -d "$OPENVELA_ROOT/packages/demos" ]; then
     echo "[build] regenerate packages/demos/Kconfig..."
     (
@@ -120,31 +187,9 @@ apply_target_patches()
     )
   fi
 
-  echo "[build] apply QSPI patch..."
-  bash "$SCRIPT_DIR/apply-openvela-qspi-patch.sh" "$OPENVELA_ROOT"
-
-  case "$TARGET" in
-    net)
-      echo "[build] apply net patches (eth-mii + board pins + velaguard-net defconfig)..."
-      bash "$SCRIPT_DIR/apply-openvela-eth-mii-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-velaguard-board-pins-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-velaguard-net-defconfig-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-velaguard-net-esp8266-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-esp8266-lesp-compat-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-mqttc-pal-hook-patch.sh" "$OPENVELA_ROOT"
-      ;;
-    min)
-      echo "[build] apply min patches (board pins + pwm-tim15 + velaguard-min defconfig)..."
-      bash "$SCRIPT_DIR/apply-openvela-velaguard-board-pins-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-pwm-tim15-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-velaguard-min-defconfig-patch.sh" "$OPENVELA_ROOT"
-      ;;
-    lvgl)
-      echo "[build] apply lvgl patches (ui-performance + display-acceleration)..."
-      bash "$SCRIPT_DIR/apply-openvela-ui-performance-patch.sh" "$OPENVELA_ROOT"
-      bash "$SCRIPT_DIR/apply-openvela-display-acceleration-patch.sh" "$OPENVELA_ROOT"
-      ;;
-  esac
+  echo "[build] verify upstream public trees (no patches)..."
+  VG_SYNC_UPSTREAM="$SYNC_UPSTREAM" \
+    bash "$SCRIPT_DIR/ensure-upstream-velaguard-trees.sh" "$TARGET" "$OPENVELA_ROOT"
 }
 
 ensure_bootstub()
@@ -198,7 +243,7 @@ apply_compiler_mode()
   make -C "$NUTTX_ROOT" olddefconfig
 }
 
-apply_target_patches
+prepare_build_trees
 ensure_bootstub
 
 # 防呆：清掉旧烧录产物，失败时 Download 报"找不到 nuttx.hex"而不是烧旧固件

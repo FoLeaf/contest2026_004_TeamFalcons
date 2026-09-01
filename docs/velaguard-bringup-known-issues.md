@@ -130,12 +130,11 @@ velaguard_app_main（入口，常驻）
 
 | 项 | 内容 |
 |---|---|
-| 状态 | app 层已绕过，驱动级根治未做 |
-| 现象 | `vgrs485 tx` 连发三次，COM23 分别收到 23 / 24 / 26 字节，尾部缺字节且末字节显示为 `?` |
-| 根因 | ① `tcdrain()`（`drivers/serial/serial.c` 的 `uart_tcdrain`）只等软件发送缓冲区清空（`xmitsem` 在字节交给硬件时由 `uart_datasent` 唤醒），**不等最后一个字节从移位寄存器发完（TC）**；② 随后 `close(fd)` 触发 `up_shutdown()` → `stm32_unconfiggpio(GPIO_UART7_RS485_DIR)` 释放 PK1；③ 板载 R2（10K）把 D4 拉低 → 收发器 DE/RE 回到接收态 → 总线尾巴被切 |
-| 已应用绕过 | `velaguard_rs485.c` 的 `do_tx` 在 `tcdrain()` 后加 `usleep(50000)`（9600 下 26 字节 ≈ 27ms，50ms 足够）；验证 3/3 收到完整 26 字节 |
-| 待办（可选） | 驱动级根治：RS485 模式下让 tcdrain/close 路径等待 TC（Transmission Complete）后再释放 DIR；属 nuttx 公共仓改动，需 patch 固化。若仅测试用途，保留 app 层延时亦可 |
-| 参考 | `serialblaster` 用 `up_udelay(5000000)` 等 5 秒规避同一问题；教学要点：`write()` 返回 ≠ 缓冲区空 ≠ 物理发完，是三个时间点 |
+| 状态 | **驱动已修（2026-08-29）**：RS485 关 FIFO；`txempty` 等 **TXE\|TC** 后切 DIR=RX；TC ISR 不再切 DIR；`vgrs485` 去掉 `usleep(50ms)` |
+| 板测教训 | LA 证 DI/DIR 正确时，A/B 乱码多为 **USB-RS485 收发器/共地**；换适配器后误码大降 |
+| 现象（旧） | 对端偶发缺尾/中段花码；`close` 过早拆 DIR 会切尾 |
+| 根因（软件） | `.txempty` 绑 TXE（FIFO 下为 TXFNF），`tcdrain` 早返回 |
+| 验收 | 对端 Hex 连续 `61…7A`（26 字节）；偶发单字节误码可归适配器 |
 
 ## 已完成验证记录（2026-08-13）
 
@@ -249,3 +248,16 @@ nuttx / MQTT-C 侧交付物（contest 仓 patch，幂等 apply）：
 | `scripts/openvela-esp8266-lesp-compat.patch` + `apply-openvela-esp8266-lesp-compat-patch.sh` | `esp8266.c` 仍用 `LESP_*`，头文件已改成 `lespSSID_SIZE` / `lesp_eMODE_*`；缺这层映射则 `NETUTILS_ESP8266` 编不过；patch 内每一行新增宏须带 `+` 前缀 |
 
 主机单测：`make -C app/velaguard/host_tests test`。物理拔线不是完成门禁。
+
+## 7. eMMC / SDMMC1（2026-08-29）
+
+| 项 | 内容 |
+|---|---|
+| 状态 | Stage0 bring-up **通过**（`08-29-stage0-emmc`） |
+| 预设 | `bash scripts/build.sh emmc` → `velaguard-emmc` |
+| 挂载 | `/mnt/emmc`（vfat）；首次需 `mkfatfs /dev/mmcsd0` |
+| LFN | `CONFIG_FAT_LFN=y`（长名如 `vg_emmc_probe.txt`） |
+| 总线 | 当前 NuttX H7 路径为 **1-bit MMC**；硬件 8-bit 已接，宽总线待驱动增强 |
+| IDMA | 关闭（`MM_REGIONS=6`） |
+| 板资 | BOUNDARY V11 本地官方包；细节见 `.trellis/tasks/08-29-stage0-emmc/research/emmc-bringup-notes.md` |
+| 不做 | 不自动格式化；`/data` 正式布局留给阶段 1 / powerfail-store |

@@ -1,7 +1,7 @@
 {
   // Cursor cannot install ms-vscode.cpptools; use clangd + ../nuttx/compile_commands.json.
   "C_Cpp.intelliSenseEngine": "disabled",
-  "clangd.path": "/home/debian19y/tools/clangd/clangd_22.1.6/bin/clangd",
+  "clangd.path": "${workspaceFolder}/scripts/wsl_clangd_launcher.sh",
   "clangd.onConfigChanged": "restart",
   "clangd.checkUpdates": false,
   "clangd.arguments": [
@@ -31,20 +31,9 @@
   },
   "cmake.ignoreCMakeListsMissing": true,
 
-  // Windows-host debug tool paths (used later by Cortex-Debug / flash tasks).
-  // Edit these on the machine that owns ST-LINK; they are not required for
-  // IntelliSense in Remote - WSL.
-  "cortex-debug.openocdPath.windows": "D:/Develop/xpack-openocd-0.12.0-7/bin/openocd.exe",
-  "cortex-debug.armToolchainPath.windows": "D:/Develop/STM32CubeCLT/GNU-tools-for-STM32/bin",
-  "cortex-debug.gdbPath.windows": "D:/Develop/STM32CubeCLT/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe",
-
-  // Single-window flow (Remote - WSL): Cortex-Debug running inside the WSL
-  // window. GDB is the native Linux gdb-multiarch (launched via
-  // scripts/wsl_gdb_launcher.sh so its bundled libs are found); OpenOCD is
-  // the Windows xPack build launched through WSL interop, so the ST-LINK USB
-  // stays on Windows. Requires WSL2 mirrored networking
-  // (C:\\Users\\19y\\.wslconfig -> networkingMode=mirrored) for Linux GDB to
-  // reach the Windows OpenOCD on shared localhost:3333.
+  // Remote - WSL debug: GDB/OpenOCD launchers read machine paths from env vars
+  // (see .env.example). Optional Windows-host overrides go in the gitignored
+  // .vscode/settings.local.json (see settings.local.json.example).
   "cortex-debug.gdbPath.linux": "${workspaceFolder}/scripts/wsl_gdb_launcher.sh",
   "cortex-debug.armToolchainPath.linux": "${workspaceFolder}/../prebuilts/gcc/linux-x86_64/arm-none-eabi/bin",
   "cortex-debug.openocdPath.linux": "${workspaceFolder}/scripts/wsl_openocd_launcher.sh"

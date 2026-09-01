@@ -1,0 +1,24 @@
+CompileFlags:
+  CompilationDatabase: ../nuttx
+  Add:
+    - -mcpu=cortex-m7
+    - -mthumb
+    - -ffreestanding
+    - -std=gnu11
+    - -D__NuttX__
+    - -DNDEBUG
+    - -include
+    - ../nuttx/include/nuttx/config.h
+    - -Iapp
+    - -Iboard
+    - -I../nuttx/include
+    - -I../nuttx/arch/arm/include
+    - -I../nuttx/arch/arm/src/common
+    - -I../nuttx/arch/arm/src/stm32h7
+    - -I../nuttx/boards/arm/stm32h7/stm32h750b-dk/include
+    - -I../apps/include
+    - -I../apps/netutils/mqttc/MQTT-C/include
+    - -I../apps/graphics/lvgl
+    - -I../apps/graphics/lvgl/lvgl
+    - -I../frameworks
+    - -I../packages

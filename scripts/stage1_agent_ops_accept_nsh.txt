@@ -1,0 +1,32 @@
+# Stage1 agent-ops 板端验收（net + VG_AGENT_OPS + VG_AGENT_AUTOSTART）
+# 固件：bash scripts/build.sh net --clean && bash scripts/flash.sh
+#
+# autostart 以 --daemon 后台跑 cron/heartbeat；交互需：
+#   nsh> ai_agent    → 进入 vela>（附着 daemon，不会双实例）
+#   quit             → 只退出 vela>，daemon 继续跑
+# NSH 命令（ls/cat）在 nsh> 下执行，无需 quit daemon。
+
+# --- §1 启动日志 ---
+# 应含：vgagent: ai_agent autostart ok
+#       nsh_commands skipped (daemon mode)
+
+ls /data/agent/skills
+cat /data/agent/HEARTBEAT.md
+
+# --- §2 运营日报 ---
+# nsh> 先 ai_agent；vela> 下 ask 不要加外层引号（NSH 会把 " 当语法）
+ai_agent
+ask 按 operations_report Skill 生成今日运营日报，写入 /data/velaguard/reports/
+quit
+
+ls /data/velaguard/reports
+# NSH 不支持 shell glob；用 ls 看到的完整文件名，例如：
+cat /data/velaguard/reports/daily-20260228.md
+
+# --- §4 告警解读（可选）---
+echo "type=threshold\nslave=1\nreg=0\nvalue=3500\nthreshold=3000" > /data/velaguard/pending_alarm.txt
+ai_agent
+ask 按 alarm_interpretation Skill 解释 pending 告警
+quit
+
+cat /data/velaguard/reports/last_alarm.md

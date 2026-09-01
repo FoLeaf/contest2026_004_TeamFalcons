@@ -57,12 +57,11 @@ static int do_tx(FAR const char *dev)
         total += n;
     }
 
-    /* write() 只是把数据交给驱动队列，tcdrain() 会阻塞到字节真正从
-     * UART 发出去，这样 close() 不会丢掉还没发完的尾巴。
+    /* write() 入队；tcdrain() 在 RS485 下等到 TXE|TC 并切回 DIR=RX，
+     * 无需症状级 usleep（见 stm32_serial up_txempty）。
      */
 
     tcdrain(fd);
-    usleep(50*1000);
     printf("vgrs485: sent %d bytes: %s\n", total, buf);
     close(fd);
     return 0;

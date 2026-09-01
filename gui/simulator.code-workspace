@@ -1,0 +1,150 @@
+{
+	// https://code.visualstudio.com/docs/editor/workspaces
+	// https://code.visualstudio.com/docs/editor/multi-root-workspaces
+	// https://code.visualstudio.com/docs/editor/variables-reference
+
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-vscode.cpptools-themes",
+			"ms-vscode.cmake-tools"
+		],
+		"unwantedRecommendations": []
+	},
+	"settings": {
+		"files.trimTrailingWhitespace": true,
+		"files.insertFinalNewline": true,
+		"files.trimFinalNewlines": true,
+		"cmake.configureOnOpen": true,
+		"cmake.generator": "MinGW Makefiles",
+		"cmake.preferredGenerators": [
+			"MinGW Makefiles",
+			"Ninja"
+		],
+		"cmake.configureSettings": {
+			"CMAKE_BUILD_TYPE": "Debug"
+		},
+		"cmake.environment": {
+			"PATH": "D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64\\bin;D:\\Develop\\STM32CubeCLT\\Ninja\\bin;D:\\Develop\\STM32CubeCLT\\CMake\\bin;${env:PATH}"
+		},
+		"cmake.mingwSearchDirs": [
+			"D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64"
+		],
+		"cmake.cmakePath": "D:\\Develop\\STM32CubeCLT\\CMake\\bin\\cmake.exe",
+		"files.associations": {
+			"glob.h": "c",
+			"lvgl.h": "c",
+			"lv_conf.h": "c"
+		},
+		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Build",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"--build",
+					"${workspaceFolder}/build",
+					"-j",
+					"8"
+				],
+				"options": {
+					"env": {
+						"PATH": "D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64\\bin;D:\\Develop\\STM32CubeCLT\\Ninja\\bin;D:\\Develop\\STM32CubeCLT\\CMake\\bin;${env:PATH}"
+					}
+				},
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"problemMatcher": {
+					"owner": "cpp",
+					"fileLocation": [
+						"relative",
+						"${workspaceFolder}"
+					],
+					"pattern": {
+						"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				}
+			},
+			{
+				"label": "Configure",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"-S",
+					"${workspaceFolder}",
+					"-B",
+					"${workspaceFolder}/build",
+					"-G",
+					"MinGW Makefiles",
+					"-DCMAKE_BUILD_TYPE=Debug",
+					"-DCMAKE_C_COMPILER=gcc",
+					"-DCMAKE_CXX_COMPILER=g++"
+				],
+				"options": {
+					"env": {
+						"PATH": "D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64\\bin;D:\\Develop\\STM32CubeCLT\\Ninja\\bin;D:\\Develop\\STM32CubeCLT\\CMake\\bin;${env:PATH}"
+					}
+				},
+				"problemMatcher": []
+			},
+			{
+				"label": "Build and Run",
+				"type": "shell",
+				"command": "${workspaceFolder}/bin/main.exe",
+				"group": {
+					"kind": "test",
+					"isDefault": true
+				},
+				"dependsOn": "Build",
+				"problemMatcher": []
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Debug LVGL demo with gdb",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/bin/main.exe",
+				"args": [],
+				"cwd": "${workspaceFolder}/bin",
+				"preLaunchTask": "Build",
+				"stopAtEntry": false,
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "D:\\Develop\\mingw64\\bin\\gdb.exe",
+				"environment": [
+					{
+						"name": "PATH",
+						"value": "D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64\\bin;${env:PATH}"
+					}
+				],
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			}
+		]
+	}
+}

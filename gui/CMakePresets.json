@@ -1,0 +1,41 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "mingw-debug",
+      "displayName": "MinGW Debug (llvm-mingw)",
+      "description": "Windows LVGL simulator with llvm-mingw + SDL2",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "USE_FREERTOS": "OFF"
+      },
+      "environment": {
+        "PATH": "D:\\Develop\\llvm-mingw-20250227-ucrt-x86_64\\bin;D:\\Develop\\STM32CubeCLT\\Ninja\\bin;D:\\Develop\\STM32CubeCLT\\CMake\\bin;$penv{PATH}"
+      }
+    },
+    {
+      "name": "mingw-release",
+      "displayName": "MinGW Release (llvm-mingw)",
+      "inherits": "mingw-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "mingw-debug",
+      "configurePreset": "mingw-debug",
+      "jobs": 8
+    },
+    {
+      "name": "mingw-release",
+      "configurePreset": "mingw-release",
+      "jobs": 8
+    }
+  ]
+}

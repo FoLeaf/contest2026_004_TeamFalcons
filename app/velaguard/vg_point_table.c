@@ -1,0 +1,351 @@
+/****************************************************************************
+ * app/velaguard/vg_point_table.c
+ *
+ * Point inference, JSON export, state persistence, apply.
+ ****************************************************************************/
+
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#if defined(__NuttX__)
+#  include <nuttx/config.h>
+#else
+#  undef CONFIG_VG_CONFIG_STORE
+#endif
+
+#include "vg_discover.h"
+
+#ifdef CONFIG_VG_CONFIG_STORE
+#include "vg_config_store.h"
+#endif
+
+#define VG_DISC_STATE_MAGIC  0x56474453u
+#define VG_DISC_STATE_PATH   "/data/velaguard/discover/discover_state.bin"
+
+struct vg_disc_state_file
+{
+  uint32_t magic;
+  struct vg_discover_summary sum;
+};
+
+static struct vg_discover_summary g_sum;
+static struct vg_disc_state_file g_sf;
+
+struct vg_discover_summary *vg_discover_state(void)
+{
+  return &g_sum;
+}
+
+void vg_discover_reset(FAR struct vg_discover_summary *sum)
+{
+  if (sum != NULL)
+    {
+      memset(sum, 0, sizeof(*sum));
+    }
+}
+
+float vg_discover_decode_int16_scaled(int16_t raw, float scale)
+{
+  return (float)raw * scale;
+}
+
+bool vg_discover_parse_addr_range(FAR const char *spec,
+                                    int *min_out, int *max_out)
+{
+  int a;
+  int b;
+
+  if (spec == NULL || min_out == NULL || max_out == NULL)
+    {
+      return false;
+    }
+
+  if (strchr(spec, '-') != NULL)
+    {
+      if (sscanf(spec, "%d-%d", &a, &b) != 2)
+        {
+          return false;
+        }
+    }
+  else
+    {
+      a = b = (int)strtol(spec, NULL, 0);
+    }
+
+  if (a < 1 || b > 247 || a > b)
+    {
+      return false;
+    }
+
+  *min_out = a;
+  *max_out = b;
+  return true;
+}
+
+static int mkdir_p(FAR const char *path)
+{
+  char tmp[128];
+  char *p;
+  size_t len;
+
+  if (path == NULL)
+    {
+      return -EINVAL;
+    }
+
+  snprintf(tmp, sizeof(tmp), "%s", path);
+  len = strlen(tmp);
+  if (len == 0)
+    {
+      return -EINVAL;
+    }
+
+  for (p = tmp + 1; *p != '\0'; p++)
+    {
+      if (*p == '/')
+        {
+          *p = '\0';
+          (void)mkdir(tmp, 0755);
+          *p = '/';
+        }
+    }
+
+  return mkdir(tmp, 0755);
+}
+
+int vg_discover_state_save(FAR const struct vg_discover_summary *sum,
+                           FAR const char *path)
+{
+  int fd;
+  ssize_t n;
+  FAR const char *out = (path != NULL && path[0] != '\0') ?
+                        path : VG_DISC_STATE_PATH;
+
+  if (sum == NULL)
+    {
+      return -EINVAL;
+    }
+
+  mkdir_p("/data/velaguard/discover");
+
+  g_sf.magic = VG_DISC_STATE_MAGIC;
+  memcpy(&g_sf.sum, sum, sizeof(g_sf.sum));
+
+  fd = open(out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if (fd < 0)
+    {
+      return -errno;
+    }
+
+  n = write(fd, &g_sf, sizeof(g_sf));
+  close(fd);
+
+  return (n == (ssize_t)sizeof(g_sf)) ? 0 : -EIO;
+}
+
+int vg_discover_state_load(FAR struct vg_discover_summary *sum,
+                           FAR const char *path)
+{
+  int fd;
+  ssize_t n;
+  FAR const char *in = (path != NULL && path[0] != '\0') ?
+                       path : VG_DISC_STATE_PATH;
+
+  if (sum == NULL)
+    {
+      return -EINVAL;
+    }
+
+  fd = open(in, O_RDONLY);
+  if (fd < 0)
+    {
+      return -errno;
+    }
+
+  n = read(fd, &g_sf, sizeof(g_sf));
+  close(fd);
+
+  if (n != (ssize_t)sizeof(g_sf) || g_sf.magic != VG_DISC_STATE_MAGIC)
+    {
+      return -EINVAL;
+    }
+
+  memcpy(sum, &g_sf.sum, sizeof(*sum));
+  return 0;
+}
+
+static void add_point(FAR struct vg_discover_summary *sum,
+                      uint8_t addr, uint8_t fc, uint16_t reg,
+                      FAR const char *tag, FAR const char *dtype,
+                      float scale, FAR const char *unit)
+{
+  FAR struct vg_point_entry *p;
+
+  if (sum->n_points >= VG_DISCOVER_MAX_POINTS)
+    {
+      return;
+    }
+
+  p = &sum->points[sum->n_points++];
+  p->addr = addr;
+  p->fc   = fc;
+  p->reg  = reg;
+  p->qty  = 1;
+  snprintf(p->tag, sizeof(p->tag), "%s", tag);
+  snprintf(p->dtype, sizeof(p->dtype), "%s", dtype);
+  p->scale = scale;
+  snprintf(p->unit, sizeof(p->unit), "%s", unit);
+}
+
+int vg_point_table_infer(FAR struct vg_discover_summary *sum)
+{
+  int i;
+
+  if (sum == NULL)
+    {
+      return -EINVAL;
+    }
+
+  sum->n_points = 0;
+
+  for (i = 0; i < sum->n_blocks; i++)
+    {
+      FAR struct vg_reg_block *b = &sum->blocks[i];
+      int tag_idx = 0;
+
+      if (b->count == 0)
+        {
+          continue;
+        }
+
+      for (tag_idx = 0; tag_idx < (int)b->count && tag_idx < 4; tag_idx++)
+        {
+          char tag[24];
+          float scaled;
+
+          scaled = vg_discover_decode_int16_scaled((int16_t)b->sample[tag_idx],
+                                                   0.1f);
+          snprintf(tag, sizeof(tag), "s%u_r%u_%d",
+                   (unsigned)b->addr,
+                   (unsigned)(b->start + (uint16_t)tag_idx), tag_idx);
+
+          if (scaled >= -50.0f && scaled <= 120.0f)
+            {
+              add_point(sum, b->addr, b->fc,
+                        (uint16_t)(b->start + (uint16_t)tag_idx),
+                        tag, "int16", 0.1f, (tag_idx == 0) ? "C" : "%RH");
+            }
+          else
+            {
+              add_point(sum, b->addr, b->fc,
+                        (uint16_t)(b->start + (uint16_t)tag_idx),
+                        tag, "uint16", 1.0f, "");
+            }
+        }
+    }
+
+  return sum->n_points;
+}
+
+int vg_point_table_write_candidate(FAR const struct vg_discover_summary *sum,
+                                     FAR const char *path)
+{
+  FILE *fp;
+  int i;
+  FAR const char *out = path;
+
+  if (sum == NULL || out == NULL)
+    {
+      return -EINVAL;
+    }
+
+  mkdir_p("/data/velaguard/discover");
+
+  fp = fopen(out, "w");
+  if (fp == NULL)
+    {
+      return -errno;
+    }
+
+  fprintf(fp,
+          "{\"schema_version\":1,\"bus\":{\"device\":\"%s\",\"baud\":%d},"
+          "\"hits\":[",
+          sum->devpath, sum->baud);
+
+  for (i = 0; i < sum->n_hits; i++)
+    {
+      fprintf(fp, "%s%u", (i > 0) ? "," : "",
+              (unsigned)sum->hits[i].addr);
+    }
+
+  fprintf(fp, "],\"points\":[");
+
+  for (i = 0; i < sum->n_points; i++)
+    {
+      FAR const struct vg_point_entry *p = &sum->points[i];
+
+      fprintf(fp,
+              "%s{\"tag\":\"%s\",\"addr\":%u,\"fc\":%u,\"reg\":%u,"
+              "\"qty\":%u,\"dtype\":\"%s\",\"scale\":%.3f,\"unit\":\"%s\"}",
+              (i > 0) ? "," : "",
+              p->tag, (unsigned)p->addr, (unsigned)p->fc,
+              (unsigned)p->reg, (unsigned)p->qty,
+              p->dtype, (double)p->scale, p->unit);
+    }
+
+  fprintf(fp, "]}\n");
+  fclose(fp);
+  return 0;
+}
+
+int vg_point_table_apply(FAR const struct vg_discover_summary *sum,
+                         FAR const char *points_path,
+                         FAR const char *config_basedir,
+                         bool confirm)
+{
+  if (sum == NULL || points_path == NULL)
+    {
+      return -EINVAL;
+    }
+
+  if (!confirm)
+    {
+      printf("vgdiscover: dry-run apply → %d points to %s (use --confirm)\n",
+             sum->n_points, points_path);
+      return 0;
+    }
+
+  if (vg_point_table_write_candidate(sum, points_path) != 0)
+    {
+      return -EIO;
+    }
+
+#ifdef CONFIG_VG_CONFIG_STORE
+  if (config_basedir != NULL)
+    {
+      struct vg_config cfg;
+      int ret;
+
+      vg_config_set_basedir(config_basedir);
+      vg_config_factory_default(&cfg);
+      snprintf(cfg.device_name, sizeof(cfg.device_name), "discovered");
+      ret = vg_config_commit(&cfg);
+      if (ret != 0)
+        {
+          printf("vgdiscover: vg_config_commit failed %d (%s)\n",
+                 ret, vg_config_last_error());
+          return ret;
+        }
+    }
+#else
+  (void)config_basedir;
+#endif
+
+  printf("vgdiscover: applied %d points → %s\n", sum->n_points, points_path);
+  return 0;
+}

@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "MThings 自动化配置"
+  short_description: "从多协议点表生成 MThings 设备、通道、页面和工程配置"
+  default_prompt: "使用 $mthings-automation-config-skill 根据 Modbus、S7、DL/T645、CJ/T188 或 DL/T698.45 点表生成完整 MThings 工程配置。"

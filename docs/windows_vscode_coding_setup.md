@@ -84,6 +84,31 @@ NuttX 的 `include/arch` 符号链接和 `include/nuttx/config.h` 在 configure 
 2. clangd: Restart language server（若用 C/C++：Reset IntelliSense Database）
 3. `Developer: Reload Window`
 
+## 双机 / 多机开发：避免互相污染配置
+
+原则：**可提交的配置尽量机器无关；本机路径只放在 gitignore 的文件或环境变量里。**
+
+| 类型 | 放哪里 | 是否提交 |
+|------|--------|----------|
+| 任务、launch、clangd 参数、include 路径 | `.vscode/settings.json`、`.clangd`、`c_cpp_properties.json` | 提交 |
+| Cube/OpenOCD/GDB/clangd 安装路径 | `.env.local` 或 Windows 用户环境变量 | 不提交 |
+| 仅本机 VS Code 覆盖项 | `.vscode/settings.local.json`（见 `settings.local.json.example`） | 不提交 |
+| `compile_commands.json` | `../nuttx/`（由脚本生成） | 不提交 |
+| 构建产物 | `.debug/` | 不提交 |
+
+**新机一次性步骤：**
+
+1. 用 Remote - WSL 打开本仓（左下角 `WSL: Debian`）。
+2. 复制 `.env.example` → `.env.local`，按本机路径填写（可选；多数工具会被启动脚本自动探测）。
+3. 运行任务 **`openvela: Prepare IntelliSense`**，或：
+   ```bash
+   ./scripts/prepare_wsl_intellisense.sh
+   ```
+4. 在 WSL 侧安装扩展 **clangd**（`llvm-vs-code-extensions.vscode-clangd`）。
+5. `clangd: Restart language server` → `Developer: Reload Window`。
+
+两台电脑各自维护 `.env.local` / `settings.local.json`，**不要**把 `D:\Develop\...` 或 `/home/某用户/...` 写进已跟踪的 `settings.json`。
+
 ## 验证补全与跳转
 
 打开 `app/hello_app/hello_app_main.c`：

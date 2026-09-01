@@ -1,0 +1,3 @@
+device,device_id,device_type,port,station,name,address,block,data_type,unit,scale,min,max,value_strategy,trend,history,serial_baud,group
+[S]Mock-TH-01,10,slave,COM5,1,温度,30001,3,int16,°C,0.1,0,50,3,true,true,9600,环境
+[S]Mock-TH-01,10,slave,COM5,1,湿度,30002,3,int16,%RH,0.1,0,100,3,true,true,9600,环境

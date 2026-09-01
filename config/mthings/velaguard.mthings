@@ -1,0 +1,1016 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<MThings>
+	<PORT_LIST>
+		<COM Name="COM6" Remarks="vgrs485 / VelaGuard RS485" Baund="9600" Parity="0" StopBit="0" DataBit="0" FlowCtrl="0" DTR="0" TransMode="0" BreakTime="10" DeviceType="2" Configured="1">
+			<ProtocolPara CharType="0" />
+		</COM>
+	</PORT_LIST>
+	<SIGNT SYS_DATA="" ALARM="" HISDATA="" />
+	<MQTT />
+	<CURVE>
+		<DATA DeviceID="1" DataID="1" IsRightY="0" Color="#FF3498DB" spsn="0" />
+		<DATA DeviceID="1" DataID="2" IsRightY="1" Color="#FFE74C3C" spsn="0" />
+		<DATA DeviceID="3" DataID="1" IsRightY="0" Color="#FF6366F1" spsn="0" />
+		<DATA DeviceID="3" DataID="2" IsRightY="0" Color="#FF10B981" spsn="0" />
+		<DATA DeviceID="3" DataID="3" IsRightY="1" Color="#FFF59E0B" spsn="0" />
+		<DATA DeviceID="3" DataID="4" IsRightY="1" Color="#FF8B5CF6" spsn="0" />
+	</CURVE>
+	<HISDATA>
+		<DEVICE ID="1">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="2">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="3">
+			<DATA ID="1" />
+			<DATA ID="2" />
+			<DATA ID="3" />
+			<DATA ID="4" />
+		</DEVICE>
+		<DEVICE ID="4">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="5">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="6">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="7">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="8">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="9">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="10">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="11">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="12">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="13">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="14">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="15">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="16">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="17">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="18">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="19">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="20">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="21">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="22">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="23">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="24">
+			<DATA ID="1" />
+		</DEVICE>
+		<DEVICE ID="25">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="26">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="27">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="28">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="29">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="30">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="31">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+		<DEVICE ID="32">
+			<DATA ID="1" />
+			<DATA ID="2" />
+		</DEVICE>
+	</HISDATA>
+	<ALARM_LIST>
+		<TYPELIST />
+	</ALARM_LIST>
+	<SYS_DATA>
+		<PAGE ID="1" Name="HOME" width="1920" hight="920" BackColor="#ffffffff" PicPath="">
+			<CHIPV ID="1" Width="760" Height="50" PosX="20" PosY="20" />
+			<CHIPV ID="2" Width="220" Height="90" PosX="20" PosY="90" />
+			<CHIPV ID="3" Width="220" Height="90" PosX="260" PosY="90" />
+			<CHIPV ID="4" Width="220" Height="90" PosX="500" PosY="90" />
+			<CHIPV ID="5" Width="220" Height="90" PosX="740" PosY="90" />
+			<CHIPV ID="6" Width="220" Height="90" PosX="980" PosY="90" />
+			<CHIPV ID="7" Width="220" Height="90" PosX="1220" PosY="90" />
+			<CHIPV ID="8" Width="220" Height="90" PosX="1460" PosY="90" />
+			<CHIPV ID="10" Width="940" Height="320" PosX="20" PosY="210" />
+			<CHIPV ID="11" Width="940" Height="320" PosX="980" PosY="210" />
+			<CHIPV ID="12" Width="120" Height="36" PosX="800" PosY="20" />
+			<CHIPV ID="13" Width="120" Height="36" PosX="930" PosY="20" />
+		</PAGE>
+		<CHIPV ID="1" lock="0" Type="18" Intvl="10" ExtroPara="text::VelaGuard vgrs485 Mock 总线（9600 N81 · 从站1-32）;fsize::22;t_bd::ON;color::#FF111827;backcolor::#00000000;" />
+		<CHIPV ID="2" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::湿度;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::%RH;">
+			<DeviceData DeviceID="1" DataID="1" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="3" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::温度;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::°C;">
+			<DeviceData DeviceID="1" DataID="2" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="4" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::水浸;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::0;default::0;uint::;">
+			<DeviceData DeviceID="2" DataID="1" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="5" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::PT100-1;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::°C;">
+			<DeviceData DeviceID="3" DataID="1" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="6" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::PT100-2;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::°C;">
+			<DeviceData DeviceID="3" DataID="2" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="7" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::PT100-3;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::°C;">
+			<DeviceData DeviceID="3" DataID="3" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="8" lock="0" Type="15" Intvl="10" ExtroPara="bodercolor::#FF2563EB;boderwidth::1;rd_b::4;backcolor::#FFFFFFFF;tlname::PT100-4;fs_t::15;tlcolor::#FF1F2937;vlcolor::#FF111827;fs_v::20;preci::1;default::0;uint::°C;">
+			<DeviceData DeviceID="3" DataID="4" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="10" lock="0" Type="0" Intvl="10" ExtroPara="vcolmnHead::ON;uint::ON;vrange::ON;tlcolor::#FF111827;vlcolor::#FF111827;gdcolor::#FFE5E7EB;backcolor::#FFFFFFFF;">
+			<DeviceData DeviceID="1" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="1" DataID="2" ExtroPara="" />
+			<DeviceData DeviceID="2" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="2" DataID="2" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="11" lock="0" Type="1" Intvl="10" ExtroPara="tagcolor::#FF111827;cvcolor1::#FF3498DB;cvcolor2::#FFE74C3C;cvcolor3::#FF6366F1;showlegend::ON;period::30;autoy::ON;">
+			<DeviceData DeviceID="1" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="1" DataID="2" ExtroPara="" />
+			<DeviceData DeviceID="3" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="3" DataID="2" ExtroPara="" />
+		</CHIPV>
+		<CHIPV ID="12" lock="0" Type="28" Intvl="10" ExtroPara="text::首页;pageid::1;fsize::14;color::#FF111827;backcolor::#FFFFFFFF;" />
+		<CHIPV ID="13" lock="0" Type="28" Intvl="10" ExtroPara="text::设备总览;pageid::2;fsize::14;color::#FF111827;backcolor::#FFFFFFFF;" />
+		<PAGE ID="2" Name="OVERVIEW" width="1920" hight="920" BackColor="#ffffffff" PicPath="">
+			<CHIPV ID="12" Width="120" Height="36" PosX="800" PosY="20" />
+			<CHIPV ID="13" Width="120" Height="36" PosX="930" PosY="20" />
+			<CHIPV ID="14" Width="760" Height="50" PosX="20" PosY="20" />
+			<CHIPV ID="15" Width="1880" Height="820" PosX="20" PosY="80" />
+		</PAGE>
+		<CHIPV ID="14" lock="0" Type="18" Intvl="10" ExtroPara="text::VelaGuard RS485 从站设备总览（32 类 · Addr 1-32）;fsize::22;t_bd::ON;color::#FF111827;backcolor::#00000000;" />
+		<CHIPV ID="15" lock="0" Type="0" Intvl="10" ExtroPara="vcolmnHead::ON;uint::ON;vrange::ON;tlcolor::#FF111827;vlcolor::#FF111827;gdcolor::#FFE5E7EB;backcolor::#FFFFFFFF;">
+			<DeviceData DeviceID="1" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="2" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="3" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="4" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="5" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="6" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="7" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="8" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="9" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="10" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="11" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="12" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="13" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="14" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="15" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="16" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="17" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="18" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="19" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="20" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="21" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="22" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="23" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="24" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="25" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="26" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="27" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="28" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="29" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="30" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="31" DataID="1" ExtroPara="" />
+			<DeviceData DeviceID="32" DataID="1" ExtroPara="" />
+		</CHIPV>
+	</SYS_DATA>
+	<LOGIC_LIST ActiveID="0" ActiveIDs="" />
+	<DEVICE_LIST>
+		<DEVICE ID="1" Name="[S]温湿度-导轨V1.5" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="1" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="湿度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="%RH" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FF3498DB" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="3" Coef_b="0.01" Coef_c="600" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="5" MinRadom="0" MaxValue="100" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="温度" BLOCK="2" Addr="1" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="-40-80" CmdValue="" Color="#FFE74C3C" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="250" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="3" MinRadom="0" MaxValue="80" MinValue="-40" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="2" Name="[S]水浸-V1.1" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="2" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="水浸状态" BLOCK="2" Addr="2" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="5" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="1" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="0" MaxRadom="255" MinRadom="1" MaxValue="255" MinValue="1" datarry="1&#10;1&#10;1&#10;1&#10;255&#10;1&#10;1&#10;1" BindDeviceID="0" BindDataID="0" />
+					<ENUMS>
+						<enum Value="1" Name="正常" />
+						<enum Value="255" Name="报警" />
+					</ENUMS>
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="灵敏度" BLOCK="2" Addr="16" PrtcTYPE="1" PointNum="0" Unit="" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="0" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="80" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="5000" MaxRadom="80" MinRadom="80" MaxValue="80" MinValue="80" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="3" Name="[S]PT100-FTX458" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="温度" Addr="3" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="温度" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="通道1温度" BLOCK="2" Addr="0" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="-200-850" CmdValue="" Color="#FF6366F1" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="250" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="850" MinValue="-200" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="温度" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="通道2温度" BLOCK="2" Addr="1" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="-200-850" CmdValue="" Color="#FF10B981" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="280" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="850" MinValue="-200" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="温度" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="3" Name="通道3温度" BLOCK="2" Addr="2" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="-200-850" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="320" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="850" MinValue="-200" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="温度" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="4" Name="通道4温度" BLOCK="2" Addr="3" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="-200-850" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="245" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="850" MinValue="-200" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="温度" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="4" Name="[S]烟雾-SD100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="消防" Addr="4" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="消防" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="烟雾浓度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="%obs/m" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.01" Coef_c="15" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="8" MinRadom="0" MaxValue="100" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="消防" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="5" Name="[S]CO2-MH410" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="5" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="CO2浓度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="ppm" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-5000" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="1" Coef_c="650" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="80" MinRadom="0" MaxValue="5000" MinValue="400" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="6" Name="[S]PM2.5-AQ100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="6" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="PM2.5" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="ug/m3" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-500" CmdValue="" Color="#FFEC4899" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="35" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="12" MinRadom="0" MaxValue="500" MinValue="5" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="PM10" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="ug/m3" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-600" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="48" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="12" MinRadom="0" MaxValue="600" MinValue="5" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="7" Name="[S]光照-LS200" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="7" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="照度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="lux" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-200000" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="2" TimeBngrWay="1" Coef_a="4" Coef_b="5" Coef_c="200" Coef_d="0" Coef_e="0" ResetStep="24" XInvl="5000" MaxRadom="200000" MinRadom="0" MaxValue="200000" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="8" Name="[S]噪声-NS300" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="8" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="噪声" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="dB" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="30-120" CmdValue="" Color="#FFF97316" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="55" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="4" MinRadom="0" MaxValue="120" MinValue="30" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="9" Name="[S]气压-BP100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="9" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="气压" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="hPa" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="800-1100" CmdValue="" Color="#FF84CC16" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="0" Coef_b="0.1" Coef_c="1013" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="1100" MinValue="800" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="10" Name="[S]风速-WS500" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="气象" Addr="10" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="气象" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="风速" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="m/s" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-60" CmdValue="" Color="#FF06B6D4" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="35" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="6" MinRadom="0" MaxValue="60" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="气象" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="风向" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="0" Unit="deg" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-360" CmdValue="" Color="#FF3498DB" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="1" Coef_c="180" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="15" MinRadom="0" MaxValue="360" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="气象" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="11" Name="[S]液位-LT400" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="过程" Addr="11" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="过程" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="液位" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="%" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FF3498DB" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="1" Coef_c="620" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="2000" MaxRadom="980" MinRadom="120" MaxValue="980" MinValue="120" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="过程" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="12" Name="[S]流量-FM200" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="过程" Addr="12" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="过程" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="瞬时流量" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="m3/h" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-200" CmdValue="" Color="#FFE74C3C" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.01" Coef_c="125" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="10" MinRadom="0" MaxValue="200" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="过程" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="累计流量" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="m3" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-999999" CmdValue="" Color="#FF6366F1" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="2" Coef_c="12580" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="1000" MaxRadom="999999" MinRadom="0" MaxValue="999999" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="过程" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="13" Name="[S]压力-PT300" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="过程" Addr="13" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="过程" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="压力" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="MPa" ShowType="0" Gain="0.001" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-1.6" CmdValue="" Color="#FF6366F1" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.001" Coef_c="85" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="8" MinRadom="0" MaxValue="1600" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="过程" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="14" Name="[S]电表-DTS666" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="能源" Addr="14" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="能源" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="有功功率" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="kW" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-500" CmdValue="" Color="#FF10B981" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="0.01" Coef_c="128" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="20" MinRadom="0" MaxValue="500" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="能源" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="正向电能" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="kWh" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-999999" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="3" Coef_c="45678" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="1000" MaxRadom="999999" MinRadom="0" MaxValue="999999" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="能源" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="15" Name="[S]UPS-UP500" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="动力" Addr="15" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="动力" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="负载率" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="%" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="42" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="6" MinRadom="0" MaxValue="100" MinValue="5" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="动力" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="电池SOC" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="0" Unit="%" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="-1" Coef_c="880" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="3000" MaxRadom="100" MinRadom="20" MaxValue="100" MinValue="20" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="动力" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="16" Name="[S]门禁-AC100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="安防" Addr="16" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="安防" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="门状态" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="5" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="1" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="0" MaxRadom="255" MinRadom="1" MaxValue="255" MinValue="1" datarry="1&#10;1&#10;2&#10;2&#10;1&#10;255&#10;1&#10;1&#10;2&#10;1" BindDeviceID="0" BindDataID="0" />
+					<ENUMS>
+						<enum Value="1" Name="关闭" />
+						<enum Value="2" Name="开启" />
+						<enum Value="255" Name="报警" />
+					</ENUMS>
+					<GROUPS>
+						<group Name="安防" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="今日刷卡" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="0" Unit="次" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-9999" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="1" Coef_c="37" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="5000" MaxRadom="9999" MinRadom="0" MaxValue="9999" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="安防" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="17" Name="[S]人体-PIR200" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="安防" Addr="17" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="安防" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="占用状态" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="4" TimeBngrWay="1" Coef_a="8" Coef_b="0" Coef_c="1" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="2000" MaxRadom="2" MinRadom="1" MaxValue="2" MinValue="1" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS>
+						<enum Value="1" Name="无人" />
+						<enum Value="2" Name="有人" />
+					</ENUMS>
+					<GROUPS>
+						<group Name="安防" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="18" Name="[S]振动-VS100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="机械" Addr="18" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="机械" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="振动速度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="mm/s" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-50" CmdValue="" Color="#FFEC4899" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.01" Coef_c="12" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="3" MinRadom="0" MaxValue="50" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="机械" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="轴承温度" BLOCK="2" Addr="1" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-120" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="45" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="4" MinRadom="0" MaxValue="120" MinValue="20" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="机械" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="19" Name="[S]SF6-SF600" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="电力" Addr="19" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="电力" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="SF6浓度" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="ppm" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-3000" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="0" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="120" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="2000" MaxRadom="120" MinRadom="120" MaxValue="120" MinValue="120" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="电力" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="20" Name="[S]臭氧-O3M100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="20" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="臭氧" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="ppb" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-500" CmdValue="" Color="#FFF97316" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="1" Coef_c="28" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="6" MinRadom="0" MaxValue="500" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="21" Name="[S]甲醛-HCHO50" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="21" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="甲醛" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="mg/m3" ShowType="0" Gain="0.001" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-5" CmdValue="" Color="#FF84CC16" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.001" Coef_c="8" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="2" MinRadom="0" MaxValue="5000" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="22" Name="[S]TVOC-VOC300" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="环境" Addr="22" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="环境" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="TVOC" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="ppb" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-2000" CmdValue="" Color="#FF06B6D4" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="1" Coef_c="220" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="35" MinRadom="0" MaxValue="2000" MinValue="50" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="环境" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="23" Name="[S]继电器-RLY8" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="控制" Addr="23" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="控制" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="输出字" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FF3498DB" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="4" TimeBngrWay="1" Coef_a="4" Coef_b="0" Coef_c="0" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="1500" MaxRadom="255" MinRadom="0" MaxValue="255" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="控制" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="24" Name="[S]DI采集-IO16" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="控制" Addr="24" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="控制" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="DI状态" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FFE74C3C" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="5" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="4369" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="0" MaxRadom="21845" MinRadom="4369" MaxValue="21845" MinValue="4369" datarry="4369&#10;8738&#10;21845&#10;4369&#10;13107&#10;8738" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="控制" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="25" Name="[S]AI采集-AI8" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="控制" Addr="25" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="控制" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="AI通道1" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="mA" ShowType="0" Gain="0.001" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="4-20" CmdValue="" Color="#FF6366F1" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="0" Coef_b="0.001" Coef_c="12000" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="180" MinRadom="0" MaxValue="20000" MinValue="4000" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="控制" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="AI通道2" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="mA" ShowType="0" Gain="0.001" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="4-20" CmdValue="" Color="#FF10B981" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="0" Coef_b="0.001" Coef_c="8500" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="180" MinRadom="0" MaxValue="20000" MinValue="4000" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="控制" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="26" Name="[S]变频器-VFD750" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="驱动" Addr="26" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="驱动" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="输出频率" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="Hz" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-50" CmdValue="" Color="#FF10B981" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.01" Coef_c="3500" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="60" MinRadom="0" MaxValue="5000" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="驱动" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="输出电流" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="A" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.01" Coef_c="1850" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="25" MinRadom="0" MaxValue="10000" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="驱动" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="27" Name="[S]软启动-SS100" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="驱动" Addr="27" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="驱动" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="运行状态" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="" ShowType="7" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-65535" CmdValue="" Color="#FFF59E0B" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="5" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="1" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="0" MaxRadom="3" MinRadom="1" MaxValue="3" MinValue="1" datarry="1&#10;2&#10;2&#10;2&#10;2&#10;3&#10;1&#10;1&#10;2&#10;2" BindDeviceID="0" BindDataID="0" />
+					<ENUMS>
+						<enum Value="1" Name="停止" />
+						<enum Value="2" Name="运行" />
+						<enum Value="3" Name="故障" />
+					</ENUMS>
+					<GROUPS>
+						<group Name="驱动" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="电机电流" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="A" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-200" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="65" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="8" MinRadom="0" MaxValue="200" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="驱动" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="28" Name="[S]空调-ACU200" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="暖通" Addr="28" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="暖通" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="回风温度" BLOCK="2" Addr="0" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="10-40" CmdValue="" Color="#FF8B5CF6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="245" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="3" MinRadom="0" MaxValue="400" MinValue="100" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="暖通" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="设定温度" BLOCK="2" Addr="1" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="16-30" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="0" TimeBngrWay="0" Coef_a="0" Coef_b="0" Coef_c="260" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="60000" MaxRadom="260" MinRadom="260" MaxValue="260" MinValue="260" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="暖通" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="29" Name="[S]柴发-DG500" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="动力" Addr="29" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="动力" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="转速" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="0" Unit="rpm" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-1800" CmdValue="" Color="#FF2ECC71" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="2" Coef_b="1" Coef_c="1500" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="25" MinRadom="0" MaxValue="1800" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="动力" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="油位" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="0" Unit="%" ShowType="2" Gain="1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FFEC4899" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="-1" Coef_c="720" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="5000" MaxRadom="100" MinRadom="5" MaxValue="100" MinValue="5" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="动力" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="30" Name="[S]BMS-BMS48" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="储能" Addr="30" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="储能" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="SOC" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="%" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-100" CmdValue="" Color="#FFEC4899" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="-1" Coef_c="765" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="4000" MaxRadom="1000" MinRadom="100" MaxValue="1000" MinValue="100" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="储能" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="总电压" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="V" ShowType="0" Gain="0.01" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="40-60" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="0" Coef_b="0.01" Coef_c="5120" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="12" MinRadom="0" MaxValue="6000" MinValue="4000" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="储能" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="31" Name="[S]逆变器-PV1000" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="能源" Addr="31" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="能源" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="发电功率" BLOCK="2" Addr="0" PrtcTYPE="1" PointNum="1" Unit="kW" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-1000" CmdValue="" Color="#FF14B8A6" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="2" TimeBngrWay="1" Coef_a="3" Coef_b="0.5" Coef_c="80" Coef_d="0" Coef_e="0" ResetStep="24" XInvl="3000" MaxRadom="10000" MinRadom="0" MaxValue="10000" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="能源" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="日发电量" BLOCK="2" Addr="1" PrtcTYPE="1" PointNum="1" Unit="kWh" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-9999" CmdValue="" Color="#FFF97316" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="1" TimeBngrWay="1" Coef_a="0" Coef_b="5" Coef_c="2856" Coef_d="0" Coef_e="0" ResetStep="0" XInvl="2000" MaxRadom="99990" MinRadom="0" MaxValue="99990" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="能源" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+		<DEVICE ID="32" Name="[S]变压器-TT200" DeviceType="2" BindMode="0" BindDeviceID="0" p_invl="1" btime="0" BathReadMode="0" cGp="电力" Addr="32" mr_reg="125" mr_bit="2000" AddrUIMode="0" CRCByteOder="1" BlockBitOder="0" AddrOffset="0" PackWay="1" BitGap="0" RegGap="5" OneReg10="0" OneCoil0F="0" BCast1="0" BCast2="0" IsBCDevice="0">
+			<PORTS>
+				<port Name="COM6" />
+			</PORTS>
+			<GROUPS>
+				<group Name="电力" />
+			</GROUPS>
+			<SELF_LIST />
+			<DATA_LIST>
+				<DATA ID="1" Name="油温" BLOCK="2" Addr="0" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-120" CmdValue="" Color="#FFF97316" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="55" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="3" MinRadom="0" MaxValue="1200" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="电力" />
+					</GROUPS>
+				</DATA>
+				<DATA ID="2" Name="绕组温度" BLOCK="2" Addr="1" PrtcTYPE="0" PointNum="1" Unit="°C" ShowType="0" Gain="0.1" Offset="0" sz="2" BitOffset="0" BitNum="16" Range="0-150" CmdValue="" Color="#FF84CC16" ByteOder="0" WordOder="1" IntervalTime="1000" IsBRead="1">
+					<TIMEOUT Time="2000" ResendCount="0" />
+					<VALUE Stategy="3" TimeBngrWay="1" Coef_a="1" Coef_b="0.1" Coef_c="68" Coef_d="0" Coef_e="0" ResetStep="12" XInvl="1000" MaxRadom="3" MinRadom="0" MaxValue="1500" MinValue="0" datarry="" BindDeviceID="0" BindDataID="0" />
+					<ENUMS />
+					<GROUPS>
+						<group Name="电力" />
+					</GROUPS>
+				</DATA>
+			</DATA_LIST>
+		</DEVICE>
+	</DEVICE_LIST>
+</MThings>

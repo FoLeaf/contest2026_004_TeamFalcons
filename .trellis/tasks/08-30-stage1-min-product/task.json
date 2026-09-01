@@ -1,0 +1,33 @@
+{
+  "id": "stage1-min-product",
+  "name": "stage1-min-product",
+  "title": "阶段1：最小完整作品",
+  "description": "推进方案§6/§9.2：运营助手Agent、总线探查、最简LVGL；9/20里程碑子集",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "19y",
+  "assignee": "19y",
+  "createdAt": "2026-08-30",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "learn_vela",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-30-stage1-data-layout",
+    "08-30-stage1-ai-agent",
+    "08-30-stage1-modbus-discovery",
+    "08-30-stage1-agent-ops",
+    "08-30-stage1-lvgl-hmi",
+    "08-25-agent-capability-rescope"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "2026-09-01 Q1=B：HMI+Agent 同机为尽力项；出口主战场 lvgl-hmi AC4–AC7 + net CLI 查数。",
+  "meta": {}
+}

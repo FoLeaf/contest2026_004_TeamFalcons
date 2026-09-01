@@ -34,6 +34,28 @@
       "problemMatcher": []
     },
     {
+      "label": "openvela: Prepare IntelliSense",
+      "type": "process",
+      "linux": {
+        "command": "bash",
+        "args": [
+          "-lc",
+          "exec bash ${workspaceFolder}/scripts/prepare_wsl_intellisense.sh"
+        ]
+      },
+      "windows": {
+        "command": "wsl.exe",
+        "args": [
+          "-d",
+          "Debian",
+          "bash",
+          "-lc",
+          "exec bash ${workspaceFolder}/scripts/prepare_wsl_intellisense.sh"
+        ]
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "openvela: Build",
       "type": "process",
       "windows": {

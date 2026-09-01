@@ -86,13 +86,20 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 }
 
 $cubeCandidates = @(
+  "D:\Develop\STM32CubeCLT_1.21.0\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
   "D:\Develop\STM32CubeCLT\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
   (Join-Path $env:ProgramFiles "STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe")
 )
+Get-ChildItem -Path "D:\Develop" -Filter "STM32CubeCLT*" -Directory -ErrorAction SilentlyContinue |
+  ForEach-Object {
+    Join-Path $_.FullName "STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe"
+  } |
+  ForEach-Object { $cubeCandidates = @($_) + $cubeCandidates }
 $CubeCli = Resolve-ExistingFile $CubeCli "STM32_PROGRAMMER_CLI" $cubeCandidates "STM32CubeProgrammer CLI"
 
 $loaderCandidates = @(
   (Join-Path (Split-Path -Parent $CubeCli) "ExternalLoader\MT25TL01G_STM32H750B-DISCO.stldr"),
+  "D:\Develop\STM32CubeCLT_1.21.0\STM32CubeProgrammer\bin\ExternalLoader\MT25TL01G_STM32H750B-DISCO.stldr",
   "D:\Develop\STM32CubeCLT\STM32CubeProgrammer\bin\ExternalLoader\MT25TL01G_STM32H750B-DISCO.stldr"
 )
 $ExternalLoader = Resolve-ExistingFile $ExternalLoader "STM32_EXTERNAL_LOADER" $loaderCandidates "STM32H750B-DK External Loader"

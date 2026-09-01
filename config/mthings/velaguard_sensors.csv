@@ -1,0 +1,9 @@
+device,device_id,device_type,port,station,name,address,block,data_type,unit,scale,min,max,value_strategy,trend,history,serial_baud,group,enum
+[S]温湿度-导轨V1.5,1,slave,COM6,1,湿度,40001,2,uint16,%RH,0.1,0,100,3,true,true,9600,环境,
+[S]温湿度-导轨V1.5,1,slave,COM6,1,温度,40002,2,int16,°C,0.1,-40,80,3,true,true,9600,环境,
+[S]水浸-V1.1,2,slave,COM6,2,水浸状态,40003,2,uint16,,1,0,65535,0,true,true,9600,环境,1:正常;255:报警
+[S]水浸-V1.1,2,slave,COM6,2,灵敏度,40017,2,uint16,,1,0,100,0,false,false,9600,环境,
+[S]PT100-FTX458,3,slave,COM6,3,通道1温度,40001,2,int16,°C,0.1,-200,850,3,true,true,9600,温度,
+[S]PT100-FTX458,3,slave,COM6,3,通道2温度,40002,2,int16,°C,0.1,-200,850,3,true,true,9600,温度,
+[S]PT100-FTX458,3,slave,COM6,3,通道3温度,40003,2,int16,°C,0.1,-200,850,3,true,true,9600,温度,
+[S]PT100-FTX458,3,slave,COM6,3,通道4温度,40004,2,int16,°C,0.1,-200,850,3,true,true,9600,温度,

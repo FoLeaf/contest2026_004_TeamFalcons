@@ -1,0 +1,12 @@
+{
+  "ts": "2026-08-28T15:26:44.730Z",
+  "kind": "manifest_read",
+  "tool": "cursor",
+  "team_id": "contest2026_004_TeamFalcons",
+  "version": "1.4.0",
+  "context": {
+    "tool": "cursor",
+    "path": "/home/hello19y/openvela/contest2026_004_TeamFalcons/logs/Foleaf/manifest.json"
+  },
+  "message": "Expecting value: line 1 column 1 (char 0)"
+}

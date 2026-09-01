@@ -9,9 +9,8 @@
  *   - byte_timeout_ms < 0 无限等待，== 0 非阻塞试一次；
  *   - 返回实际字节数；< 0 为传输错误；[0, count-1] 视为超时。
  *
- * DE/RE 由 NuttX UART7 RS485 驱动自动切换。tcdrain 之后补一段短延时，
- * 规避已知问题：uart_tcdrain 不等移位寄存器发完（见
- * docs/velaguard-bringup-known-issues.md §4）。
+ * DE/RE 由 NuttX UART7 RS485 驱动在 TC 后切换。tcdrain 在 RS485 下等到
+ * TC；其后短延时仅为 Modbus RTU 帧间隔（3.5 字符），不是 DIR 补偿。
  ****************************************************************************/
 
 #include <nuttx/config.h>
@@ -39,11 +38,9 @@ static int32_t vg_modbus_now_ms(void)
   return (int32_t)(ts.tv_sec * 1000L + ts.tv_nsec / 1000000L);
 }
 
-/* 9600 8N1 下一个字符约 1.15ms；3.5 字符时间 ≈ 4ms。取 5ms 覆盖
- * tcdrain 未等 TC 的尾巴，同时满足 RTU 帧间隔。
- */
+/* 9600 8N1：3.5 字符时间 ≈ 4ms。tcdrain 已等 TC；此处仅为 RTU 帧间隔。 */
 
-#define VG_MODBUS_TX_TAIL_US 5000
+#define VG_MODBUS_RTU_GAP_US 5000
 
 static int32_t vg_modbus_port_read(uint8_t *buf, uint16_t count,
                                    int32_t byte_timeout_ms, void *arg)
@@ -229,7 +226,7 @@ static int32_t vg_modbus_port_write(const uint8_t *buf, uint16_t count,
       return -1;
     }
 
-  usleep(VG_MODBUS_TX_TAIL_US);
+  usleep(VG_MODBUS_RTU_GAP_US);
   return sent;
 }
 
