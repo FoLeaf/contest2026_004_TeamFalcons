@@ -12,7 +12,12 @@
 #     localhost relay presents the original port to Linux GDB (mirrored WSL)
 set -euo pipefail
 
-OCD="${OPENVELA_OPENOCD:-/mnt/d/Develop/xpack-openocd-0.12.0-7/bin/openocd.exe}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RESOLVE="$SCRIPT_DIR/wsl_resolve_windows_tool.sh"
+
+OCD="$("$RESOLVE" OPENVELA_OPENOCD \
+  "D:/Develop/xpack-openocd-0.12.0-7/bin/openocd.exe" \
+  "C:/Program Files/xPack/OpenOCD/0.12.0-7/bin/openocd.exe")"
 WIN_GDB_PORT="${OPENVELA_OPENOCD_GDB_PORT:-3333}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 RELAY_PY="$SCRIPT_DIR/wsl_tcp_relay.py"

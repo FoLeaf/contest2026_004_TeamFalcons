@@ -42,5 +42,15 @@ apply_patch_once() {
 
 apply_patch_once "$NUTTX_ROOT" "$NUTTX_PATCH" \
   "STM32H750B-DK MII/QSPI carrier"
-apply_patch_once "$APPS_ROOT" "$APPS_PATCH" \
-  "netinit carrier/DHCP reconnect"
+
+NETINIT_HDR="$APPS_ROOT/include/netutils/netinit.h"
+NETINIT_SRC="$APPS_ROOT/netutils/netinit/netinit.c"
+if [[ -f "$NETINIT_HDR" && -f "$NETINIT_SRC" ]] &&
+   grep -Fq 'netinit_set_ipv4_config' "$NETINIT_HDR" &&
+   grep -Fq 'NETINIT_HAVE_NETDEV' "$NETINIT_SRC" &&
+   grep -Fq 'config NETINIT_CARRIER_POLL' "$APPS_ROOT/netutils/netinit/Kconfig"; then
+  echo "netinit carrier/DHCP reconnect patch is already applied."
+else
+  apply_patch_once "$APPS_ROOT" "$APPS_PATCH" \
+    "netinit carrier/DHCP reconnect"
+fi

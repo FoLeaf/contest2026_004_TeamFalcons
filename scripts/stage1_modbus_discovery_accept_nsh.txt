@@ -1,0 +1,13 @@
+# Stage1 modbus-discovery 板端验收（net + VG_BUS_DISCOVER）
+# 前置：Modbus Slave mock @COM6 9600 8N1（推荐；MThings 全扫易崩）
+#   powershell: .\scripts\build_velaguard_mbslave.ps1 -OpenConnection -KeepOpenSeconds 900
+
+vgdiscover scan -a 1-8
+vgdiscover scan -a 1-32
+vgdiscover probe -a 1
+vgdiscover dump
+vgdiscover test-read -a 1 -r 0 -c 2
+vgdiscover apply --confirm
+vgcfg dump
+ls /data/velaguard/config
+cat /data/velaguard/config/points.json

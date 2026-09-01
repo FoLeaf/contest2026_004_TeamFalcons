@@ -27,14 +27,22 @@ venv/
 
 # Host-side unit-test binaries (sources and Makefiles stay tracked)
 app/velaguard/host_tests/test_net_policy
+app/velaguard/host_tests/test_frame_stats
+app/velaguard/host_tests/test_config_store
+app/velaguard/host_tests/test_discover
 
 # Local AI / editor tooling (do not submit; contest code lives in-tree)
 .claude
 .claude/
 .codex/
-.cursor/
+.cursor/*
+!.cursor/hooks.json
+!.cursor/hooks/
+!.cursor/hooks/**
+!.cursor/skills/
+!.cursor/skills/**
 .grok/
-.clangd
+# .clangd is committed (portable include flags for all machines)
 
 # Editor settings: keep the shared VS Code project configuration.
 .vscode/*
@@ -43,6 +51,8 @@ app/velaguard/host_tests/test_net_policy
 !.vscode/launch.json
 !.vscode/settings.json
 !.vscode/c_cpp_properties.json
+!.vscode/settings.local.json.example
+.vscode/settings.local.json
 .idea/
 *.swp
 *~
@@ -55,8 +65,16 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+.env.local
+
+# ai_agent LLM secrets (local only; provision to eMMC encrypted)
+secrets/agent_llm.key
+secrets/agent_llm.endpoint
+app/velaguard/agent_secrets.h
 
 # openvela contest AI Coding logs are collaboration artifacts and must be
 # committed with the code they document.
 !logs/
 !logs/**
+# Collector local failure dumps (not scored session transcripts)
+logs/**/errors/

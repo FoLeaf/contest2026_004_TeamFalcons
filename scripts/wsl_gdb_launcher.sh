@@ -6,8 +6,8 @@
 # libbabeltrace/libipt/... on its own. Point LD_LIBRARY_PATH at the bundled
 # lib dir, then exec gdb so Cortex-Debug talks to the real gdb process.
 
-GDB_BIN="${GDB_BIN:-/home/debian19y/tools/gdb-multiarch/usr/bin/gdb-multiarch}"
-GDB_LIBS="${GDB_LIBS:-/home/debian19y/tools/gdb-multiarch/usr/lib/x86_64-linux-gnu}"
+GDB_BIN="${GDB_BIN:-${HOME}/tools/gdb-multiarch/usr/bin/gdb-multiarch}"
+GDB_LIBS="${GDB_LIBS:-${HOME}/tools/gdb-multiarch/usr/lib/x86_64-linux-gnu}"
 
 if [ -x "$GDB_BIN" ]; then
   export LD_LIBRARY_PATH="${GDB_LIBS}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"

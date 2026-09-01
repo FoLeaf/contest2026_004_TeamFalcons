@@ -16,6 +16,26 @@ If you're using Codex or another agent-capable tool, additional project-scoped h
 - `.agents/skills/` — reusable Trellis skills
 - `.codex/agents/` — optional custom subagents
 
+Project-local skills (also mirrored under `.cursor/skills/` for Cursor):
+- `mthings-automation-config-skill` — generate or modify MThings `.mthings` from Modbus/S7/DL/T645/CJ/T188/DL/T698.45 point tables; trigger when importing registers, building SCADA pages/widgets, or validating `.mthings` XML.
+
 Managed by Trellis. Edits outside this block are preserved; edits inside may be overwritten by a future `trellis update`.
 
 <!-- TRELLIS:END -->
+
+# Project constraints (agents)
+
+Official contest rules override every local document. Durable local boundary: `docs/agents/BOUNDARY.md`. Terminology: `CONTEXT.md`.
+
+## When board circuitry is involved (BOUNDARY V11)
+
+**Trigger**: feature work that depends on the real development-board circuit — e.g. device drivers, pinmux, SDMMC/UART/SPI/I2C/ETH bring-up, expansion-board wiring, or any claim about which MCU pin/net a peripheral uses.
+
+**Then**: hardware materials must be taken from the local official board pack (not web-only UM scrapes or third-party pinmux notes as sole evidence):
+
+- Windows: `F:\Project\Embeded\H750B-DK\BOARD INFO\H750B-DK`
+- WSL: `/mnt/f/Project/Embeded/H750B-DK/BOARD INFO/H750B-DK`
+
+Priority inside that pack: **schematic PDF / SchDoc > ST BSP under `bsp/` > ST UM / data brief**.
+
+Files whose names contain `unofficial` are working notes only — useful for search; **cross-check** against schematic and/or BSP before coding. Non-hardware work (app logic, MQTT, Agent prompts, docs-only) does not require opening this pack.

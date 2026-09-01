@@ -52,3 +52,102 @@ M1/M2 全部验收通过(AC1-AC5)：velaguard-net 预设(patch+幂等apply, vela
 ### Status
 
 [OK] **Completed**
+
+## Session: Stage0 eMMC bring-up complete
+
+**Date**: 2026-08-29
+**Task**: `08-29-stage0-emmc`
+**Branch**: `learn_vela`
+
+### Summary
+
+STM32H750B-DK eMMC (SDMMC1) bring-up PASS: velaguard-emmc preset, board stm32_sdmmc (no CD), mount `/mnt/emmc`, FAT LFN, probe file survives cold reset. Hardware SoT locked as BOUNDARY V11. Stock NuttX H7 path is 1-bit MMC (8-bit HW wired). Powerfail-store planning drafted next.
+
+### Status
+
+[OK] **Completed** (AC1–AC5). Awaiting human git commit; not archived yet.
+
+
+## Session 3: stage0 powerfail-store board AC
+<!-- trellis-session: v=2 fp=98a59bf62e3c6e54 -->
+
+**Date**: 2026-08-29
+**Task**: stage0 powerfail-store board AC
+**Branch**: `learn_vela`
+
+### Summary
+
+Dual-slot FAT config store + vgcfg; fixed boot race, POSIX write, LIBC_SCANSET parse; AC1–AC5 board/host pass; archived task.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3883537` | feat(velaguard): add dual-slot power-fail config store and vgcfg |
+| `f258dcf` | docs(velaguard): record dual-slot config store contract and stage0 AC |
+| `f8be1eb` | chore(build): keep emmc target wiring for vgcfg bring-up |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 4: stage0 RS485 DIR/TC board AC
+<!-- trellis-session: v=2 fp=880e7483d2fc4f37 -->
+
+**Date**: 2026-08-29
+**Task**: stage0 RS485 DIR/TC board AC
+**Branch**: `learn_vela`
+
+### Summary
+
+stm32h7 RS485 tcdrain waits TXE|TC; dropped vgrs485 usleep; LA+new transceiver AC3/rx PASS; archived task.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b7e41b1` | fix(velaguard): drop RS485 usleep after tcdrain waits for TC |
+| `e3106dd` | docs(velaguard): record RS485 DIR/TC board bring-up and AC |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 5: stage0 frame stats MVP B
+<!-- trellis-session: v=2 fp=fd029fa2547408bf -->
+
+**Date**: 2026-08-30
+**Task**: stage0 frame stats MVP B
+**Branch**: `learn_vela`
+
+### Summary
+
+vg_frame_stats ring window + vgstats NSH; vgmodbus hook; host tests pass; emmc build OK; AC2 board pending inject/vgmodbus verify
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `86b694e` | feat(velaguard): add sliding-window frame stats and vgstats NSH |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 6: stage1 agent-ops board AC
+<!-- trellis-session: v=2 fp=stage1-agent-ops-ac -->
+
+**Date**: 2026-08-30
+**Task**: stage1-agent-ops + stage1-ai-agent + stage1-data-layout
+**Branch**: `learn_vela`
+
+### Summary
+
+板端运营日报验收通过（build 13:19:33；`daily-20260228.md` 1796B；`END status=ok iters=6 tools=6 elapsed=115s`）。联调修复 LLM watchdog、daemon attach、symlink 路径、MiMo JSON、run_shell 输出、120s 超时。AC4 告警解读代码就绪，板测留可选 §4。三子任务 PRD/笔记更新并归档。
+
+### Status
+
+[OK] **Completed**

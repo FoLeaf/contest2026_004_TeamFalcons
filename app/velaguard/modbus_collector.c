@@ -21,15 +21,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "modbus_port_openvela.h"
+
+#ifdef CONFIG_VG_FRAME_STATS
+#include "vg_frame_stats.h"
+#endif
 
 #ifndef VGMODBUS_DEFAULT_DEV
 #  define VGMODBUS_DEFAULT_DEV "/dev/rs485"
 #endif
 
 #define VGMODBUS_MAX_REGS     32
-#define VGMODBUS_READ_TO_MS   500
+#define VGMODBUS_READ_TO_MS   2000
 #define VGMODBUS_BYTE_TO_MS   20
 
 /****************************************************************************
@@ -175,6 +180,45 @@ static nmbs_error do_read(FAR nmbs_t *nmbs, FAR const struct vgmodbus_cfg_s *cfg
   return nmbs_read_holding_registers(nmbs, cfg->start, cfg->qty, regs);
 }
 
+#ifdef CONFIG_VG_FRAME_STATS
+static int32_t now_ms(void)
+{
+  struct timespec ts;
+
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (int32_t)(ts.tv_sec * 1000L + ts.tv_nsec / 1000000L);
+}
+
+static enum vg_fs_result nmbs_to_fs(nmbs_error err)
+{
+  if (err == NMBS_ERROR_NONE)
+    {
+      return VG_FS_OK;
+    }
+
+  if (err == NMBS_ERROR_CRC)
+    {
+      return VG_FS_CRC;
+    }
+
+  if (err == NMBS_ERROR_TIMEOUT)
+    {
+      return VG_FS_TIMEOUT;
+    }
+
+  return VG_FS_OTHER;
+}
+
+static void record_frame(uint8_t slave, nmbs_error err, int32_t t0_ms)
+{
+  int32_t t1 = now_ms();
+  uint32_t lat = (t1 >= t0_ms) ? (uint32_t)(t1 - t0_ms) : 0;
+
+  (void)vg_fs_record(slave, nmbs_to_fs(err),
+                     (err == NMBS_ERROR_NONE) ? lat : 0);
+}
+#endif
+
 static void print_regs(uint8_t addr, uint16_t start, uint16_t qty,
                        FAR const uint16_t *regs)
 {
@@ -196,13 +240,16 @@ static void print_regs(uint8_t addr, uint16_t start, uint16_t qty,
 int main(int argc, FAR char *argv[])
 {
   struct vgmodbus_cfg_s cfg;
-  cfg.loops=3;
   struct vg_modbus_port_s port;
   nmbs_platform_conf pc;
   nmbs_t nmbs;
   nmbs_error err;
   uint32_t fails = 0;
   unsigned int n = 0;
+
+#ifdef CONFIG_VG_FRAME_STATS
+  vg_fs_init();
+#endif
 
   if (parse_args(argc, argv, &cfg) != OK)
     {
@@ -238,9 +285,15 @@ int main(int argc, FAR char *argv[])
   for (; ; )
     {
       uint16_t regs[VGMODBUS_MAX_REGS];
+#ifdef CONFIG_VG_FRAME_STATS
+      int32_t t0 = now_ms();
+#endif
 
       memset(regs, 0, sizeof(regs));
       err = do_read(&nmbs, &cfg, regs);
+#ifdef CONFIG_VG_FRAME_STATS
+      record_frame(cfg.addr, err, t0);
+#endif
       if (err == NMBS_ERROR_NONE)
         {
           fails = 0;

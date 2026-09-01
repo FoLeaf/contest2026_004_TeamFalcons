@@ -24,6 +24,33 @@ config VG_BRINGUP_TOOLS
 		velaguard-min preset can enable them independently of LVGL/LVX
 		demo symbols.
 
+config VG_CONFIG_STORE
+	bool "VelaGuard dual-slot config store (eMMC FAT)"
+	default n
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		Build vg_config_store and the NSH tool vgcfg.  Requires a writable
+		FAT mount (e.g. /data/velaguard/config via velaguard-net).  Implements
+		dual-slot + CRC + seq atomic commit for power-fail safety.
+
+if VG_CONFIG_STORE
+
+config VG_CONFIG_BASEDIR
+	string "Config slot directory on mounted FS"
+	default "/data/velaguard/config"
+	---help---
+		Directory holding point_table_a.json / point_table_b.json.
+
+endif
+
+config VG_FRAME_STATS
+	bool "VelaGuard frame quality stats (Modbus/RS485)"
+	default n
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		Build vg_frame_stats and NSH tool vgstats.  vgmodbus records
+		CRC/timeout/latency into a per-slave sliding window.
+
 config VG_NET_FAILOVER
 	bool "VelaGuard TCP failover (RJ45 / ESP-01S)"
 	default n
@@ -69,5 +96,157 @@ config VG_NET_PING_HOST
 	---help---
 		Fallback ICMP target when eth0 has no DHCP gateway. Ping is
 		only an RJ45 health probe, not a traffic failover path.
+
+endif
+
+config VG_AGENT_OPS
+	bool "VelaGuard agent ops (Skill seed + alarm monitor)"
+	default n
+	depends on VG_BRINGUP_TOOLS && VG_FRAME_STATS
+	---help---
+		Seed alarm_interpretation / operations_report Skills and
+		HEARTBEAT.md; run a background alarm detector writing
+		/data/velaguard/pending_alarm.txt for Agent pickup.
+
+if VG_AGENT_OPS
+
+config VG_AGENT_AUTOSTART
+	bool "Auto-start ai_agent task at boot"
+	default y
+	---help---
+		Spawn ai_agent in a background task so cron/heartbeat can run
+		without manual "ai_agent &". NSH remains on the console thread.
+
+config VG_AGENT_ALARM_SLAVE
+	int "Alarm monitor Modbus slave address"
+	default 1
+
+config VG_AGENT_ALARM_POLL_SEC
+	int "Alarm poll interval (seconds)"
+	default 60
+
+config VG_AGENT_ALARM_TEMP_REG
+	int "Temperature holding register index"
+	default 0
+
+config VG_AGENT_ALARM_TEMP_THRESHOLD
+	int "Temperature alarm threshold (raw register value)"
+	default 3000
+
+config VG_AGENT_ALARM_OFFLINE_PCT
+	int "Offline alarm when timeout percent exceeds"
+	default 50
+
+endif
+
+config VG_BUS_DISCOVER
+	bool "Modbus bus discover (vgdiscover @9600)"
+	default n
+	depends on VG_BRINGUP_TOOLS && VG_CONFIG_STORE
+	---help---
+		NSH tool vgdiscover: fixed-9600 address scan, register block probe,
+		candidate point table JSON, and apply to /data/velaguard/config.
+
+if VG_BUS_DISCOVER
+
+config VG_DISCOVER_DEVPATH
+	string "RS485 device for discovery"
+	default "/dev/rs485"
+
+config VG_DISCOVER_BAUD
+	int "Discovery baud rate"
+	default 9600
+
+config VG_DISCOVER_ADDR_MIN
+	int "Scan address minimum"
+	default 1
+
+config VG_DISCOVER_ADDR_MAX
+	int "Scan address maximum"
+	default 32
+
+config VG_DISCOVER_INTER_MS
+	int "Inter-probe delay (ms)"
+	default 50
+
+config VG_DISCOVER_REG_MAX
+	int "Max holding register to probe"
+	default 120
+
+config VG_DISCOVER_CANDIDATE_PATH
+	string "Candidate point table JSON path"
+	default "/data/velaguard/discover/point_table_candidate.json"
+
+config VG_DISCOVER_POINTS_PATH
+	string "Applied points JSON path"
+	default "/data/velaguard/config/points.json"
+
+endif
+
+config VG_HMI
+	bool "VelaGuard LVGL HMI (NSH vghmi)"
+	default n
+	depends on GRAPHICS_LVGL
+	---help---
+		Build vghmi: LTDC + touch HMI entry (Phase B).
+		When VG_BRINGUP_TOOLS is also on (velaguard-lvgl-net merge),
+		autostart from velaguard_app_main if VG_HMI_AUTOSTART.
+
+if VG_HMI
+
+config VG_HMI_PRIORITY
+	int "vghmi task priority"
+	default 100
+
+config VG_HMI_STACKSIZE
+	int "vghmi stack size"
+	default 49152
+
+config VG_HMI_AUTOSTART
+	bool "Auto-start vghmi from velaguard_app_main"
+	default y
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		Spawn vghmi after /dev/fb0 appears so the demo firmware
+		does not require typing "vghmi &" on NSH.
+
+config VG_HMI_INPUT_DEVPATH
+	string "Touchscreen device path"
+	default "/dev/input0"
+
+config VG_HMI_DISCOVER
+	bool "HMI Modbus bus discover (9600 scan via work queue)"
+	default y
+	---help---
+		Link vg_bus_scan for the discover page. Requires RS485 UART
+		(UART7 /dev/rs485) in board defconfig.
+
+if VG_HMI_DISCOVER
+
+config VG_HMI_RS485_DEVPATH
+	string "RS485 device for HMI discover"
+	default "/dev/rs485"
+
+config VG_HMI_DISCOVER_BAUD
+	int "Discover baud rate"
+	default 9600
+
+config VG_HMI_DISCOVER_ADDR_MIN
+	int "Scan address minimum"
+	default 1
+
+config VG_HMI_DISCOVER_ADDR_MAX
+	int "Scan address maximum"
+	default 32
+
+config VG_HMI_DISCOVER_INTER_MS
+	int "Inter-probe delay (ms)"
+	default 50
+
+endif
+
+config VG_HMI_REPORT_DIR
+	string "Agent daily report directory"
+	default "/data/agent/reports"
 
 endif

@@ -5,7 +5,7 @@
 | 状态 | **终审通过（2026-07-14）**；文档交付（无 KiCad/Gerber） |
 | 任务 | `.trellis/tasks/07-14-velaguard-arduino-shield` |
 | 主板 | STM32H750B-DK / MB1381B |
-| 资料 | `D:\Study\Embeded\openvela\report\H750B-DK`（原理图、pinmux、PnP） |
+| 资料 | `F:\Project\Embeded\H750B-DK\BOARD INFO\H750B-DK`（原理图 MB1381、BSP、PnP；见 `docs/agents/BOUNDARY.md` V11） |
 | 关联固件 | UART7 RS485：`.trellis/tasks/07-13-resolve-usart3-rs485-vcp-conflict/design.md` |
 | 固件 pin 源 | `nuttx/.../stm32h750b-dk/include/board.h`：`GPIO_UART7_RX=PA8`，`GPIO_UART7_TX=PB4`；console=`USART3` PB10/PB11 |
 

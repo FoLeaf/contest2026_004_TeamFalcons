@@ -1,0 +1,22 @@
+# Ignore build folder
+build/
+bin/
+
+# LVGL tree cloned by scripts/setup_gui.sh (do not vendor)
+lvgl/
+
+# Ignore legacy root-level ui/ only (VelaGuard HMI lives in main/ui/)
+/ui/
+
+# Local third-party SDK drops (use system / package manager installs)
+third_party/
+
+# Ignore all dot folders except .trellis (tracked: tasks / workspace / spec / scripts)
+.*/
+!.trellis/
+
+# VSCode
+.vscode
+
+# Simulator-persisted custom sensor type templates
+vg_sensor_types.cfg

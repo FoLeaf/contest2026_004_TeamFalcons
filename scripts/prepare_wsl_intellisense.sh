@@ -12,6 +12,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+if [[ -f "${REPO_DIR}/.env.local" ]]; then
+  # shellcheck disable=SC1091
+  set -a
+  source "${REPO_DIR}/.env.local"
+  set +a
+fi
 OPENVELA_ROOT="$(cd "${OPENVELA_ROOT:-${REPO_DIR}/..}" && pwd)"
 BOARD_CONFIG="${BOARD_CONFIG:-stm32h750b-dk:lvgl}"
 NUTTX_DIR="${OPENVELA_ROOT}/nuttx"
@@ -87,6 +93,8 @@ for CONTEST_APP in "${CONTEST_APPS[@]}"; do
   fi
 done
 
+python3 "${SCRIPT_DIR}/generate_minimal_compile_commands.py"
+
 cat <<EOF
 
 IntelliSense prerequisites are ready.
@@ -94,10 +102,13 @@ IntelliSense prerequisites are ready.
 Next in Cursor (Remote - WSL):
   1. Install llvm-vs-code-extensions.vscode-clangd when prompted
      (ms-vscode.cpptools is unavailable in Cursor)
-  2. First clangd start: approve the bundled clangd download if asked
-  3. Command Palette → "clangd: Restart language server"
-  4. Command Palette → "Developer: Reload Window"
-  5. Open app/velaguard/velaguard.c and try Go to Definition on printf
+  2. Command Palette → "clangd: Restart language server"
+  3. Command Palette → "Developer: Reload Window"
+  4. Open app/velaguard/velaguard.c and try Go to Definition on printf
+
+If jump/complete is still weak after a big NuttX change:
+  sudo apt install bear
+  ./scripts/refresh_compile_commands.sh
 
 Architecture reminder:
   edit/IntelliSense → Cursor Remote - WSL + clangd
