@@ -39,6 +39,7 @@ app/velaguard/host_tests/test_time_sync
 .claude
 .claude/
 .codex/
+.zcode/
 .cursor/*
 !.cursor/hooks.json
 !.cursor/hooks/
