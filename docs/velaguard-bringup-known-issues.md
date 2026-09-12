@@ -226,7 +226,7 @@ vgmqtt -h 107.174.123.74 -p 1883 -w 30
 |---|---|
 | 判定 | 只 ping `eth0`（DHCP 网关；空则 `CONFIG_VG_NET_PING_HOST`）。连续 3 次失败才判 RJ45 挂 |
 | 切什么 | POSIX TCP ↔ ESP-01S `lesp_*` TCP。同时只一条活动出口 |
-| Wi-Fi | 上电即 join，与 RJ45 是否健康无关（热备）。测试 AP：SSID `xxx` / PSK `1472583690` |
+| Wi-Fi | 上电即 join，与 RJ45 是否健康无关（热备）。测试 AP 凭据以 `scripts/configs/velaguard-lvgl.defconfig` 的 `CONFIG_VG_WIFI_SSID/PASSWORD` 为准，或运行期 `vgnet wifi` 覆盖 |
 | 模组 | 仍是 ESP-01S，USART2 `/dev/ttyS1`，AT 1.7.4。不换 ESP32 |
 | 自动运行 | `velaguard_app_main` 拉 `net_mgr` 线程。不需要敲 NSH |
 | `vgnet` | 只观察/注入：`status`、`inject rj45\|wifi down\|up\|auto`、`wifi <ssid> <psk>` |
