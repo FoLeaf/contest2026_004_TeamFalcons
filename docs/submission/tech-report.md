@@ -13,7 +13,7 @@
 
 ## 2、摘要
 
-VelaGuard 是 STM32H750B-DK 上的 Modbus 现场值守网关，同板用 openvela 运行 LVGL 界面与 openvelaClaw。采集、判定、告警与显示由本地 C 代码完成，断网照常；联网后 openvelaClaw 按 Skill 解释告警，并经 MQTT 四类主题上报云看板。重点是本地安全环、滑窗失败率判定、试读后人工确认与边界明确的工具。已提交公共仓 PR 9 个；带屏静止首页在约 80 秒窗口内的界面提交由 158 次降至 9 次；板端自主发起的一轮日报与一番告警建议都在带屏固件上跑通并落盘，把互不依赖的取证命令并到一条消息后，一轮由四次迭代降到两次，端到端约 105 到 115 秒。
+VelaGuard 是 STM32H750B-DK 上的 Modbus 现场值守网关，同板用 openvela 运行 LVGL 界面与 openvelaClaw。采集、判定、告警与显示由本地 C 代码完成，断网照常；联网后 openvelaClaw 按 Skill 解释告警，并经 MQTT 四类主题上报云看板。重点是本地安全环、滑窗失败率判定、试读后人工确认与边界明确的工具。已提交公共仓 PR 11 个；带屏静止首页约 80 秒窗口内的界面提交由 158 次降至 9 次；板端自主日报与告警建议在带屏固件上跑通并落盘，取证命令合并后一轮由四次迭代、194 秒降到两次迭代、约 104 秒。
 
 专属仓为 [contest2026_004_TeamFalcons](https://github.com/open-vela/contest2026_004_TeamFalcons)。
 
@@ -167,7 +167,7 @@ eMMC 上的 FAT 文件系统不提供写入原子性，因此配置采用双槽�
 
 AI 能力使用 openvelaClaw 的 llm_proxy、Skill 加载、心跳服务和 NSH 交互渠道。带屏配置将 openvelaClaw 主循环栈设为 32 KiB、上下文和流缓冲各设为 4 KiB，并按需启动主循环。 [19](https://github.com/open-vela/packages_ai_agent/pull/32)
 
-公共仓里的改动涉及 QSPI 启动、板级接口、显示、触摸、网络与 openvelaClaw 适配。后续可以把资源受限 MCU 的栈和缓冲预算整理成配置组合，并加强工具参数、写路径和输出结构的检查。9 个 PR 的具体入口见表 4。
+公共仓里的改动涉及 QSPI 启动、板级接口、显示、触摸、网络与 openvelaClaw 适配。后续可以把资源受限 MCU 的栈和缓冲预算整理成配置组合，并加强工具参数、写路径和输出结构的检查。11 个 PR 的具体入口见表 4。
 
 ### 3.4 系统实现
 
@@ -239,7 +239,7 @@ RS485 半双工的方向控制是一处实现难点。发送结束后，方向�
 
 以太网存在一处引脚冲突。PH2 与 PH3 复用为以太网载波侦听与冲突检测信号，同时又是 QSPI bank2 的数据线；板子要从 QSPI 启动，这两脚必须让给 QSPI。解法分三步：声明本板不使用载波侦听与冲突检测（全双工以太网不需要这两路信号），把链路检测改为轮询 PHY 状态寄存器，以及允许先启动后插线，把自协商超时由失败改为成功返回、交给轮询去发现链路。轮询读取还有一个细节：该寄存器的链路位是低电平锁存，需要连读两遍才拿到当前值，并做两次采样防抖。这一方案成立的前提是自协商结果为全双工。 [39](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-15/codex__019fffb5-e402-7633-877e-61b322ff444e.jsonl)
 
-XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动代码与外部执行镜像的衔接；显示与触摸改动分别进入 LTDC 和 FT5x06 驱动，ESP8266 与 MQTT 改动留在其真实公共源码树中。以下 9 个 PR 的目标分支均为 dev-ai-contest-2026，当前状态均为 open。 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)
+XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动代码与外部执行镜像的衔接；显示与触摸改动分别进入 LTDC 和 FT5x06 驱动，ESP8266 与 MQTT 改动留在其真实公共源码树中。以下 11 个 PR 的目标分支均为 dev-ai-contest-2026，当前状态均为 open。 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)
 
 表 4  公共仓贡献入口
 
@@ -250,10 +250,12 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 | [nuttx #352](https://github.com/open-vela/nuttx/pull/352) | 网络、eMMC、RS485 和 ETH MII 的板级 bring-up |
 | [nuttx #353](https://github.com/open-vela/nuttx/pull/353) | STM32H7 LTDC 显示加速 |
 | [nuttx #354](https://github.com/open-vela/nuttx/pull/354) | FT5x06 触摸轮询性能改进 |
+| [nuttx #384](https://github.com/open-vela/nuttx/pull/384) | 看门狗活动链表被清空后的重建修复 |
 | [nuttx-apps #119](https://github.com/open-vela/nuttx-apps/pull/119) | 链路状态轮询、DHCP 续租及 ESP8266 LESP 兼容 |
 | [MQTT-C #1](https://github.com/open-vela/apps_netutils_mqttc_MQTT-C/pull/1) | 带标记的 LESP send/recv 弱符号钩子 |
 | [ai_agent #29](https://github.com/open-vela/packages_ai_agent/pull/29) | 守护进程附着、看门狗改用单调时钟与工具可靠性修复 |
 | [ai_agent #32](https://github.com/open-vela/packages_ai_agent/pull/32) | H750 带屏内存配置与 VelaGuard 工具访问限制 |
+| [ai_agent #40](https://github.com/open-vela/packages_ai_agent/pull/40) | 大请求体 TLS 写入、工具重复收尾与只读边界加固 |
 
 #### 交互与设备 Skill
 
@@ -273,9 +275,13 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 | --- | --- | --- |
 | alarm_interpretation.md | 板端在告警集合变化时发起，或用户问告警含义；数据随请求下发，再用统计、寄存器和配置摘要取证 | 逐点建议写入 alarm_advice.txt（VGADV1 行式格式），校验通过后上屏 |
 | operations_report.md | 板端发现当天无日报时主动请求，或用户询问运行概况 | 用只读工具取真实数字，写出 daily-当日日期.md；不覆盖固件的 runtime-report.md |
-| modbus_query.md | 用户查询寄存器、通信质量或运行累计；调用查询工具 | 返回工具支持的数据 |
+| modbus_query.md | 用户查询寄存器、通信质量或运行累计；优先调用 vg_point_read 按点名取已确认点表的工程值，无点位映射的寄存器与统计再用 vgstats dump、vgruntime dump、vgcfg dump | 返回工具支持的数据 |
 
-三份 Skill 均为 Markdown 文件，由固件首次启动写入 /data/agent/skills/，约定任务过程，C 层工具实现负责真正的访问限制。自然语言查数是补充交互，使用演示见提交的演示视频。 [4](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_agent_seed.c) [19](https://github.com/open-vela/packages_ai_agent/pull/32)
+三份 Skill 均为 Markdown 文件，由固件首次启动写入 /data/agent/skills/，固件侧措辞更新时就地刷新旧文件，约定任务过程，C 层工具实现负责真正的访问限制。自然语言查数是补充交互，使用演示见提交的演示视频。 [4](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_agent_seed.c) [19](https://github.com/open-vela/packages_ai_agent/pull/32)
+
+取数工具分两层。自定义只读工具 vg_point_read 按点名返回已确认点表的工程值，vg_run_report 复用固件生成的运行报告文本，两者读的是界面轮询快照与内存统计，不占用 RS485 总线；两个工具以 provider 名 vg 注册进 openvelaClaw 工具表，调用限流为每 60 秒 20 次，防止模型轮次拖垮业务线程。 [45](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_agent_tools.c)
+
+工具层可以脱离模型单独验证。vgagent tools 列出已注册工具，vgagent tool 加工具名与可选 JSON 参数可直接执行一次并查看返回，模型后端不可达时用于定位问题在工具层还是链路层；vgagent status 会打印凭证状态，凭证缺失时告警页显示本地规则摘要而不是 AI 建议，链路自动降级、不阻塞采集与显示。 [46](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgagent.c)
 
 #### 配套项目：上位机与云看板
 
@@ -301,7 +307,7 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 
 #### 复现入口
 
-需要包含 nuttx、apps 和 packages 的完整 openvela 工作区，并按专属仓 manifest 接入产品目录。在本仓根目录执行 bash scripts/build.sh，默认构建 velaguard-lvgl。公共树改动按表 4 核对；本仓构建脚本不会替公共树应用补丁。主机测试入口为 make -C app/velaguard/host_tests test，当前 13 个用例覆盖网络策略、配置存储、帧统计、运行统计、探查、点表、告警判定、时间同步、AI 文本契约、HMI 性能、运行渲染、交互调度与 MQTT 载荷；无头界面用例用 ctest 运行，覆盖告警、趋势、夹具、生命周期刷新与交互检查。上位机与云看板各自按仓内 README 运行。本仓源码遵循 Apache 2.0，内置的 nanoMODBUS 保留其 MIT 许可。 [16](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/scripts/build.sh) [23](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/host_tests/Makefile) [30](https://github.com/FoLeaf/velaguard_host)
+需要包含 nuttx、apps 和 packages 的完整 openvela 工作区，并按专属仓 manifest 接入产品目录。在本仓根目录执行 bash scripts/build.sh，默认构建 velaguard-lvgl。公共树改动按表 4 核对；本仓构建脚本不会替公共树应用补丁。主机测试入口为 make -C app/velaguard/host_tests test，当前 17 个用例覆盖网络策略、配置存储、帧统计、运行统计、探查、点表、告警判定、时间同步、AI 文本契约、建议策略、HMI 性能、运行渲染、交互调度、MQTT 载荷、凭证、查数解析与只读工具；无头界面用例用 ctest 运行，覆盖告警、趋势、夹具、生命周期刷新与交互检查。上位机与云看板各自按仓内 README 运行。本仓源码遵循 Apache 2.0，内置的 nanoMODBUS 保留其 MIT 许可。 [16](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/scripts/build.sh) [23](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/host_tests/Makefile) [30](https://github.com/FoLeaf/velaguard_host)
 
 ### 3.5 系统测试与结果分析
 
@@ -313,13 +319,13 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 
 | 项目与日期 | 方法或条件 | 实际结果与证据 |
 | --- | --- | --- |
-| 主机测试<br>2026-09-17 复核 | app/velaguard/host_tests | 13 个用例编译运行通过，覆盖网络策略、配置存储、帧统计、运行统计、探查、点表、告警判定、时间同步、AI 文本契约、HMI 性能、运行渲染、交互调度与 MQTT 载荷；其中 AI 文本契约用例为 2026-09-17 新增。[23](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/host_tests/Makefile) |
+| 主机测试<br>2026-09-20 复核 | app/velaguard/host_tests | 17 个用例编译运行通过，覆盖网络策略、配置存储、帧统计、运行统计、探查、点表、告警判定、时间同步、AI 文本契约、建议策略、HMI 性能、运行渲染、交互调度、MQTT 载荷、凭证、查数解析与只读工具；其中建议策略、凭证、查数解析与只读工具四项为 2026-09-17 后新增。[23](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/host_tests/Makefile) |
 | 无头界面测试<br>2026-09-13 18:28 | ctest，hmi-headless | 原始记录 5/5 通过，覆盖告警、趋势、夹具、生命周期刷新和交互检查；不能代替实体触摸验收。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
 | MQTT 四主题板验<br>2026-09-14 11:14 | 板端串口脚本断言 | PASS=4 FAIL=0：设备标识由 UID 派生、vgnet 显示 mqtt=up、eth0 取得 192.168.137.47、运行日志出现 mqtt online。[20](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/velaguard-mqtt-contract.md)[21](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/mqtt-nsh-accept-20260914.log) |
 | 板端时间同步<br>2026-09-14 | 串口连续观察记录 | 16:16 至 21:17 约 5 小时，vgtime 校时成功 11 次，同段日志无断言失败或 panic。[22](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/vgtime-board-20260914.log) |
 | 带屏 openvelaClaw 自启<br>2026-09-13 | 启动串口日志 | 出现 ai_agent autostart ok、32768 字节栈和 daemon 启动信息；只证明服务自启。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
-| 板端自主生成日报<br>2026-09-16 23:2x | 带屏固件，无人工提问 | 板端自行发起：日志 `vghmi: daily report requested` 与 `round submitted: 124 bytes`，工具行依次为 read_file、get_current_time、run_shell、run_shell、write_file，`END status=ok iters=4 tools=4 elapsed=194s`，产出 `daily-2026-09-16.md`（824 B），`vgagent status` 的 gen 由 0 增至 1。串口记录见 `.trellis/tasks/09-16-ai-contract-request-channel/research/board-driven-daily-20260916-r1.log`。 |
-| 轮次耗时对比<br>2026-09-17 10:5x | 审计日志的单调时间戳 | 改造前一轮 4 次迭代、端到端 194 秒；把互不依赖的取证命令并到同一条消息后，一条建议轮的三个 `run_shell` 集中在 8 秒内发完、约 107 秒后写文件，整轮约 115 秒；日报轮两次迭代、约 104 秒。 |
+| 板端自主生成日报<br>2026-09-16 23:2x | 带屏固件，无人工提问 | 板端自行发起：日志 `vghmi: daily report requested` 与 `round submitted: 124 bytes`，工具行依次为 read_file、get_current_time、run_shell、run_shell、write_file，`END status=ok iters=4 tools=4 elapsed=194s`，产出 `daily-2026-09-16.md`（824 B），`vgagent status` 的 gen 由 0 增至 1。串口记录见 `.trellis/tasks/archive/2026-09/09-16-ai-contract-request-channel/research/board-driven-daily-20260916-r1.log`。 |
+| 轮次耗时对比<br>2026-09-17 10:5x | 板端 agent_tools.log 的单调时间戳，单轮实测样本 | 改造前一轮 4 次迭代、端到端 194 秒（串口记录已归档，见上行）；把互不依赖的取证命令并到同一条消息后，一条建议轮的三个 `run_shell` 集中在 8 秒内发完、约 107 秒后写文件，整轮约 115 秒；日报轮两次迭代、约 104 秒。优化后的两轮样本未归档原始日志。 |
 | 告警逐点建议<br>2026-09-16 23:0x | 带屏固件，从站 1 离线告警 | Agent 写的 `alarm_advice.txt` 1840 B，首行 `VGADV1`、`boot=30bda344 req=15 n=8`，8 条均为 `sev=offline`，`sum`/`ev`/`att` 三字段齐全且引用了 vgstats 与 vgmodbus 的实际观测；板端另有 `agent_tools.log` 记录每次工具调用。 |
 | 历史 openvelaClaw 日报<br>2026-08-30 | 无屏板端，手动 ask | END status=ok；6 轮、6 次工具调用，产生 1796 B 日报文件。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)[12](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/.trellis/tasks/archive/2026-08/08-30-stage1-agent-ops/research/agent-ops-notes.md)[31](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-30/cursor__5c92cac5-619d-4584-8c7f-3a6ae56c3286.jsonl) |
 | 点表确认与本地告警<br>2026-09-14 核查 | 代码、协议及历史用例 | 候选分离与 --confirm 检查存在，点表上限 32 点；完整人工试读确认与物理注入录像仍待补充。[1](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_alarm_eval.c)[2](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgpoint.c)[10](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/velaguard-host-nsh-protocol.md) |
@@ -347,9 +353,9 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 | 项目 | 结果 | 测量说明 |
 | --- | --- | --- |
 | 历史无屏 ask | 115 s；6 轮；6 次工具 | 2026-08-30 单次日报请求，原始行见会话日志；不是平均时延，也不是带屏数据。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)[12](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/.trellis/tasks/archive/2026-08/08-30-stage1-agent-ops/research/agent-ops-notes.md)[31](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-30/cursor__5c92cac5-619d-4584-8c7f-3a6ae56c3286.jsonl) |
-| nuttx.bin | 1,233,724 B | 2026-09-14 已有的二进制文件，未重新构建。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
-| nuttx.hex | 3,470,222 B | 同批 Intel HEX 文本大小；不等于 Flash 有效负载。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
-| qspi_bootstub.hex | 2,076 B | 2026-09-12 已有 HEX 文件大小，不能直接等同启动代码占用。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
+| nuttx.bin | 1,257,332 B | 2026-09-17 已有的二进制文件，未重新构建。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
+| nuttx.hex | 3,536,656 B | 同批 Intel HEX 文本大小；不等于 Flash 有效负载。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
+| qspi_bootstub.hex | 2,076 B | 2026-09-16 已有 HEX 文件大小，不能直接等同启动代码占用。[11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) |
 
 #### 可靠性与稳定性
 
@@ -363,13 +369,13 @@ XIP 指程序直接从外部闪存取指执行，QSPI 启动解决片内启动�
 
 | 指标 | 数据 |
 | --- | --- |
-| AI Coding 代码占比 | 约 85%（团队估算）。范围为专属仓自研 C、头文件与脚本，清点范围 167 个文件、32,195 个物理行，含空行与注释；排除公共树、nanoMODBUS、LVGL 库和生成字体。 |
+| AI Coding 代码占比 | 约 85%（团队估算）。范围为专属仓自研 C、头文件与脚本，清点范围 191 个文件、41,416 个物理行，含空行与注释；排除公共树、nanoMODBUS、LVGL 库和生成字体。 |
 | 使用的 AI 工具 | Claude Code、Codex、OpenCode、Cursor、Grok Build、ZCode。工具归属按 logs 中的真实 tool 标签统计。 |
 | MCP 工具使用情况 | 设备端未使用 MCP，开发侧亦未使用 VelaJS MCP 或 Figma MCP。 |
 | Skills 使用与新增情况 | 开发侧使用官方构建、Kconfig、驱动审查与日志采集等 Skill；自建板端内环、候选确认、告警上屏、硬件核对与 MThings 配置 Skill。设备端另有告警解释、运行报告、Modbus 查数三份运行时 Skill，见表 5。 |
 | Token 使用总量 | 开发阶段未使用赛事 MiMo Token。板端推理使用赛事 MiMo，累计用量未导出。 |
 
-证据快照记录开发会话文件 270 份，按真实来源分布为 claude-code 64；codex 64；cursor 60；grok-build 21；opencode 50；zcode 11。这些会话日志本身也是板端联调与验收的原始记录，正文按日期引用到具体文件，例如日报验收的会话日志；日志位于 logs/Foleaf/，提交前由官方校验脚本检查。 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) [17](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/) [31](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-30/cursor__5c92cac5-619d-4584-8c7f-3a6ae56c3286.jsonl)
+证据快照（2026-09-20）记录开发会话文件 286 份，按真实来源分布为 claude-code 73；codex 64；cursor 63；grok-build 21；opencode 50；zcode 15。这些会话日志本身也是板端联调与验收的原始记录，正文按日期引用到具体文件，例如日报验收的会话日志；日志位于 logs/Foleaf/，提交前由官方校验脚本检查。 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json) [17](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/) [31](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-30/cursor__5c92cac5-619d-4584-8c7f-3a6ae56c3286.jsonl)
 
 #### 开发方式与经验
 
@@ -381,7 +387,7 @@ AI 辅助覆盖驱动和应用实现、Kconfig 排查、主机测试、板测脚
 
 #### 成果总结
 
-VelaGuard 已经有一套以现场网关为中心的 openvela 固件，本地采集与规则、候选点表操作、LVGL 显示、设备 Skill 和联网推理接口都有对应入口。同板图形与 openvelaClaw 自启、历史板端多轮日报和静止界面优化都有带测试条件的证据；9 个公共仓 PR 将底层工作留在相应源码树中。板端另有三项验收：MQTT 四主题上报（PASS=4 FAIL=0）、eMMC 时间恢复与 SNTP 校时、32 点位点表上限；界面侧新增趋势页与多行告警页，支持逐点静音与标记处理。配套的 Windows 点表上位机与只读云看板已独立可用。 [20](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/velaguard-mqtt-contract.md) [21](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/mqtt-nsh-accept-20260914.log) [22](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/vgtime-board-20260914.log)
+VelaGuard 已经有一套以现场网关为中心的 openvela 固件，本地采集与规则、候选点表操作、LVGL 显示、设备 Skill 和联网推理接口都有对应入口。同板图形与 openvelaClaw 自启、历史板端多轮日报和静止界面优化都有带测试条件的证据；11 个公共仓 PR 将底层工作留在相应源码树中。板端另有三项验收：MQTT 四主题上报（PASS=4 FAIL=0）、eMMC 时间恢复与 SNTP 校时、32 点位点表上限；界面侧新增趋势页与多行告警页，支持逐点静音与标记处理。配套的 Windows 点表上位机与只读云看板已独立可用。 [20](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/velaguard-mqtt-contract.md) [21](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/mqtt-nsh-accept-20260914.log) [22](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/vgtime-board-20260914.log)
 
 #### 应用前景与商业价值
 
@@ -395,13 +401,13 @@ VelaGuard 已经有一套以现场网关为中心的 openvela 固件，本地采
 
 实现层面还有三处不一致。告警规则目前有两份实现：界面模型里的滑窗离线判定已经上线，而独立的告警判定模块用的是连续失败计数，只被主机测试覆盖、尚未接入固件调用路径，后续将合并为一份实现。寄存器解码只实现了 int16 乘倍率，点表虽然支持 5 种数据类型与两种字序，但由人工选定，多候选的自动求解尚未实现。帧质量统计把帧间隔违规与异常码一并归入其他类，没有单独计数。 [1](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_alarm_eval.c) [3](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_ui_backend_board.c) [37](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/gui/main/ui/model/vg_model.c)
 
-安全边界已经补上的部分：命令限制细化到子命令（vgstats 与 vgruntime 只放行 dump、vgnet 只放行 status、vgcfg 只放行 dump），封住了 vgruntime report 这个可写任意路径的口子；固件的离线兜底产物 runtime-report.md 在 C 层对 Agent 只读；每次工具执行前追加审计行到 agent_tools.log；AI 上屏文本只来自通过板端 C 校验的缓存条目，标注为 AI 推测。其中 schema 指输出字段和类型必须符合预先规定的结构。仍待补强的是试读结果与生效版本的强绑定，以及文件写入范围与配置文件保护的进一步收紧。 [2](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgpoint.c) [3](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_ui_backend_board.c) [19](https://github.com/open-vela/packages_ai_agent/pull/32)
+安全边界已经补上的部分：命令限制细化到子命令（vgstats 与 vgruntime 只放行 dump、vgnet 只放行 status、vgcfg 只放行 dump），封住了 vgruntime report 这个可写任意路径的口子；自定义只读工具 vg_point_read 与 vg_run_report 不开总线、限流每 60 秒 20 次；固件的离线兜底产物 runtime-report.md 在 C 层对 Agent 只读；每次工具执行前追加审计行到 agent_tools.log；凭证缺失时 Agent 链路降级到本地规则摘要，AI 上屏文本只来自通过板端 C 校验的缓存条目，标注为 AI 推测。其中 schema 指输出字段和类型必须符合预先规定的结构。仍待补强的是试读结果与生效版本的强绑定，以及文件写入范围与配置文件保护的进一步收紧。 [45](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_agent_tools.c) [2](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgpoint.c) [3](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_ui_backend_board.c) [19](https://github.com/open-vela/packages_ai_agent/pull/32)
 
 24 小时稳定性、物理告警注入及恢复测试仍待完成。明文 MQTT 和测试 Broker 只按赛期演示定位；OTA、周报、故障归因规则库、Bridge、语音与屏幕点表编辑尚未交付。
 
 #### 实现与证据索引
 
-以下编号对应正文中的可点击引用。代码与记录位于专属仓，公共框架改动通过表 4 的 PR 查阅；版本条件、原始记录位置和文件哈希另见 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)。
+以下编号对应正文中的可点击引用。代码与记录位于专属仓，公共框架改动通过表 4 的 PR 查阅；版本条件、原始记录位置和文件哈希另见。 [11](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/docs/submission/evidence/report-evidence.json)
 
 - [1 本地告警判定](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_alarm_eval.c)，路径为 `app/velaguard/vg_alarm_eval.c`
 - [2 候选点表与人工确认](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgpoint.c)，路径为 `app/velaguard/vgpoint.c`
@@ -447,4 +453,6 @@ VelaGuard 已经有一套以现场网关为中心的 openvela 固件，本地采
 - [42 2026-08-18 MQTT-C 队列模型与 ESP 链路排障](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-18/cursor__2b954b8a-3d21-4fb8-8fbd-54684a8360f1.jsonl)，路径为 `logs/Foleaf/2026-08-18/cursor__2b954b8a-3d21-4fb8-8fbd-54684a8360f1.jsonl`
 - [43 带屏界面后端：不生成心跳唤醒文件](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_ui_backend_board.c)，路径为 `app/velaguard/vg_ui_backend_board.c`
 - [44 2026-08-25 需求取舍：波特率矩阵与设备指纹](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/logs/Foleaf/2026-08-25/cursor__2d65c3b9-8cdc-4237-bfcb-8493004ff772.jsonl)，路径为 `logs/Foleaf/2026-08-25/cursor__2d65c3b9-8cdc-4237-bfcb-8493004ff772.jsonl`
+- [45 设备端只读工具与限流](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vg_agent_tools.c)，路径为 `app/velaguard/vg_agent_tools.c`
+- [46 vgagent 诊断子命令与凭证状态](https://github.com/open-vela/contest2026_004_TeamFalcons/blob/dev-ai-contest-2026/app/velaguard/vgagent.c)，路径为 `app/velaguard/vgagent.c`
 

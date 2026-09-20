@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-15T08:52:11.412912+00:00",
+  "captured_at": "2026-09-20T07:13:57.695417+00:00",
   "note": "Read-only collection. Historical results are not new test runs.",
   "sources": {
     "AGENTS.md": {
@@ -13,14 +13,14 @@
       "sha256": "760bf92aa78066e4f21bfd8433f75ab03f2cc4c83dcc760693a59290f5ebbeb8"
     },
     "app/velaguard/vgpoint.c": {
-      "bytes": 18532,
-      "mtime": "2026-09-14T10:29:59.619664+08:00",
-      "sha256": "a616937c8178d513553bed2146d61927b3975ac9e9faa76522081f0f8bc11536"
+      "bytes": 19625,
+      "mtime": "2026-09-16T18:29:30.779150+08:00",
+      "sha256": "e4fcc383543a23c2b863f236e7f075df74567102f2e9c093ef6c69a751f91e64"
     },
     "app/velaguard/vg_point_table.c": {
-      "bytes": 28609,
-      "mtime": "2026-09-14T10:29:53.144884+08:00",
-      "sha256": "2c462d6c340e22aaf8bb45f5c4d8a05007ba012ac841a62097cace777b04bada"
+      "bytes": 33014,
+      "mtime": "2026-09-17T16:18:11.350320+08:00",
+      "sha256": "769c61a3c8b83e73f0dc39bd78640553b064ac26594c6d33a2c5ee8f7e2e9358"
     },
     "app/velaguard/vg_alarm_eval.c": {
       "bytes": 3054,
@@ -33,24 +33,24 @@
       "sha256": "df9b7f935d24b8d0dcfef2457186abd2005b8ffde1f45918b88cd8b605252e5b"
     },
     "app/velaguard/vg_runtime.c": {
-      "bytes": 24952,
-      "mtime": "2026-09-14T10:29:23.599104+08:00",
-      "sha256": "470e1629d37cfc5275c9783d973b1c2929f7bc833b546eacd0d04922a10e2232"
+      "bytes": 27085,
+      "mtime": "2026-09-17T20:05:08.994924+08:00",
+      "sha256": "c09eac728564f485564fa72ecebbe6087ab209e7b3f4ccf17f960913f24e2a75"
     },
     "app/velaguard/vg_ui_backend_board.c": {
-      "bytes": 29753,
-      "mtime": "2026-09-14T15:40:43.526699+08:00",
-      "sha256": "81eb53aec7eff9c276277801d6bf812049dccfcb60f44226c8d37d66339467ef"
+      "bytes": 38123,
+      "mtime": "2026-09-17T10:38:24.229848+08:00",
+      "sha256": "b44a3199b5550db9c4c2d31833f450eb04d509024dcee888acf8c0e1189bbd6c"
     },
     "app/velaguard/vg_agent_seed.c": {
-      "bytes": 5219,
-      "mtime": "2026-09-13T22:37:28.539977+08:00",
-      "sha256": "5a862ac40606d2f41041344d7f9aeb1b6056936dc87ef800dec2eb20022a00b0"
+      "bytes": 9260,
+      "mtime": "2026-09-17T20:23:28.236773+08:00",
+      "sha256": "90b941b1c6c34dc05f14badb4332e2e59e65091ca34a4dc702f2ffbd5e34da80"
     },
     "app/velaguard/vg_provision.c": {
-      "bytes": 8879,
-      "mtime": "2026-09-14T10:30:07.421697+08:00",
-      "sha256": "b17d3f5cf0a5182a9bd596d87d35aea90d902c8bddb90171e4dd943e3270ff5b"
+      "bytes": 14574,
+      "mtime": "2026-09-17T19:25:02.763598+08:00",
+      "sha256": "96c4af53342a68ccd08f98ec75661d2e58a7676e4b507db6559d6ce85f729038"
     },
     "app/velaguard/vg_net_mgr.c": {
       "bytes": 11080,
@@ -62,14 +62,34 @@
       "mtime": "2026-09-14T15:07:50.745879+08:00",
       "sha256": "0043fd62dea0cfeee932c1404f5a4687bfd306694cd6f8c0f7710ccfa327c0a5"
     },
+    "app/velaguard/vg_agent_tools.c": {
+      "bytes": 15333,
+      "mtime": "2026-09-17T21:38:05.067676+08:00",
+      "sha256": "cca98d79a4edfed1e59b409dad54f2a7391cca8678ba64f38fd6b5d3242c1570"
+    },
+    "app/velaguard/vg_agent_query.c": {
+      "bytes": 10065,
+      "mtime": "2026-09-17T20:16:17.530875+08:00",
+      "sha256": "b99414b11c5068ff232b47adee3b0ba31cd2080514230dc43fe106d4712a19f3"
+    },
+    "app/velaguard/vgagent.c": {
+      "bytes": 8468,
+      "mtime": "2026-09-17T21:37:22.527826+08:00",
+      "sha256": "4935a6df74ad130663de8a032830ca91c71b5c7f8f2df3817a4a2b3391dad2ed"
+    },
+    "app/velaguard/vg_advice.c": {
+      "bytes": 22527,
+      "mtime": "2026-09-17T19:19:17.833598+08:00",
+      "sha256": "76a24283a7a3aa74562ad84b0e162493e0b4250c5850c8d6435017ab57d413e7"
+    },
     "app/velaguard/velaguard.c": {
-      "bytes": 6921,
-      "mtime": "2026-09-13T18:44:02.342574+08:00",
-      "sha256": "cd3709ce4a37611d44e4c6debf1528b24c7d372f14aa9fef1d1629f916ede573"
+      "bytes": 7277,
+      "mtime": "2026-09-17T20:09:22.672954+08:00",
+      "sha256": "9ff6adf8e2c5564b4a88097a7a0aeb5eff4ec894ccf61e541ac698c1cb59bf2a"
     },
     "scripts/configs/velaguard-lvgl.defconfig": {
       "bytes": 5609,
-      "mtime": "2026-09-15T16:05:14.881517+08:00",
+      "mtime": "2026-09-16T18:29:30.809329+08:00",
       "sha256": "e6751baa7dffb62d6d65880b91c1ba8c2b0ed0aa8186cc417f6523b0bd4344a5"
     },
     "gui/main/ui/model/vg_model.c": {
@@ -78,14 +98,14 @@
       "sha256": "6d4a868a27763a38339346359a57aa209acd7947e247b6a122f0a2851d11020f"
     },
     "gui/main/ui/pages/vg_page_alarm.c": {
-      "bytes": 26975,
-      "mtime": "2026-09-13T18:07:09.727650+08:00",
-      "sha256": "59f733a18cc53eb9af548281d96fde1f9681da2b6a13a399a1b435320389aa6b"
+      "bytes": 30613,
+      "mtime": "2026-09-17T19:18:59.797602+08:00",
+      "sha256": "d8a5b39cb574981bdc6e53353acc83b8c5f030d7224fc8061c964bed9c9b423d"
     },
     "docs/velaguard-host-nsh-protocol.md": {
-      "bytes": 14062,
-      "mtime": "2026-09-14T10:34:58.185044+08:00",
-      "sha256": "60b408b29b0da795042dd270bf1a12e944c414e02c5d908ba3803564deec20f7"
+      "bytes": 20005,
+      "mtime": "2026-09-17T21:52:19.203633+08:00",
+      "sha256": "023bdeeaa8d700b47d21c037113cbc0b7fc0372d3ad53ec1fbdb89cedece73dd"
     },
     "docs/velaguard-mqtt-contract.md": {
       "bytes": 3439,
@@ -118,19 +138,19 @@
       "sha256": "e3fc38213915b6e60cbfd875d51052dbda79023bfcb07caa68a1ff112ebc3b66"
     },
     "../packages/ai_agent/include/agent_config.h": {
-      "bytes": 19640,
-      "mtime": "2026-09-14T18:58:57.631651+08:00",
-      "sha256": "cadde640afb29211f26dad922ea37e39dd9fc9486fddb9d011a4836e2dbe20b5"
+      "bytes": 20195,
+      "mtime": "2026-09-17T19:14:22.329662+08:00",
+      "sha256": "f1f779f19b2fb6ef239339bd27cf51287093517166ded50fe9f278a78a7fb426"
     },
     "../packages/ai_agent/src/tools/tool_shell.c": {
-      "bytes": 19048,
-      "mtime": "2026-09-14T18:58:57.633132+08:00",
-      "sha256": "c36bf1c738180c564bb93cbbbcad7eb5402314679fa7faa2bf8a6769f43ed5ee"
+      "bytes": 20396,
+      "mtime": "2026-09-16T21:52:27.306044+08:00",
+      "sha256": "01b00811b259c8983aa037dd4a87caa417b17e8ed297e5bab5e071de59052292"
     },
     "../packages/ai_agent/src/tools/tool_files.c": {
-      "bytes": 13845,
-      "mtime": "2026-09-15T16:02:28.049550+08:00",
-      "sha256": "235758b38bc6c40c0ec3fc928e519b785a76547b77f3946e93e703d447197792"
+      "bytes": 14236,
+      "mtime": "2026-09-20T12:18:39.053246+08:00",
+      "sha256": "8a037f5a92aa27cffd3102440718cb2881e09622bf4f645c6446c0b41a20cdd8"
     }
   },
   "performance": [
@@ -406,110 +426,110 @@
   },
   "headless_20260913": {
     "path": ".debug/hmi-headless/Testing/Temporary/LastTest.log",
-    "bytes": 8531,
-    "mtime": "2026-09-13T18:28:37.299713+08:00",
-    "sha256": "72e515a89f78ead693871e09ea5be315418bdd932d31bce751c6d2cf6831dff8",
+    "bytes": 9363,
+    "mtime": "2026-09-17T19:46:26.981252+08:00",
+    "sha256": "63514ded15a3331015756d4f2a9de14cb1997aa52b3572f1d1dee254166acfe0",
     "excerpts": [
       {
         "line": 1,
-        "text": "Start testing: Sep 13 18:28 CST"
+        "text": "Start testing: Sep 17 19:46 CST"
       },
       {
         "line": 3,
         "text": "1/5 Testing: alarm_check"
       },
       {
-        "line": 48,
-        "text": "Test time =   0.05 sec"
-      },
-      {
-        "line": 50,
-        "text": "Test Passed."
-      },
-      {
-        "line": 55,
-        "text": "2/5 Testing: trend_check"
-      },
-      {
-        "line": 84,
-        "text": "Test time =   0.05 sec"
-      },
-      {
-        "line": 86,
-        "text": "Test Passed."
-      },
-      {
-        "line": 91,
-        "text": "3/5 Testing: fixture_check"
-      },
-      {
-        "line": 123,
+        "line": 66,
         "text": "Test time =   0.10 sec"
       },
       {
-        "line": 125,
+        "line": 68,
         "text": "Test Passed."
       },
       {
-        "line": 130,
+        "line": 73,
+        "text": "2/5 Testing: trend_check"
+      },
+      {
+        "line": 102,
+        "text": "Test time =   0.06 sec"
+      },
+      {
+        "line": 104,
+        "text": "Test Passed."
+      },
+      {
+        "line": 109,
+        "text": "3/5 Testing: fixture_check"
+      },
+      {
+        "line": 141,
+        "text": "Test time =   0.10 sec"
+      },
+      {
+        "line": 143,
+        "text": "Test Passed."
+      },
+      {
+        "line": 148,
         "text": "4/5 Testing: lifecycle_render_check"
       },
       {
-        "line": 152,
-        "text": "Test time =   3.39 sec"
+        "line": 170,
+        "text": "Test time =   3.47 sec"
       },
       {
-        "line": 154,
+        "line": 172,
         "text": "Test Passed."
       },
       {
-        "line": 159,
+        "line": 177,
         "text": "5/5 Testing: interaction_check"
       },
       {
-        "line": 203,
-        "text": "Test time =   0.20 sec"
+        "line": 221,
+        "text": "Test time =   0.21 sec"
       },
       {
-        "line": 205,
+        "line": 223,
         "text": "Test Passed."
       },
       {
-        "line": 210,
-        "text": "End testing: Sep 13 18:28 CST"
+        "line": 228,
+        "text": "End testing: Sep 17 19:46 CST"
       }
     ]
   },
   "firmware_files": {
     "nuttx.bin": {
-      "bytes": 1233724,
-      "mtime": "2026-09-14T15:44:47.344139+08:00",
-      "sha256": "4bb3aae9ae8ea344cca7f58a6f908a6cd236e4a7d994510784c8ceeefce592ed"
+      "bytes": 1257332,
+      "mtime": "2026-09-17T21:38:13.814303+08:00",
+      "sha256": "3c048bc0324e3d40448967bdb1ef369c0d10fd3d214ebc7ee49689b0ca5db59b"
     },
     "nuttx.hex": {
-      "bytes": 3470222,
-      "mtime": "2026-09-14T15:44:47.340572+08:00",
-      "sha256": "c5f56ae30f01cb1d66667118581c830d7fc9012de0744de987d343fb1d8da198"
+      "bytes": 3536656,
+      "mtime": "2026-09-17T21:38:13.811815+08:00",
+      "sha256": "926477c10ad1337b04e4739e841c4966264bfce2e15363a4754ddedfa0e4c133"
     },
     "qspi_bootstub.hex": {
       "bytes": 2076,
-      "mtime": "2026-09-12T19:57:37.394847+08:00",
+      "mtime": "2026-09-16T22:10:21.251450+08:00",
       "sha256": "877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e"
     }
   },
   "coding_sessions_by_tool": {
-    "claude-code": 64,
+    "claude-code": 73,
     "codex": 64,
-    "cursor": 60,
+    "cursor": 63,
     "grok-build": 21,
     "opencode": 50,
-    "zcode": 11
+    "zcode": 15
   },
-  "coding_sessions_total": 270,
+  "coding_sessions_total": 286,
   "source_line_inventory": {
-    "files": 167,
-    "physical_lines": 32195,
-    "nonempty_lines": 27707
+    "files": 191,
+    "physical_lines": 41416,
+    "nonempty_lines": 35343
   },
   "pull_requests": [
     {
@@ -540,7 +560,7 @@
       "state": "open",
       "merged_at": null,
       "base": "dev-ai-contest-2026",
-      "head_sha": "8792b0c2744845fcbf8144b8bd54a4a50df5e1a7"
+      "head_sha": "581e576b65ab1c702f9a2b329cfa1cf42f2d9ba5"
     },
     {
       "repo": "nuttx",
@@ -561,6 +581,16 @@
       "merged_at": null,
       "base": "dev-ai-contest-2026",
       "head_sha": "b47cb29d06a3d53fa89b42119ddc5e86a1ed6766"
+    },
+    {
+      "repo": "nuttx",
+      "number": 384,
+      "url": "https://github.com/open-vela/nuttx/pull/384",
+      "title": "fix(sched/wdog): rebuild the active list when it was found cleared",
+      "state": "open",
+      "merged_at": null,
+      "base": "dev-ai-contest-2026",
+      "head_sha": "605d9fffde8677fbecf6dcb97e146f3ae36cda34"
     },
     {
       "repo": "nuttx-apps",
@@ -601,6 +631,16 @@
       "merged_at": null,
       "base": "dev-ai-contest-2026",
       "head_sha": "2701d0363e4b97c9def6dc22f520b101a1618234"
+    },
+    {
+      "repo": "packages_ai_agent",
+      "number": 40,
+      "url": "https://github.com/open-vela/packages_ai_agent/pull/40",
+      "title": "fix(ai_agent): 大请求体 TLS 写入、工具重复收尾与只读边界加固",
+      "state": "open",
+      "merged_at": null,
+      "base": "dev-ai-contest-2026",
+      "head_sha": "fdbe2e502a29cdc1ac1966d0173566a9c7363233"
     }
   ]
 }
