@@ -203,6 +203,7 @@ config VG_AGENT_ALARM_OFFLINE_PCT
 endif
 
 config VG_BUS_DISCOVER
+	select NETUTILS_CJSON
 	bool "Modbus bus discover (vgdiscover @9600)"
 	default n
 	depends on VG_BRINGUP_TOOLS && VG_CONFIG_STORE
@@ -297,6 +298,7 @@ config VG_HMI_INPUT_DEVPATH
 	default "/dev/input0"
 
 config VG_HMI_DISCOVER
+	select NETUTILS_CJSON
 	bool "HMI Modbus bus discover (9600 scan via work queue)"
 	default y
 	---help---

@@ -28,6 +28,13 @@
 #include <nshlib/nshlib.h>
 #include <pthread.h>
 
+/* The system entry task uses CONFIG_INIT_STACKSIZE, not the builtin app's
+ * STACKSIZE. Boot now performs verified FAT writes when refreshing Skills;
+ * the former 2 KiB init stack overflows inside open()/getumask(). */
+#if defined(CONFIG_VG_HMI_AUTOSTART) && CONFIG_INIT_STACKSIZE < 8192
+#  error "VelaGuard boot storage path requires CONFIG_INIT_STACKSIZE >= 8192"
+#endif
+
 #if defined(CONFIG_VG_AGENT_AUTOSTART) || defined(CONFIG_VG_HMI_AUTOSTART)
 #include <nuttx/sched.h>
 #endif

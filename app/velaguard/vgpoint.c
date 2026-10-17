@@ -699,7 +699,8 @@ static int cmd_test(int argc, char *argv[])
   printf("vgpoint: test bus=%s\n", dev);
 
   rc = vg_discover_poll_points(dev, CONFIG_VG_DISCOVER_BAUD,
-                               sum.points, sum.n_points,
+                               idx >= 0 ? &sum.points[idx] : sum.points,
+                               idx >= 0 ? 1 : sum.n_points,
                                raw, oks, CONFIG_VG_DISCOVER_INTER_MS);
   vg_bus_unlock();
   if (rc != 0)
@@ -707,6 +708,7 @@ static int cmd_test(int argc, char *argv[])
       return reply_err("test", "io", "read_fail");
     }
 
+  if (idx > 0) { raw[idx] = raw[0]; oks[idx] = oks[0]; }
   for (i = 0; i < sum.n_points; i++)
     {
       FAR const struct vg_point_entry *p = &sum.points[i];
@@ -870,20 +872,6 @@ static int cmd_apply(int argc, char *argv[])
       return reply_err("apply", "io", "write_points");
     }
 
-#ifdef CONFIG_VG_CONFIG_STORE
-  {
-    struct vg_config cfg;
-
-    vg_config_set_basedir(CONFIG_VG_CONFIG_BASEDIR);
-    vg_config_factory_default(&cfg);
-    snprintf(cfg.device_name, sizeof(cfg.device_name), "vgpoint");
-    rc = vg_config_commit(&cfg);
-    if (rc != 0)
-      {
-        return reply_err("apply", "io", "commit_fail");
-      }
-  }
-#endif
 
   (void)vg_live_points_replace(&sum);
   if (vg_mqtt_notify_point_table != NULL)

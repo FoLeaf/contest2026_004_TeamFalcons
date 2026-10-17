@@ -52,7 +52,7 @@ VelaGuard 板端 ──MQTT──▶ Broker 8.148.67.174:1883 ◀──只读订
 - alarm：`state` 为 `raised`/`cleared`；`kind` 为 `offline` / `threshold_high` / `threshold_low`；另加 `level`（`warn`/`crit`/`offline`）。`alarm_id` 为 `{device_id}-{boot_id}-{seq}`，`boot_id`/`seq` 仅 RAM。
 - point_table：已确认 `points.json` 原文。`points` 为空则不发。
 
-发布只在 `vg_net_mgr` 线程。采集/HMI 只入队。`g_tx` 10 KiB BSS。队列满丢 telemetry、保 alarm。
+发布只在 `vg_net_mgr` 线程。采集/HMI 只入队。`g_tx` 18 KiB BSS，点表缓冲 16 KiB（与点表解析上限一致）。队列满丢 telemetry、保 alarm。
 
 ## 5. 联调
 
