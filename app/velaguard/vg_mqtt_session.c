@@ -249,6 +249,10 @@ static void publish_point_table(void)
 {
   int n;
 
+  /* A previous version's success must not suppress periodic retries for
+   * an updated table whose read or publish fails. Only the network thread
+   * owns this flag; notifications keep their separate dirty bit. */
+  g_pt_sent = 0;
   n = load_point_table();
   if (n <= 0)
     {

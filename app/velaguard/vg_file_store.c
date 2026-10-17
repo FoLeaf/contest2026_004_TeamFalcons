@@ -51,6 +51,34 @@ static int write_verified(const char *path, const void *data, size_t len,
   return rc;
 }
 
+static int verify_copy(int source, int copy)
+{
+  unsigned char expected[256];
+  unsigned char actual[256];
+  if (lseek(source, 0, SEEK_SET) < 0 || lseek(copy, 0, SEEK_SET) < 0)
+    return -errno;
+  for (;;)
+    {
+      ssize_t n = read(source, expected, sizeof(expected));
+      if (n < 0 && errno == EINTR) continue;
+      if (n < 0) return -errno;
+      if (n == 0)
+        {
+          do { n = read(copy, actual, 1); } while (n < 0 && errno == EINTR);
+          return n < 0 ? -errno : n == 0 ? 0 : -EIO;
+        }
+      size_t off = 0;
+      while (off < (size_t)n)
+        {
+          ssize_t got = read(copy, actual + off, (size_t)n - off);
+          if (got < 0 && errno == EINTR) continue;
+          if (got <= 0) return got < 0 ? -errno : -EIO;
+          off += (size_t)got;
+        }
+      if (memcmp(expected, actual, (size_t)n) != 0) return -EIO;
+    }
+}
+
 static int backup_file(const char *path, const char *backup, mode_t mode)
 {
   unsigned char buf[256];
@@ -59,7 +87,7 @@ static int backup_file(const char *path, const char *backup, mode_t mode)
   int rc = 0;
 
   if (in < 0) return errno == ENOENT ? 0 : -errno;
-  out = open(backup, O_WRONLY | O_CREAT | O_TRUNC, mode);
+  out = open(backup, O_RDWR | O_CREAT | O_TRUNC, mode);
   if (out < 0) { rc = -errno; close(in); return rc; }
   for (;;)
     {
@@ -71,6 +99,7 @@ static int backup_file(const char *path, const char *backup, mode_t mode)
       if (rc != 0) break;
     }
   if (rc == 0 && fsync(out) != 0) rc = -errno;
+  if (rc == 0) rc = verify_copy(in, out);
   if (close(out) != 0 && rc == 0) rc = -errno;
   close(in);
   return rc;

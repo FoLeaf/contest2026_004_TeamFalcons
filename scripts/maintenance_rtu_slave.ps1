@@ -7,10 +7,9 @@ param(
   [switch]$EnableRts,
   [switch]$EnableDtr,
   [ValidateRange(1,168)][int]$Hours = 24,
-  # Reply after this many ms so the response lands outside the board's
-  # post-TX receive blind window (~2-3ms: tcdrain poll + DIR hold + settle
-  # + tcflush) yet inside its 500ms read timeout.
-  [ValidateRange(0,1000)][int]$ReplyDelayMs = 150
+  # Default to prompt replies so tests can expose receive timing defects.
+  # Nonzero delays are only for explicit timing/timeout experiments.
+  [ValidateRange(0,1000)][int]$ReplyDelayMs = 0
 )
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
@@ -52,7 +51,7 @@ public static class VelaMaintenanceSlave {
   using(var w=new StreamWriter(log,true,new System.Text.UTF8Encoding(false)))
   using(var p=new SerialPort(port,9600,Parity.None,8,StopBits.One)) {
    w.AutoFlush=true;p.ReadTimeout=100;p.WriteTimeout=1000;p.RtsEnable=rts;p.DtrEnable=dtr;p.Open();
-   w.WriteLine("START {0:o} port={1} mode=slave-only baud=9600 rts={2} dtr={3}",DateTime.Now,port,rts,dtr);
+   w.WriteLine("START {0:o} port={1} mode=slave-only baud=9600 rts={2} dtr={3} reply_delay_ms={4}",DateTime.Now,port,rts,dtr,replyDelayMs);
    var timer=Stopwatch.StartNew();var rx=new List<byte>();string mode="normal";long requests=0,replies=0,ignored=0,bad=0;int rawBudget=256;long next=0,refresh=0;
    try { while(timer.Elapsed.TotalHours<hours) {
     if(timer.ElapsedMilliseconds>=refresh) {

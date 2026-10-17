@@ -18,8 +18,6 @@
 #include "vg_config_store.h"
 #endif
 
-void vg_mqtt_notify_point_table(void) __attribute__((weak));
-
 #ifndef CONFIG_VG_DISCOVER_DEVPATH
 #  define CONFIG_VG_DISCOVER_DEVPATH "/dev/rs485"
 #endif
@@ -866,19 +864,10 @@ static int cmd_apply(int argc, char *argv[])
       return reply_err("apply", "no_candidate", "missing");
     }
 
-  if (vg_point_table_write_candidate(&sum,
-                                     CONFIG_VG_DISCOVER_POINTS_PATH) != 0)
+  if (vg_point_table_commit(&sum, CONFIG_VG_DISCOVER_POINTS_PATH) != 0)
     {
       return reply_err("apply", "io", "write_points");
     }
-
-
-  (void)vg_live_points_replace(&sum);
-  if (vg_mqtt_notify_point_table != NULL)
-    {
-      vg_mqtt_notify_point_table();
-    }
-
   reply_ok("apply", "committed", sum.n_points);
   return 0;
 }

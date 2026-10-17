@@ -120,6 +120,11 @@ int vg_point_table_ensure_candidate(FAR struct vg_discover_summary *sum,
                                     FAR const char *cand_path,
                                     FAR const char *committed_path);
 
+/* Persist and publish one validated table, including an explicitly empty
+ * edited table. Callers enforce their existing human-confirmation gate. */
+int vg_point_table_commit(FAR const struct vg_discover_summary *sum,
+                          FAR const char *points_path);
+
 int vg_point_table_apply(FAR const struct vg_discover_summary *sum,
                          FAR const char *points_path,
                          FAR const char *config_basedir,

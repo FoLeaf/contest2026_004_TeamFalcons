@@ -62,6 +62,7 @@ struct vg_disc_state_file
 };
 
 static struct vg_discover_summary g_sum;
+static pthread_mutex_t g_commit_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 
 struct vg_discover_summary *vg_discover_state(void)
@@ -415,6 +416,23 @@ int vg_point_table_create_candidate(const struct vg_discover_summary *sum,
   return write_point_table(sum, path, 1);
 }
 
+int vg_point_table_commit(FAR const struct vg_discover_summary *sum,
+                          FAR const char *points_path)
+{
+  int rc;
+  /* Keep disk replacement, RAM generation and notification in the same
+   * order for every submitter. The file-store mutex alone ends too early. */
+  pthread_mutex_lock(&g_commit_mtx);
+  rc = vg_point_table_write_candidate(sum, points_path);
+  if (rc == 0)
+    {
+      (void)vg_live_points_replace(sum);
+      if (vg_mqtt_notify_point_table != NULL) vg_mqtt_notify_point_table();
+    }
+  pthread_mutex_unlock(&g_commit_mtx);
+  return rc;
+}
+
 int vg_point_table_apply(FAR const struct vg_discover_summary *sum,
                          FAR const char *points_path,
                          FAR const char *config_basedir,
@@ -432,7 +450,7 @@ int vg_point_table_apply(FAR const struct vg_discover_summary *sum,
       return 0;
     }
 
-  if (vg_point_table_write_candidate(sum, points_path) != 0)
+  if (vg_point_table_commit(sum, points_path) != 0)
     {
       return -EIO;
     }
@@ -440,11 +458,6 @@ int vg_point_table_apply(FAR const struct vg_discover_summary *sum,
   (void)config_basedir;
 
   printf("vgdiscover: applied %d points → %s\n", sum->n_points, points_path);
-  (void)vg_live_points_replace(sum);
-  if (vg_mqtt_notify_point_table != NULL)
-    {
-      vg_mqtt_notify_point_table();
-    }
   return 0;
 }
 
@@ -539,9 +552,11 @@ int vg_live_points_load(FAR const char *path)
   struct vg_discover_summary *next = malloc(sizeof(*next));
   int rc;
   if (next == NULL) return -ENOMEM;
+  pthread_mutex_lock(&g_commit_mtx);
   rc = vg_point_table_read(next, path);
   /* Failed storage reads must not erase an already running configuration. */
   if (rc == 0) vg_live_points_replace(next);
+  pthread_mutex_unlock(&g_commit_mtx);
   free(next);
   return rc;
 }

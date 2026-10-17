@@ -7,13 +7,23 @@
 #include <unistd.h>
 
 static int fault;
+static int writes;
 ssize_t __real_write(int, const void *, size_t);
 ssize_t __real_read(int, void *, size_t);
 int __real_fsync(int);
 int __real_rename(const char *, const char *);
 ssize_t __wrap_write(int fd, const void *p, size_t n)
 {
+  writes++;
   if (fault == 1) { errno = ENOSPC; return -1; }
+  if (fault == 7 && writes == 2) {
+    /* New primary verified correctly, but the backup write is corrupt. */
+    char corrupt[256];
+    assert(n <= sizeof(corrupt));
+    memcpy(corrupt, p, n);
+    corrupt[0] ^= 1;
+    return __real_write(fd, corrupt, n);
+  }
   return __real_write(fd, p, fault == 2 && n > 2 ? 2 : n);
 }
 ssize_t __wrap_read(int fd, void *p, size_t n)
@@ -63,6 +73,12 @@ int main(void)
     fault = 0;
     expect_file("store-test", old);
   }
+  writes = 0;
+  fault = 7;
+  assert(vg_file_replace("store-test", next, strlen(next), 0600) < 0);
+  fault = 0;
+  expect_file("store-test", old);
+  expect_file("store-test.bak", old);
   fault = 2;
   assert(!vg_file_replace("store-test", next, strlen(next), 0600));
   fault = 0;
@@ -82,6 +98,6 @@ int main(void)
   fault = 0;
   assert(access("store-test", F_OK) != 0); /* do not resurrect an aborted file */
   unlink("store-test.bak");
-  puts("test_file_store: OK (ENOSPC, short write, verification, sync, rename, concurrent)");
+  puts("test_file_store: OK (ENOSPC, short write, primary/backup verification, sync, rename, concurrent)");
   return 0;
 }

@@ -72,7 +72,7 @@ test_agent_tools: test_agent_tools.c ../vg_agent_tools.c ../vg_agent_tools.h \
 	$(CC) $(TEST_AGENT_TOOLS_CFLAGS) -o $@ test_agent_tools.c \
 	  ../vg_agent_tools.c ../vg_agent_query.c $(CJSON_SRC) -lm
 
-test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output
+test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output test_modbus_port test_point_commit test_mqtt_session
 	./test_net_policy
 	./test_config_store
 	./test_frame_stats
@@ -98,10 +98,14 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 	./test_discover_io
 	./test_agent_round
 	./test_shell_output
+	./test_modbus_port
+	./test_point_commit
+	./test_mqtt_session
 	python3 test_boot_stack.py
 	python3 test_board_pins.py
 
 clean:
+	rm -f test_modbus_port test_point_commit test_mqtt_session
 	rm -f test_shell_output test_agent_round test_discover_io test_file_policy test_maintenance test_file_store test_shell_runner test_local_client test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools
 
 test_maintenance: test_maintenance.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC)
@@ -126,6 +130,15 @@ test_file_policy: $(AI_AGENT_ROOT)/tests/test_file_policy.c $(AI_AGENT_ROOT)/src
 
 test_discover_io: test_discover_io.c ../vg_discover_modbus.c ../nanomodbus/nanomodbus.c ../vg_frame_stats.c
 	$(CC) $(CFLAGS) -Istubs -I../nanomodbus -o $@ $^
+
+test_modbus_port: test_modbus_port.c ../modbus_port_openvela.c ../nanomodbus/nanomodbus.c
+	$(CC) $(CFLAGS) -Istubs -include stubs/vg_host_shim.h -o $@ $^ -Wl,--wrap=poll,--wrap=read,--wrap=write,--wrap=tcdrain,--wrap=tcflush
+
+test_point_commit: test_point_commit.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC)
+	$(CC) $(CFLAGS) -o $@ $^ -Wl,--wrap=vg_file_replace -lm
+
+test_mqtt_session: test_mqtt_session.c ../vg_mqtt_session.c ../vg_mqtt_payload.c
+	$(CC) $(CFLAGS) -Istubs -include stubs/vg_host_shim.h -I$(OPENVELA_ROOT)/apps/netutils/mqttc/MQTT-C/include -ffunction-sections -fdata-sections -o $@ test_mqtt_session.c ../vg_mqtt_payload.c -Wl,--gc-sections -lm
 
 
 test_agent_round: test_agent_round.c ../vg_agent_round.c ../vg_agent_round.h
