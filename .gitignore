@@ -116,3 +116,6 @@ logs/**/errors/
 
 # Headless/HMI framebuffer captures dropped at the repo root during accept runs
 /*.ppm
+
+# Submission material backups (kept out of git; canonical copies live elsewhere)
+docs/submission/.backup-*/
