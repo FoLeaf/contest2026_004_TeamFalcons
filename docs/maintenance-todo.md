@@ -57,7 +57,7 @@
 
 最新板端记录见 [2026-10-18 目录](maintenance-evidence/2026-10-18/)：`board-baseline.md`（新固件基线）、`defects.md`（D-01/D-02 两个缺陷）、`old-soak-verdict.md`（旧长测失败归档）。上一轮复核见 [review.md](maintenance-evidence/2026-10-17-review/review.md)。
 
-- `make -C app/velaguard/host_tests clean test`：2026-10-18 在 clean 的 `3327500` 上重跑，30 个 C 目标和 2 个 Python 检查全部通过，原始输出见 [host-tests-full-integrated-current.log](maintenance-evidence/2026-10-18/host-tests-full-integrated-current.log)。
+- `make -C app/velaguard/host_tests clean test`：2026-10-18 在 clean 的 `7acaf84` 上重跑，32 个 C 目标和 2 个 Python 检查全部通过；Agent 专项 8 个目标、长测脚本离线集 202 项断言和 RTU 从站自检也全部通过。原始输出与哈希见 [离线回归记录](maintenance-evidence/2026-10-18/offline-closeout-current.md)。历史 `3327500` 的 30 个目标记录仍保留在 [host-tests-full-integrated-current.log](maintenance-evidence/2026-10-18/host-tests-full-integrated-current.log)。
 - HMI重新构建，CTest 5/5。
 - 默认 `bash scripts/build.sh` 通过，本次增量构建无warning/error；静态SRAM 292,252/524,288。
 - 新固件已烧录并核对哈希，启动基线、存储诊断、只读工具与禁止工具拒绝均已取证。
