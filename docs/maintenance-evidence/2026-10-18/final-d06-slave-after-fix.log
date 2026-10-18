@@ -63,3 +63,13 @@ STATUS 2026-10-18T21:58:21.2006790+08:00 elapsed_s=260.2 mode=normal requests=21
 STATUS 2026-10-18T21:58:31.2065843+08:00 elapsed_s=270.2 mode=normal requests=2264 replies=2264 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
 STATUS 2026-10-18T21:58:41.2094991+08:00 elapsed_s=280.2 mode=normal requests=2344 replies=2344 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
 STATUS 2026-10-18T21:58:51.2142356+08:00 elapsed_s=290.2 mode=normal requests=2427 replies=2427 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:01.2214151+08:00 elapsed_s=300.3 mode=normal requests=2509 replies=2509 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:11.2330685+08:00 elapsed_s=310.3 mode=normal requests=2586 replies=2586 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:21.2343582+08:00 elapsed_s=320.3 mode=normal requests=2669 replies=2669 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:31.2355599+08:00 elapsed_s=330.3 mode=normal requests=2749 replies=2749 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:41.2396349+08:00 elapsed_s=340.3 mode=normal requests=2833 replies=2833 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T21:59:51.2507744+08:00 elapsed_s=350.3 mode=normal requests=2917 replies=2917 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:00:01.2565628+08:00 elapsed_s=360.3 mode=normal requests=3000 replies=3000 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:00:11.2737072+08:00 elapsed_s=370.3 mode=normal requests=3082 replies=3082 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-18T22:00:12.8926766+08:00 written=2026-10-18T22:00:12.7000441+08:00 line="stop" effect=stop
+STOP 2026-10-18T22:00:12.8926766+08:00 requests=3095 replies=3095 suppressed=0 crc_scan=0 dropped=0
