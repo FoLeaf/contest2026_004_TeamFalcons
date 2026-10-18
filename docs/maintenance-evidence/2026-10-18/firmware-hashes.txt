@@ -7,6 +7,27 @@ afd8f1e30d42aa3ae33fb58eaa8039ee17bcadf62ddc9ea7e3fb06c6697cf493  .debug/nuttx.h
 68b2f32f37d85d78013c62151fe531a6a87a5daba51900d785b38d23a1afe13a  .debug/nuttx.bin
 877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex
 
+# --- 第七次构建：D-06 有界等待补修后（2026-10-18 21:49:46 - 21:50:39）---
+# 变更：vgpoint test 的总线等待由 1000 ms 调整为 3000 ms，覆盖 14 点、
+#       0 ms 从站下的完整采集轮次；回归持锁 1200 ms。
+# 命令：bash scripts/build.sh --clean   (TARGET=velaguard-lvgl)
+# 参赛仓：codex/maintenance-closeout c20177f21e01bd70a4c96d12dc11095ebfcd08fd
+# 公共仓提交与上一构建相同：NuttX 2373ab4a45d、apps 0ea954b79、ai_agent
+# 7dc0a8816、MQTT-C 4dbb7f321。
+# 配置：defconfig d02be7adf022e9de81bd9a1eb35b44347be21ee5e5d720e60da9943b3a2a4ccb
+#       nuttx/.config c4150e92cb327fd96b210f6db853f1130d21d6c6a349fdae98522079e90ac646
+# 静态内存：flash 1,265,760 B / sram 294,092 B（56.09%）
+# 告警：6 处既有 warning，0 error
+# 构建日志：final-clean-build-20261018-2151.log
+# 主机回归：host-tests-full-after-d06-current.log；退出码 0，32 个目标通过
+# 凭证扫描：final-security-scan-after-d06.log；MQTT 明文键名和历史口令值均 0 命中，
+#           CONFIG_VG_WIFI_PASSWORD 静态值仍命中，保留为独立问题
+# 记录写入时尚未烧录，不能据此记录板端 uname 或板验结论
+7691d831488b9b108a3eec2e7d7771a9e6afa3a0f06e5308b8642d21a707e015  .debug/nuttx.hex
+02e745bdd268bb6695b23e148045db3fcd237742752919d6cf7b06d76c748db4  .debug/nuttx.bin
+ac15ea0d234bf0aeb3d885769037b8d48a1fd58a0e1ec09cde92b54aca56b774  .debug/nuttx.elf
+877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex
+
 # 大小
 1262640 .debug/nuttx.bin
 1646104 .debug/nuttx.elf
