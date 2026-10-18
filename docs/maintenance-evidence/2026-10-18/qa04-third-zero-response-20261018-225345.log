@@ -1,0 +1,21 @@
+########## boot settle len=815 ##########
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad54d972746feb7] BEGIN chat=velaguard:6 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7311 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:6
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792363927
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent status ########## len=0
+
+
+########## ls /data/velaguard/pending_alarm.txt ########## len=0
+
+
+########## ls -l /data/velaguard/reports/alarm_advice.txt /data/velaguard/reports/daily-2026-10-18.md ########## len=0
+

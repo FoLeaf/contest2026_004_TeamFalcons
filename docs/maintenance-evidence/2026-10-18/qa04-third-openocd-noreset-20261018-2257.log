@@ -1,0 +1,40 @@
+Open On-Chip Debugger 0.11.0+dev-snapshot (2026-02-25-15:11)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 1000 kHz
+
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+Info : clock speed 1800 kHz
+Info : STLINK V3J17M11 (API v3) VID:PID 0483:374E
+Info : Target voltage: 3.272437
+Info : [stm32h7x.cpu0] Cortex-M7 r1p1 processor detected
+Info : [stm32h7x.cpu0] target has 8 breakpoints, 4 watchpoints
+[stm32h7x.cpu0] Target successfully examined.
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Info : starting gdb server for stm32h7x.cpu0 on 3333
+Info : Listening on port 3333 for gdb connections
+Info : Listening on port 6666 for tcl connections
+Info : Listening on port 4444 for telnet connections
+Info : accepting 'gdb' connection on tcp/3333
+target halted due to debug-request, current mode: Handler External Interrupt(39)
+xPSR: 0x21000037 pc: 0x90000c40 msp: 0x24048028
+Info : Device: STM32H74x/75x
+Info : flash size probed value 128k
+Info : STM32H7 flash has a single bank
+Info : Bank (0) size is 128 kb, base address is 0x08000000
+Warn : Prefer GDB command "target extended-remote :3333" instead of "target remote :3333"
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e6c msp: 0x24047ed0
+Info : dropped 'gdb' connection
+Info : accepting 'telnet' connection on tcp/4444
+shutdown command invoked
+Info : dropped 'telnet' connection

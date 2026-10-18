@@ -1,0 +1,293 @@
+Open On-Chip Debugger 0.11.0+dev-snapshot (2026-02-25-15:11)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 1000 kHz
+
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+Info : clock speed 1800 kHz
+Info : STLINK V3J17M11 (API v3) VID:PID 0483:374E
+Info : Target voltage: 3.272437
+Info : [stm32h7x.cpu0] Cortex-M7 r1p1 processor detected
+Info : [stm32h7x.cpu0] target has 8 breakpoints, 4 watchpoints
+[stm32h7x.cpu0] Target successfully examined.
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Info : starting gdb server for stm32h7x.cpu0 on 3333
+Info : Listening on port 3333 for gdb connections
+Warn : target was in unknown state when halt was requested
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e6c msp: 0x24047ed0
+===== arm v7m registers
+(0) r0 (/32): 0x24047fc0
+(1) r1 (/32): 0x24047fc0
+(2) r2 (/32): 0x00000000
+(3) r3 (/32): 0x24003d5c
+(4) r4 (/32): 0x24003d5c
+(5) r5 (/32): 0x0000000e
+(6) r6 (/32): 0x24003d58
+(7) r7 (/32): 0x24047fc0
+(8) r8 (/32): 0x00000003
+(9) r9 (/32): 0x00000005
+(10) r10 (/32): 0x00000002
+(11) r11 (/32): 0x24047fc0
+(12) r12 (/32): 0x00000000
+(13) sp (/32): 0x24047ed0
+(14) lr (/32): 0x90000e37
+(15) pc (/32): 0x90000e6c
+(16) xPSR (/32): 0x6100000e
+(17) msp (/32): 0x24047ed0
+(18) psp (/32): 0x240480cc
+(20) primask (/1): 0x00
+(21) basepri (/8): 0x80
+(22) faultmask (/1): 0x00
+(23) control (/3): 0x00
+(42) d0 (/64): 0x0000000000000000
+(43) d1 (/64): 0x0000000000000000
+(44) d2 (/64): 0x0000000000000000
+(45) d3 (/64): 0x0000000000000000
+(46) d4 (/64): 0x0000000000000000
+(47) d5 (/64): 0x0000000000000000
+(48) d6 (/64): 0x0000000000000000
+(49) d7 (/64): 0xffffffff00000000
+(50) d8 (/64): 0x0000000000000000
+(51) d9 (/64): 0x0000000000000000
+(52) d10 (/64): 0x0000000000000000
+(53) d11 (/64): 0x0000000000000000
+(54) d12 (/64): 0x0000000000000000
+(55) d13 (/64): 0x0000000000000000
+(56) d14 (/64): 0x0000000000000000
+(57) d15 (/64): 0xffffffff00000000
+(58) fpscr (/32): 0x00000000
+===== Cortex-M DWT registers
+
+0x24007344: 00028707 
+
+0x24003ff8: 90000945 
+
+0x40004800: 2000002d 00000000 06000000 00000364 00000000 00000000 00000000 0ce010f8 
+0x40004820: 00000000 00000067 00000071 00000000 
+
+0xe000e200: 00000000 20000080 12040000 00000000 00000000 00000000 00000000 00000000 
+0xe000e220: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+
+0xe000e300: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+0xe000e320: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+
+0x24048028: 00000000 ffffffff 00000002 24003d5c 380003d0 00000001 00000002 90001783 
+0x24048048: 9000bc1e 81000200 00000000 00000000 00000000 00000000 00000000 00000000 
+
+0x24047ed0: 00000000 00000007 00000000 24003cd8 24000264 90001063 380002e8 00000000 
+0x24047ef0: 24003d5c 24003d5c 9000bc5b 38000364 380002e8 00000000 900035d5 900037c1 
+
+target halted due to debug-request, current mode: Handler External Interrupt(39)
+xPSR: 0x21000037 pc: 0x90000de8 msp: 0x24048030
+===== arm v7m registers
+(0) r0 (/32): 0x24048030
+(1) r1 (/32): 0x24047fc0
+(2) r2 (/32): 0x20000000
+(3) r3 (/32): 0x00000000
+(4) r4 (/32): 0x24003d5c
+(5) r5 (/32): 0x00000000
+(6) r6 (/32): 0x24003cd8
+(7) r7 (/32): 0x24000264
+(8) r8 (/32): 0x00000003
+(9) r9 (/32): 0x00000005
+(10) r10 (/32): 0x00000002
+(11) r11 (/32): 0x00000000
+(12) r12 (/32): 0x00000000
+(13) sp (/32): 0x24048030
+(14) lr (/32): 0xffffffe9
+(15) pc (/32): 0x90000de8
+(16) xPSR (/32): 0x21000037
+(17) msp (/32): 0x24048030
+(18) psp (/32): 0x240480cc
+(20) primask (/1): 0x00
+(21) basepri (/8): 0x00
+(22) faultmask (/1): 0x00
+(23) control (/3): 0x00
+(42) d0 (/64): 0x0000000000000000
+(43) d1 (/64): 0x0000000000000000
+(44) d2 (/64): 0x0000000000000000
+(45) d3 (/64): 0x0000000000000000
+(46) d4 (/64): 0x0000000000000000
+(47) d5 (/64): 0x0000000000000000
+(48) d6 (/64): 0x0000000000000000
+(49) d7 (/64): 0xffffffff00000000
+(50) d8 (/64): 0x0000000000000000
+(51) d9 (/64): 0x0000000000000000
+(52) d10 (/64): 0x0000000000000000
+(53) d11 (/64): 0x0000000000000000
+(54) d12 (/64): 0x0000000000000000
+(55) d13 (/64): 0x0000000000000000
+(56) d14 (/64): 0x0000000000000000
+(57) d15 (/64): 0xffffffff00000000
+(58) fpscr (/32): 0x00000000
+===== Cortex-M DWT registers
+
+0x24007344: 00028707 
+
+0xe000ed04: 0044d837 
+
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e2a msp: 0x24047ed0
+===== arm v7m registers
+(0) r0 (/32): 0x0000000e
+(1) r1 (/32): 0x24047fc0
+(2) r2 (/32): 0x24047ee8
+(3) r3 (/32): 0x00000000
+(4) r4 (/32): 0x24003d5c
+(5) r5 (/32): 0x0000000e
+(6) r6 (/32): 0x24003d58
+(7) r7 (/32): 0x24047fc0
+(8) r8 (/32): 0x00000003
+(9) r9 (/32): 0x00000005
+(10) r10 (/32): 0x00000002
+(11) r11 (/32): 0x24047fc0
+(12) r12 (/32): 0x00000000
+(13) sp (/32): 0x24047ed0
+(14) lr (/32): 0x90001063
+(15) pc (/32): 0x90000e2a
+(16) xPSR (/32): 0x2100000e
+(17) msp (/32): 0x24047ed0
+(18) psp (/32): 0x240480cc
+(20) primask (/1): 0x00
+(21) basepri (/8): 0x00
+(22) faultmask (/1): 0x00
+(23) control (/3): 0x00
+(42) d0 (/64): 0x0000000000000000
+(43) d1 (/64): 0x0000000000000000
+(44) d2 (/64): 0x0000000000000000
+(45) d3 (/64): 0x0000000000000000
+(46) d4 (/64): 0x0000000000000000
+(47) d5 (/64): 0x0000000000000000
+(48) d6 (/64): 0x0000000000000000
+(49) d7 (/64): 0xffffffff00000000
+(50) d8 (/64): 0x0000000000000000
+(51) d9 (/64): 0x0000000000000000
+(52) d10 (/64): 0x0000000000000000
+(53) d11 (/64): 0x0000000000000000
+(54) d12 (/64): 0x0000000000000000
+(55) d13 (/64): 0x0000000000000000
+(56) d14 (/64): 0x0000000000000000
+(57) d15 (/64): 0xffffffff00000000
+(58) fpscr (/32): 0x00000000
+===== Cortex-M DWT registers
+
+0x24007344: 00028707 
+
+0xe000ed04: 0043780e 
+
+shutdown command invoked
+OPENOCD_RC=0
+Open On-Chip Debugger 0.11.0+dev-snapshot (2026-02-25-15:11)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 1000 kHz
+
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+Info : clock speed 1800 kHz
+Info : STLINK V3J17M11 (API v3) VID:PID 0483:374E
+Info : Target voltage: 3.272437
+Info : [stm32h7x.cpu0] Cortex-M7 r1p1 processor detected
+Info : [stm32h7x.cpu0] target has 8 breakpoints, 4 watchpoints
+[stm32h7x.cpu0] Target successfully examined.
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Info : starting gdb server for stm32h7x.cpu0 on 3333
+Info : Listening on port 3333 for gdb connections
+Info : Listening on port 6666 for tcl connections
+Info : Listening on port 4444 for telnet connections
+target halted due to breakpoint, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e2a msp: 0x24047ed0
+Info : accepting 'gdb' connection on tcp/3333
+Info : Device: STM32H74x/75x
+Info : flash size probed value 128k
+Info : STM32H7 flash has a single bank
+Info : Bank (0) size is 128 kb, base address is 0x08000000
+Warn : Prefer GDB command "target extended-remote :3333" instead of "target remote :3333"
+Info : dropped 'gdb' connection
+Info : accepting 'gdb' connection on tcp/3333
+Info : dropped 'gdb' connection
+Info : accepting 'telnet' connection on tcp/4444
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e36 msp: 0x24047ed0
+Info : dropped 'telnet' connection
+Info : accepting 'gdb' connection on tcp/3333
+Info : dropped 'gdb' connection
+Info : accepting 'telnet' connection on tcp/4444
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+Error: Duplicate Breakpoint address: 0x90000944 (BP 2)
+
+Error: timed out while waiting for target halted
+
+shutdown command invoked
+Info : dropped 'telnet' connection
+ÿûÿûÿýÿþOpen On-Chip Debugger
+> reg
+ ===== arm v7m registers
+(0) r0 (/32): 0x24048030
+(1) r1 (/32): 0x24047fc0
+(2) r2 (/32): 0x20000000
+(3) r3 (/32): 0x00000000
+(4) r4 (/32): 0x24003d5c
+(5) r5 (/32): 0x00000000
+(6) r6 (/32): 0x24003cd8
+(7) r7 (/32): 0x24000264
+(8) r8 (/32): 0x00000003
+(9) r9 (/32): 0x00000005
+(10) r10 (/32): 0x00000002
+(11) r11 (/32): 0x00000000
+(12) r12 (/32): 0x00000000
+(13) sp (/32): 0x24048010
+(14) lr (/32): 0xfffffff1
+(15) pc (/32): 0x00000000
+(16) xPSR (/32): 0x21000003
+(17) msp (/32): 0x24048010
+(18) psp (/32): 0x240480cc
+(20) primask (/1): 0x00
+(21) basepri (/8): 0x00
+(22) faultmask (/1): 0x00
+(23) control (/3): 0x00
+(42) d0 (/64): 0x0000000000000000
+(43) d1 (/64): 0x0000000000000000
+(44) d2 (/64): 0x0000000000000000
+(45) d3 (/64): 0x0000000000000000
+(46) d4 (/64): 0x0000000000000000
+(47) d5 (/64): 0x0000000000000000
+(48) d6 (/64): 0x0000000000000000
+(49) d7 (/64): 0xffffffff00000000
+(50) d8 (/64): 0x0000000000000000
+(51) d9 (/64): 0x0000000000000000
+(52) d10 (/64): 0x0000000000000000
+(53) d11 (/64): 0x0000000000000000
+(54) d12 (/64): 0x0000000000000000
+(55) d13 (/64): 0x0000000000000000
+(56) d14 (/64): 0x0000000000000000
+(57) d15 (/64): 0xffffffff00000000
+(58) fpscr (/32): 0x00000000
+===== Cortex-M DWT registers
+
+> mdw 0xE000ED28 8
+ 0xe000ed28: 00000100 40000000 0000000b 00000000 00000000 00000000 00000030 00000200 
+
+> mdw 0x58024D0 1
+ 
+> halt
+ > 
