@@ -7,7 +7,7 @@ description: "VelaGuard 点表闸门：候选表试读后人确认 apply，采�
 
 上位机经 ST-LINK NSH 写点表。编辑只动候选；人确认 `vgpoint apply --confirm` 之后，周期采集和告警才读已确认表。
 
-用户2026-10-18已选择新增MQTT候选入口，设计见 [候选接入协议](../../../docs/velaguard-candidate-mqtt-protocol.md)。该入口尚未实现，不可直接经当前MQTT下发配置。按用户更正，远程配置状态只在手机显示；板端仅在手机下发且校验、试读成功后弹出人工二次确认，未确认不生效。实施时需独立候选、配置入口互斥与试读版本绑定。以下步骤描述现行NSH流程，其固件仅检查 `--confirm`，尚不强制检查试读记录与版本。
+用户2026-10-18已选择新增MQTT候选入口，设计见 [候选接入协议](../../../docs/velaguard-candidate-mqtt-protocol.md)。该入口尚未实现，不可直接经当前MQTT下发配置。按用户最新更正，手机接入不试读，板端配置校验通过后弹出人工二次确认，确认后直接添加；所有远程配置状态仅在手机显示。实施时需独立候选、配置入口互斥与候选版本绑定。以下先试读再确认的步骤仅描述现行NSH流程，其固件仅检查 `--confirm`，尚不强制检查试读记录与版本。
 
 命令口径只认 [docs/velaguard-host-nsh-protocol.md](../../../docs/velaguard-host-nsh-protocol.md)。不要在任务文档或本 Skill 再抄命令表。NSH 行长与 `too_long` 见 [references/gotchas.md](references/gotchas.md)。
 

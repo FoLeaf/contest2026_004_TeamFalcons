@@ -33,7 +33,7 @@ The executable definition of how VelaGuard reads a sensor and evaluates its loca
 _Avoid_: prompt result, manual notes
 
 **Candidate Configuration**:
-A proposed sensor configuration that has not yet passed device-side validation, test read, and local confirmation.
+A proposed sensor configuration that has not yet passed device-side validation and local confirmation. Planned phone/MQTT imports skip test reads and join normal acquisition after confirmation; the existing NSH workflow still requires a separate test read and human confirmation.
 _Avoid_: active config, AI config
 
 **Local Confirmation**:
