@@ -106,9 +106,26 @@ if(VG_HEADLESS_PROFILE STREQUAL "board")
 endif()
 
 # ---------------------------------------------------------------------------
+# Board-path model library: same UI sources compiled with VG_HMI_BOARD, the
+# switch the firmware defines. Only the alarm-scenario check uses it, so the
+# other checks keep their PC-path behaviour.
+# ---------------------------------------------------------------------------
+add_library(vg_ui_board STATIC ${VG_UI_SRCS})
+target_include_directories(vg_ui_board PUBLIC
+  "${VG_LVGL_DIR}/.."
+  "${VG_UI_DIR}"
+  "${VG_ROOT}/gui/main/inc"
+  "${VG_ROOT}/app/velaguard"
+  "${VG_ROOT}/scripts/alarm_scenarios"
+)
+target_compile_definitions(vg_ui_board PUBLIC VG_HMI_BOARD=1)
+
+# ---------------------------------------------------------------------------
 # Checks
 # ---------------------------------------------------------------------------
-foreach(check alarm_check trend_check fixture_check lifecycle_render_check interaction_check)
+set(VG_HEADLESS_CHECKS alarm_check trend_check fixture_check
+                      lifecycle_render_check interaction_check)
+foreach(check ${VG_HEADLESS_CHECKS})
   add_executable(${check} ${check}_main.c harness_common.c)
   target_link_libraries(${check} PRIVATE vg_ui lvgl lvgl::thorvg m)
   target_compile_options(${check} PRIVATE -Wall -Wextra)
@@ -118,11 +135,23 @@ foreach(check alarm_check trend_check fixture_check lifecycle_render_check inter
   )
 endforeach()
 
+# Phase F alarm scenarios: drives vg_model_set_live through the real board
+# alarm path with the generated fixture data. No rendering assertions.
+add_executable(alarm_scenario_check alarm_scenario_check_main.c harness_common.c
+               "${VG_ROOT}/app/velaguard/vg_alarm_eval.c")
+target_link_libraries(alarm_scenario_check PRIVATE vg_ui_board lvgl lvgl::thorvg m)
+target_compile_options(alarm_scenario_check PRIVATE -Wall -Wextra)
+target_compile_definitions(alarm_scenario_check PRIVATE
+  VG_HEADLESS_PROFILE_${VG_HEADLESS_PROFILE}=1
+  VG_HEADLESS_DEPTH_${VG_HEADLESS_COLOR_DEPTH}=1
+)
+
 enable_testing()
-foreach(check alarm_check trend_check fixture_check lifecycle_render_check interaction_check)
+foreach(check ${VG_HEADLESS_CHECKS})
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/frames/${check}")
   add_test(NAME ${check}
            COMMAND ${check} "${CMAKE_CURRENT_BINARY_DIR}/frames/${check}")
 endforeach()
+add_test(NAME alarm_scenario_check COMMAND alarm_scenario_check)
 
 message(STATUS "headless: LVGL=${VG_LVGL_DIR} depth=${VG_HEADLESS_COLOR_DEPTH} profile=${VG_HEADLESS_PROFILE}")

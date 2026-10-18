@@ -32,6 +32,10 @@ test_discover: test_discover.c ../vg_point_table.c ../vg_discover.h ../vg_file_s
 test_vgpoint: test_vgpoint.c ../vg_point_table.c ../vg_discover.h ../vg_file_store.c $(CJSON_SRC)
 	$(CC) $(CFLAGS) -o $@ test_vgpoint.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC) -lm
 
+test_alarm_boundary: test_alarm_boundary.c ../vg_alarm_eval.c ../vg_alarm_eval.h \
+                    ../../../scripts/alarm_scenarios/alarm_scenarios_fixture.h
+	$(CC) $(CFLAGS) -I../../../scripts/alarm_scenarios -o $@ test_alarm_boundary.c ../vg_alarm_eval.c -lm
+
 test_alarm_eval: test_alarm_eval.c ../vg_alarm_eval.c ../vg_alarm_eval.h
 	$(CC) $(CFLAGS) -o $@ test_alarm_eval.c ../vg_alarm_eval.c
 
@@ -72,7 +76,7 @@ test_agent_tools: test_agent_tools.c ../vg_agent_tools.c ../vg_agent_tools.h \
 	$(CC) $(TEST_AGENT_TOOLS_CFLAGS) -o $@ test_agent_tools.c \
 	  ../vg_agent_tools.c ../vg_agent_query.c $(CJSON_SRC) -lm
 
-test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output test_modbus_port test_point_commit test_mqtt_session
+test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_alarm_boundary test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output test_modbus_port test_point_commit test_mqtt_session
 	./test_net_policy
 	./test_config_store
 	./test_frame_stats
@@ -80,6 +84,7 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 	./test_discover
 	./test_vgpoint
 	./test_alarm_eval
+	./test_alarm_boundary
 	./test_time_sync
 	./test_hmi_perf
 	./test_runtime_render

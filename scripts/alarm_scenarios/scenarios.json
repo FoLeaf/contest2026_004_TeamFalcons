@@ -1,0 +1,2399 @@
+{
+  "schema": 1,
+  "generator": "scripts/alarm_scenarios/gen_alarm_scenarios.py",
+  "table_source": "scripts/vgpoint_scene_room.json",
+  "rule": {
+    "source": "docs/velaguard-host-nsh-protocol.md 第 4 节",
+    "eq_eps": 0.0005000000237487257,
+    "window_samples": 8,
+    "window_min_failures": 5,
+    "rank": [
+      "crit",
+      "offline",
+      "warn"
+    ],
+    "recovery": "成功采样立即恢复在线；在线读数回到 none 时该点告警期结束"
+  },
+  "points": [
+    {
+      "id": "temp",
+      "name": "温度",
+      "addr": 1,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "int16",
+      "scale": 0.10000000149011612,
+      "unit": "C",
+      "cmp": "ge",
+      "warn": 28.0,
+      "crit": 35.0,
+      "fail_n": 3
+    },
+    {
+      "id": "humid",
+      "name": "湿度",
+      "addr": 1,
+      "fc": 3,
+      "reg": 1,
+      "dtype": "uint16",
+      "scale": 0.10000000149011612,
+      "unit": "%RH",
+      "cmp": "ge",
+      "warn": 70.0,
+      "crit": 85.0,
+      "fail_n": 3
+    },
+    {
+      "id": "flood",
+      "name": "水浸",
+      "addr": 2,
+      "fc": 3,
+      "reg": 2,
+      "dtype": "uint16",
+      "scale": 1.0,
+      "unit": "",
+      "cmp": "eq",
+      "warn": null,
+      "crit": 1.0,
+      "fail_n": 3
+    },
+    {
+      "id": "smoke",
+      "name": "烟雾",
+      "addr": 3,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "uint16",
+      "scale": 0.10000000149011612,
+      "unit": "%",
+      "cmp": "ge",
+      "warn": 5.0,
+      "crit": 10.0,
+      "fail_n": 3
+    },
+    {
+      "id": "acu_ret",
+      "name": "回风温度",
+      "addr": 4,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "int16",
+      "scale": 0.10000000149011612,
+      "unit": "C",
+      "cmp": "ge",
+      "warn": 28.0,
+      "crit": 32.0,
+      "fail_n": 3
+    },
+    {
+      "id": "acu_set",
+      "name": "设定温度",
+      "addr": 4,
+      "fc": 3,
+      "reg": 1,
+      "dtype": "int16",
+      "scale": 0.10000000149011612,
+      "unit": "C",
+      "cmp": "",
+      "warn": null,
+      "crit": null,
+      "fail_n": 3
+    },
+    {
+      "id": "acu_run",
+      "name": "空调运行",
+      "addr": 4,
+      "fc": 3,
+      "reg": 2,
+      "dtype": "uint16",
+      "scale": 1.0,
+      "unit": "",
+      "cmp": "",
+      "warn": null,
+      "crit": null,
+      "fail_n": 3
+    },
+    {
+      "id": "ups_load",
+      "name": "UPS负载",
+      "addr": 5,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "uint16",
+      "scale": 0.10000000149011612,
+      "unit": "%",
+      "cmp": "ge",
+      "warn": 70.0,
+      "crit": 90.0,
+      "fail_n": 3
+    },
+    {
+      "id": "ups_soc",
+      "name": "UPS电池",
+      "addr": 5,
+      "fc": 3,
+      "reg": 1,
+      "dtype": "uint16",
+      "scale": 1.0,
+      "unit": "%",
+      "cmp": "le",
+      "warn": 40.0,
+      "crit": 20.0,
+      "fail_n": 3
+    },
+    {
+      "id": "ups_bypass",
+      "name": "UPS旁路",
+      "addr": 5,
+      "fc": 3,
+      "reg": 2,
+      "dtype": "uint16",
+      "scale": 1.0,
+      "unit": "",
+      "cmp": "eq",
+      "warn": null,
+      "crit": 1.0,
+      "fail_n": 3
+    },
+    {
+      "id": "volt_a",
+      "name": "A相电压",
+      "addr": 6,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "uint16",
+      "scale": 0.10000000149011612,
+      "unit": "V",
+      "cmp": "le",
+      "warn": 200.0,
+      "crit": 180.0,
+      "fail_n": 3
+    },
+    {
+      "id": "pwr_kw",
+      "name": "有功功率",
+      "addr": 6,
+      "fc": 3,
+      "reg": 1,
+      "dtype": "uint16",
+      "scale": 0.009999999776482582,
+      "unit": "kW",
+      "cmp": "ge",
+      "warn": 8.0,
+      "crit": 10.0,
+      "fail_n": 3
+    },
+    {
+      "id": "energy_kwh",
+      "name": "正向电能",
+      "addr": 6,
+      "fc": 3,
+      "reg": 2,
+      "dtype": "uint16",
+      "scale": 0.10000000149011612,
+      "unit": "kWh",
+      "cmp": "",
+      "warn": null,
+      "crit": null,
+      "fail_n": 3
+    },
+    {
+      "id": "door",
+      "name": "门磁",
+      "addr": 7,
+      "fc": 3,
+      "reg": 0,
+      "dtype": "uint16",
+      "scale": 1.0,
+      "unit": "",
+      "cmp": "eq",
+      "warn": null,
+      "crit": 1.0,
+      "fail_n": 3
+    }
+  ],
+  "cases": [
+    {
+      "id": "B1-baseline",
+      "title": "正常读数基线",
+      "steps": [
+        {
+          "label": "全部从站正常读数",
+          "control": "reset",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            },
+            {
+              "point": "humid",
+              "raw": 500,
+              "value": 50.0,
+              "expect": "none"
+            },
+            {
+              "point": "flood",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            },
+            {
+              "point": "smoke",
+              "raw": 10,
+              "value": 1.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_ret",
+              "raw": 250,
+              "value": 25.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_set",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_run",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            },
+            {
+              "point": "volt_a",
+              "raw": 2300,
+              "value": 230.0,
+              "expect": "none"
+            },
+            {
+              "point": "pwr_kw",
+              "raw": 300,
+              "value": 3.0,
+              "expect": "none"
+            },
+            {
+              "point": "energy_kwh",
+              "raw": 1234,
+              "value": 123.4000015258789,
+              "expect": "none"
+            },
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "14 点全部在线，首页无告警 chip，无 pending_alarm.txt",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B2-legacy-modes",
+      "title": "脚本既有 warn / critical / normal 模式（默认行为兼容）",
+      "steps": [
+        {
+          "label": "warn 模式",
+          "control": "warn",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 300,
+              "value": 30.0,
+              "expect": "warn"
+            }
+          ],
+          "observe": "温度 30.0 C >= warn 28，判预警",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "critical 模式",
+          "control": "critical",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 360,
+              "value": 36.0,
+              "expect": "crit"
+            }
+          ],
+          "observe": "温度 36.0 C >= crit 35，判严重",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "normal 模式",
+          "control": "normal",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "温度 24.0 C，恢复",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-temp",
+      "title": "ge 边界：温度（temp）",
+      "steps": [
+        {
+          "label": "低于 warn（27.9）",
+          "control": "value 1 0 279",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 279,
+              "value": 27.899999618530273,
+              "expect": "none",
+              "label": "低于 warn（27.9）",
+              "control": "value 1 0 279",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（28）",
+          "control": "value 1 0 280",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn",
+              "label": "等于 warn（28）",
+              "control": "value 1 0 280",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（28.1）",
+          "control": "value 1 0 281",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 281,
+              "value": 28.100000381469727,
+              "expect": "warn",
+              "label": "高于 warn（28.1）",
+              "control": "value 1 0 281",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（34.9）",
+          "control": "value 1 0 349",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 349,
+              "value": 34.900001525878906,
+              "expect": "warn",
+              "label": "低于 crit（34.9）",
+              "control": "value 1 0 349",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（35）",
+          "control": "value 1 0 350",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 350,
+              "value": 35.0,
+              "expect": "crit",
+              "label": "等于 crit（35）",
+              "control": "value 1 0 350",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（35.1）",
+          "control": "value 1 0 351",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 351,
+              "value": 35.10000228881836,
+              "expect": "crit",
+              "label": "高于 crit（35.1）",
+              "control": "value 1 0 351",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-humid",
+      "title": "ge 边界：湿度（humid）",
+      "steps": [
+        {
+          "label": "低于 warn（69.9）",
+          "control": "value 1 1 699",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 699,
+              "value": 69.9000015258789,
+              "expect": "none",
+              "label": "低于 warn（69.9）",
+              "control": "value 1 1 699",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（70）",
+          "control": "value 1 1 700",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 700,
+              "value": 70.0,
+              "expect": "warn",
+              "label": "等于 warn（70）",
+              "control": "value 1 1 700",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "humid",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（70.1）",
+          "control": "value 1 1 701",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 701,
+              "value": 70.0999984741211,
+              "expect": "warn",
+              "label": "高于 warn（70.1）",
+              "control": "value 1 1 701",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "humid",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（84.9）",
+          "control": "value 1 1 849",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 849,
+              "value": 84.9000015258789,
+              "expect": "warn",
+              "label": "低于 crit（84.9）",
+              "control": "value 1 1 849",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "humid",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（85）",
+          "control": "value 1 1 850",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 850,
+              "value": 85.0,
+              "expect": "crit",
+              "label": "等于 crit（85）",
+              "control": "value 1 1 850",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "humid",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（85.1）",
+          "control": "value 1 1 851",
+          "expects": [
+            {
+              "point": "humid",
+              "raw": 851,
+              "value": 85.0999984741211,
+              "expect": "crit",
+              "label": "高于 crit（85.1）",
+              "control": "value 1 1 851",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "humid",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-eq-flood",
+      "title": "eq 边界：水浸（flood）",
+      "steps": [
+        {
+          "label": "低于 crit（0）",
+          "control": "value 2 2 0",
+          "expects": [
+            {
+              "point": "flood",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none",
+              "label": "低于 crit（0）",
+              "control": "value 2 2 0",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 crit（1）",
+          "control": "value 2 2 1",
+          "expects": [
+            {
+              "point": "flood",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "crit",
+              "label": "等于 crit（1）",
+              "control": "value 2 2 1",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "flood",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（2）",
+          "control": "value 2 2 2",
+          "expects": [
+            {
+              "point": "flood",
+              "raw": 2,
+              "value": 2.0,
+              "expect": "none",
+              "label": "高于 crit（2）",
+              "control": "value 2 2 2",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-smoke",
+      "title": "ge 边界：烟雾（smoke）",
+      "steps": [
+        {
+          "label": "低于 warn（4.9）",
+          "control": "value 3 0 49",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 49,
+              "value": 4.900000095367432,
+              "expect": "none",
+              "label": "低于 warn（4.9）",
+              "control": "value 3 0 49",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（5）",
+          "control": "value 3 0 50",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 50,
+              "value": 5.0,
+              "expect": "warn",
+              "label": "等于 warn（5）",
+              "control": "value 3 0 50",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "smoke",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（5.1）",
+          "control": "value 3 0 51",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 51,
+              "value": 5.099999904632568,
+              "expect": "warn",
+              "label": "高于 warn（5.1）",
+              "control": "value 3 0 51",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "smoke",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（9.9）",
+          "control": "value 3 0 99",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 99,
+              "value": 9.90000057220459,
+              "expect": "warn",
+              "label": "低于 crit（9.9）",
+              "control": "value 3 0 99",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "smoke",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（10）",
+          "control": "value 3 0 100",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 100,
+              "value": 10.0,
+              "expect": "crit",
+              "label": "等于 crit（10）",
+              "control": "value 3 0 100",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "smoke",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（10.1）",
+          "control": "value 3 0 101",
+          "expects": [
+            {
+              "point": "smoke",
+              "raw": 101,
+              "value": 10.100000381469727,
+              "expect": "crit",
+              "label": "高于 crit（10.1）",
+              "control": "value 3 0 101",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "smoke",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-acu_ret",
+      "title": "ge 边界：回风温度（acu_ret）",
+      "steps": [
+        {
+          "label": "低于 warn（27.9）",
+          "control": "value 4 0 279",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 279,
+              "value": 27.899999618530273,
+              "expect": "none",
+              "label": "低于 warn（27.9）",
+              "control": "value 4 0 279",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（28）",
+          "control": "value 4 0 280",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn",
+              "label": "等于 warn（28）",
+              "control": "value 4 0 280",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "acu_ret",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（28.1）",
+          "control": "value 4 0 281",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 281,
+              "value": 28.100000381469727,
+              "expect": "warn",
+              "label": "高于 warn（28.1）",
+              "control": "value 4 0 281",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "acu_ret",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（31.9）",
+          "control": "value 4 0 319",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 319,
+              "value": 31.899999618530273,
+              "expect": "warn",
+              "label": "低于 crit（31.9）",
+              "control": "value 4 0 319",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "acu_ret",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（32）",
+          "control": "value 4 0 320",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 320,
+              "value": 32.0,
+              "expect": "crit",
+              "label": "等于 crit（32）",
+              "control": "value 4 0 320",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "acu_ret",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（32.1）",
+          "control": "value 4 0 321",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 321,
+              "value": 32.10000228881836,
+              "expect": "crit",
+              "label": "高于 crit（32.1）",
+              "control": "value 4 0 321",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "acu_ret",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-ups_load",
+      "title": "ge 边界：UPS负载（ups_load）",
+      "steps": [
+        {
+          "label": "低于 warn（69.9）",
+          "control": "value 5 0 699",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 699,
+              "value": 69.9000015258789,
+              "expect": "none",
+              "label": "低于 warn（69.9）",
+              "control": "value 5 0 699",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（70）",
+          "control": "value 5 0 700",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 700,
+              "value": 70.0,
+              "expect": "warn",
+              "label": "等于 warn（70）",
+              "control": "value 5 0 700",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（70.1）",
+          "control": "value 5 0 701",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 701,
+              "value": 70.0999984741211,
+              "expect": "warn",
+              "label": "高于 warn（70.1）",
+              "control": "value 5 0 701",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（89.9）",
+          "control": "value 5 0 899",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 899,
+              "value": 89.9000015258789,
+              "expect": "warn",
+              "label": "低于 crit（89.9）",
+              "control": "value 5 0 899",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（90）",
+          "control": "value 5 0 900",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 900,
+              "value": 90.0,
+              "expect": "crit",
+              "label": "等于 crit（90）",
+              "control": "value 5 0 900",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（90.1）",
+          "control": "value 5 0 901",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 901,
+              "value": 90.0999984741211,
+              "expect": "crit",
+              "label": "高于 crit（90.1）",
+              "control": "value 5 0 901",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-le-ups_soc",
+      "title": "le 边界：UPS电池（ups_soc）",
+      "steps": [
+        {
+          "label": "高于 warn（41）",
+          "control": "value 5 1 41",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 41,
+              "value": 41.0,
+              "expect": "none",
+              "label": "高于 warn（41）",
+              "control": "value 5 1 41",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（40）",
+          "control": "value 5 1 40",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 40,
+              "value": 40.0,
+              "expect": "warn",
+              "label": "等于 warn（40）",
+              "control": "value 5 1 40",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_soc",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 warn（39）",
+          "control": "value 5 1 39",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 39,
+              "value": 39.0,
+              "expect": "warn",
+              "label": "低于 warn（39）",
+              "control": "value 5 1 39",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_soc",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 crit（21）",
+          "control": "value 5 1 21",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 21,
+              "value": 21.0,
+              "expect": "warn",
+              "label": "高于 crit（21）",
+              "control": "value 5 1 21",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_soc",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（20）",
+          "control": "value 5 1 20",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 20,
+              "value": 20.0,
+              "expect": "crit",
+              "label": "等于 crit（20）",
+              "control": "value 5 1 20",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_soc",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "低于 crit（19）",
+          "control": "value 5 1 19",
+          "expects": [
+            {
+              "point": "ups_soc",
+              "raw": 19,
+              "value": 19.0,
+              "expect": "crit",
+              "label": "低于 crit（19）",
+              "control": "value 5 1 19",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_soc",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-eq-ups_bypass",
+      "title": "eq 边界：UPS旁路（ups_bypass）",
+      "steps": [
+        {
+          "label": "低于 crit（0）",
+          "control": "value 5 2 0",
+          "expects": [
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none",
+              "label": "低于 crit（0）",
+              "control": "value 5 2 0",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 crit（1）",
+          "control": "value 5 2 1",
+          "expects": [
+            {
+              "point": "ups_bypass",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "crit",
+              "label": "等于 crit（1）",
+              "control": "value 5 2 1",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_bypass",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（2）",
+          "control": "value 5 2 2",
+          "expects": [
+            {
+              "point": "ups_bypass",
+              "raw": 2,
+              "value": 2.0,
+              "expect": "none",
+              "label": "高于 crit（2）",
+              "control": "value 5 2 2",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-le-volt_a",
+      "title": "le 边界：A相电压（volt_a）",
+      "steps": [
+        {
+          "label": "高于 warn（200.1）",
+          "control": "value 6 0 2001",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 2001,
+              "value": 200.10000610351562,
+              "expect": "none",
+              "label": "高于 warn（200.1）",
+              "control": "value 6 0 2001",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（200）",
+          "control": "value 6 0 2000",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 2000,
+              "value": 200.0,
+              "expect": "warn",
+              "label": "等于 warn（200）",
+              "control": "value 6 0 2000",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "volt_a",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 warn（199.9）",
+          "control": "value 6 0 1999",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 1999,
+              "value": 199.90000915527344,
+              "expect": "warn",
+              "label": "低于 warn（199.9）",
+              "control": "value 6 0 1999",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "volt_a",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 crit（180.1）",
+          "control": "value 6 0 1801",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 1801,
+              "value": 180.10000610351562,
+              "expect": "warn",
+              "label": "高于 crit（180.1）",
+              "control": "value 6 0 1801",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "volt_a",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（180）",
+          "control": "value 6 0 1800",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 1800,
+              "value": 180.0,
+              "expect": "crit",
+              "label": "等于 crit（180）",
+              "control": "value 6 0 1800",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "volt_a",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "低于 crit（179.9）",
+          "control": "value 6 0 1799",
+          "expects": [
+            {
+              "point": "volt_a",
+              "raw": 1799,
+              "value": 179.90000915527344,
+              "expect": "crit",
+              "label": "低于 crit（179.9）",
+              "control": "value 6 0 1799",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "volt_a",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-ge-pwr_kw",
+      "title": "ge 边界：有功功率（pwr_kw）",
+      "steps": [
+        {
+          "label": "低于 warn（7.99）",
+          "control": "value 6 1 799",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 799,
+              "value": 7.989999771118164,
+              "expect": "none",
+              "label": "低于 warn（7.99）",
+              "control": "value 6 1 799",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 warn（8）",
+          "control": "value 6 1 800",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 800,
+              "value": 8.0,
+              "expect": "warn",
+              "label": "等于 warn（8）",
+              "control": "value 6 1 800",
+              "exact": true
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "pwr_kw",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "高于 warn（8.01）",
+          "control": "value 6 1 801",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 801,
+              "value": 8.010000228881836,
+              "expect": "warn",
+              "label": "高于 warn（8.01）",
+              "control": "value 6 1 801",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "pwr_kw",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "低于 crit（9.99）",
+          "control": "value 6 1 999",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 999,
+              "value": 9.989999771118164,
+              "expect": "warn",
+              "label": "低于 crit（9.99）",
+              "control": "value 6 1 999",
+              "exact": false
+            }
+          ],
+          "observe": "期望 warn",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "pwr_kw",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "等于 crit（10）",
+          "control": "value 6 1 1000",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 1000,
+              "value": 10.0,
+              "expect": "crit",
+              "label": "等于 crit（10）",
+              "control": "value 6 1 1000",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "pwr_kw",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（10.01）",
+          "control": "value 6 1 1001",
+          "expects": [
+            {
+              "point": "pwr_kw",
+              "raw": 1001,
+              "value": 10.010000228881836,
+              "expect": "crit",
+              "label": "高于 crit（10.01）",
+              "control": "value 6 1 1001",
+              "exact": false
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "pwr_kw",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B3-eq-door",
+      "title": "eq 边界：门磁（door）",
+      "steps": [
+        {
+          "label": "低于 crit（0）",
+          "control": "value 7 0 0",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none",
+              "label": "低于 crit（0）",
+              "control": "value 7 0 0",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "等于 crit（1）",
+          "control": "value 7 0 1",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "crit",
+              "label": "等于 crit（1）",
+              "control": "value 7 0 1",
+              "exact": true
+            }
+          ],
+          "observe": "期望 crit",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "door",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "高于 crit（2）",
+          "control": "value 7 0 2",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 2,
+              "value": 2.0,
+              "expect": "none",
+              "label": "高于 crit（2）",
+              "control": "value 7 0 2",
+              "exact": false
+            }
+          ],
+          "observe": "期望 none",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B4-int16-negative",
+      "title": "int16 负数解码（回风温度）",
+      "steps": [
+        {
+          "label": "原始值 0xFF9C 应按 int16 解为 -10.0 C",
+          "control": "value 4 0 65436",
+          "expects": [
+            {
+              "point": "acu_ret",
+              "raw": 65436,
+              "value": -10.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "屏上回风温度为负值且不告警；若按 uint16 解码会得到 6543.6 C 并误报严重",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B5-no-cmp",
+      "title": "cmp 为空的点只采集、不产生模拟量告警",
+      "steps": [
+        {
+          "label": "设定温度 取极端值仍不告警",
+          "control": "value 4 1 30000",
+          "expects": [
+            {
+              "point": "acu_set",
+              "raw": 30000,
+              "value": 3000.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "acu_set 无 cmp，只采集",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "空调运行 取极端值仍不告警",
+          "control": "value 4 2 65535",
+          "expects": [
+            {
+              "point": "acu_run",
+              "raw": 65535,
+              "value": 65535.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "acu_run 无 cmp，只采集",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "正向电能 取极端值仍不告警",
+          "control": "value 6 2 65535",
+          "expects": [
+            {
+              "point": "energy_kwh",
+              "raw": 65535,
+              "value": 6553.5,
+              "expect": "none"
+            }
+          ],
+          "observe": "energy_kwh 无 cmp，只采集",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I1-warn-to-crit",
+      "title": "同点 warn 升级为 crit：告警期连续，不新增事件",
+      "steps": [
+        {
+          "label": "温度到 warn",
+          "control": "value 1 0 280",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn"
+            }
+          ],
+          "observe": "事件日志新增 1 条 raise threshold_high",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "温度升到 crit",
+          "control": "value 1 0 350",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 350,
+              "value": 35.0,
+              "expect": "crit"
+            }
+          ],
+          "observe": "告警期延续，al_epoch 不变；事件日志不新增 raise；屏上等级变为严重",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I2-recover",
+      "title": "阈值恢复：告警期结束",
+      "steps": [
+        {
+          "label": "温度到 crit",
+          "control": "value 1 0 350",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 350,
+              "value": 35.0,
+              "expect": "crit"
+            }
+          ],
+          "observe": "严重告警",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "温度回正常",
+          "control": "value 1 0 240",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "告警页收起，pending_alarm.txt 被删除，事件日志新增 clear",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I3-retrigger",
+      "title": "恢复后再次触发：不漏报、不重复",
+      "steps": [
+        {
+          "label": "第一次 warn",
+          "control": "value 1 0 280",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn"
+            }
+          ],
+          "observe": "第 1 次 raise 事件",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "保持 warn 再读若干轮",
+          "control": "",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn"
+            }
+          ],
+          "observe": "不重复产生 raise 事件，al_epoch 不变",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        },
+        {
+          "label": "回正常",
+          "control": "value 1 0 240",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "clear 事件，pending_alarm.txt 删除",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "第二次 warn",
+          "control": "value 1 0 280",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn"
+            }
+          ],
+          "observe": "第 2 次 raise，pending_alarm.txt 重新出现",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I4-primary-crit-over-warn",
+      "title": "同时告警的优先级：严重压过预警",
+      "steps": [
+        {
+          "label": "温度预警 + 水浸严重",
+          "control": "value 1 0 280\nvalue 2 2 1",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 280,
+              "value": 28.0,
+              "expect": "warn"
+            },
+            {
+              "point": "flood",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "crit"
+            }
+          ],
+          "observe": "主告警为水浸（严重）；pending tag=flood/threshold",
+          "expect_active": 2,
+          "expect_primary": {
+            "point": "flood",
+            "kind": "crit"
+          }
+        },
+        {
+          "label": "水浸恢复，温度仍在预警",
+          "control": "value 2 2 0",
+          "expects": [
+            {
+              "point": "flood",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "水浸告警期结束，温度告警期保留；主告警切换为温度，pending_alarm.txt 重写为 temp/threshold",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "warn"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I5-primary-crit-over-offline",
+      "title": "同时告警的优先级：严重压过离线",
+      "steps": [
+        {
+          "label": "温度严重 + 5 号从站静默",
+          "control": "value 1 0 350\noffline 5",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 350,
+              "value": 35.0,
+              "expect": "crit"
+            },
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 6,
+              "expect": "offline"
+            }
+          ],
+          "observe": "静默满 5 个失败采样后 5 号从站 3 点记离线；主告警仍是温度",
+          "expect_active": 4,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "crit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I6-single-slave-silent",
+      "title": "单从站静默，其他从站正常",
+      "steps": [
+        {
+          "label": "5 号从站静默",
+          "control": "offline 5",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 6,
+              "expect": "offline"
+            }
+          ],
+          "observe": "只有 5 号从站的 3 个点离线，其余 11 点保持正常；主告警按点表顺序取 ups_load",
+          "expect_active": 3,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "offline"
+          }
+        },
+        {
+          "label": "5 号从站恢复",
+          "control": "normal",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "一次成功采样即恢复在线，3 个告警期同时结束，pending_alarm.txt 删除",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I7-all-slaves-silent",
+      "title": "全部从站静默，再恢复正常",
+      "steps": [
+        {
+          "label": "全部静默",
+          "control": "offline",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "humid",
+              "raw": 500,
+              "value": 50.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "flood",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "smoke",
+              "raw": 10,
+              "value": 1.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "acu_ret",
+              "raw": 250,
+              "value": 25.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "acu_set",
+              "raw": 240,
+              "value": 24.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "acu_run",
+              "raw": 1,
+              "value": 1.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "volt_a",
+              "raw": 2300,
+              "value": 230.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "pwr_kw",
+              "raw": 300,
+              "value": 3.0,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "energy_kwh",
+              "raw": 1234,
+              "value": 123.4000015258789,
+              "offline_n": 6,
+              "expect": "offline"
+            },
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 6,
+              "expect": "offline"
+            }
+          ],
+          "observe": "14 点全部离线；主告警按点表顺序取 temp",
+          "expect_active": 14,
+          "expect_primary": {
+            "point": "temp",
+            "kind": "offline"
+          }
+        },
+        {
+          "label": "全部恢复",
+          "control": "normal",
+          "expects": [
+            {
+              "point": "temp",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            },
+            {
+              "point": "humid",
+              "raw": 500,
+              "value": 50.0,
+              "expect": "none"
+            },
+            {
+              "point": "flood",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            },
+            {
+              "point": "smoke",
+              "raw": 10,
+              "value": 1.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_ret",
+              "raw": 250,
+              "value": 25.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_set",
+              "raw": 240,
+              "value": 24.0,
+              "expect": "none"
+            },
+            {
+              "point": "acu_run",
+              "raw": 1,
+              "value": 1.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            },
+            {
+              "point": "volt_a",
+              "raw": 2300,
+              "value": 230.0,
+              "expect": "none"
+            },
+            {
+              "point": "pwr_kw",
+              "raw": 300,
+              "value": 3.0,
+              "expect": "none"
+            },
+            {
+              "point": "energy_kwh",
+              "raw": 1234,
+              "value": 123.4000015258789,
+              "expect": "none"
+            },
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "expect": "none"
+            }
+          ],
+          "observe": "同一轮全部恢复，pending_alarm.txt 删除",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I8-offline-window",
+      "title": "离线滑窗：连续失败计数与实际窗口",
+      "steps": [
+        {
+          "label": "累计失败 4 次（door，单点从站）",
+          "control": "drop 7 0 8",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 4,
+              "expect": "none",
+              "online_after": 1
+            }
+          ],
+          "observe": "每轮 2 次请求（1 次重试）；4 次失败，不满 5 次不触发",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        },
+        {
+          "label": "累计失败 12 次（第 5 次触发离线）（door，单点从站）",
+          "control": "drop 7 0 24",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 12,
+              "expect": "offline",
+              "online_after": 0
+            }
+          ],
+          "observe": "每轮 2 次请求（1 次重试）；12 次失败，第 5 次触发离线，drop 用尽后一轮内自动恢复",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "door",
+            "kind": "offline"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I9-single-drop",
+      "title": "离散失败：单次丢帧不产生失败采样",
+      "steps": [
+        {
+          "label": "丢 1 次应答（door）",
+          "control": "drop 7 0 1",
+          "expects": [
+            {
+              "point": "door",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 0,
+              "expect": "none",
+              "online_after": 1
+            }
+          ],
+          "observe": "板端 100 ms 后重试成功，无失败采样，无告警",
+          "expect_active": 0,
+          "expect_primary": {
+            "point": "",
+            "kind": "none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "I10-per-point-window",
+      "title": "同一从站内各点独立计数（ups_load 静默，邻点正常）",
+      "steps": [
+        {
+          "label": "只丢 ups_load 的应答",
+          "control": "drop 5 0 20",
+          "expects": [
+            {
+              "point": "ups_load",
+              "raw": 400,
+              "value": 40.0,
+              "offline_n": 10,
+              "expect": "offline"
+            },
+            {
+              "point": "ups_soc",
+              "raw": 80,
+              "value": 80.0,
+              "offline_n": 0,
+              "expect": "none"
+            },
+            {
+              "point": "ups_bypass",
+              "raw": 0,
+              "value": 0.0,
+              "offline_n": 0,
+              "expect": "none"
+            }
+          ],
+          "observe": "同一从站的 ups_soc / ups_bypass 不受影响，仍在线",
+          "expect_active": 1,
+          "expect_primary": {
+            "point": "ups_load",
+            "kind": "offline"
+          }
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G1-eq-epsilon",
+      "title": "eq 判定精度（VG_ALARM_EQ_EPS = 0.0005）无法在板端覆盖",
+      "detail": "点表里所有 eq 点的 scale 都是 1，阈值 1 可被整数原始值精确命中，0.0005 的容差带取不到。需要一张 eq 且 scale<1、阈值小数不可精确表示的候选表才能覆盖。",
+      "covered_by": "app/velaguard/host_tests/test_alarm_boundary.c 的合成规则用例"
+    },
+    {
+      "id": "G2-fail_n",
+      "title": "fail_n 的有效区间无法在板端覆盖",
+      "detail": "点表里 fail_n 全为 3，有效阈值恒为 max(3,5)=5。fail_n>5（上限 8）与 fail_n<5 被抬高的路径取不到。",
+      "covered_by": "app/velaguard/host_tests/test_alarm_eval.c 与 test_alarm_boundary.c"
+    },
+    {
+      "id": "G3-fc04",
+      "title": "FC04 输入寄存器读取路径无法在板端覆盖",
+      "detail": "点表里所有点都是 fc=3。模拟从站对 FC04 有应答分支，但没有点会走这条路径。",
+      "covered_by": "无；需要一张含 fc=4 点的候选表"
+    },
+    {
+      "id": "G4-cmp-no-threshold",
+      "title": "cmp 有值但 warn/crit 都空的点无法在板端覆盖",
+      "detail": "协议规定这种情况不做模拟量告警，但点表里没有这样的点。",
+      "covered_by": "无；需要候选表补充"
+    }
+  ]
+}
