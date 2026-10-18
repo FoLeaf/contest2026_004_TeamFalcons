@@ -202,7 +202,7 @@ broker。集成完成后又在 `codex/maintenance-closeout` 的 clean 提交 `d7
 
 | 项目 | 命令 | 结果 | 证据 |
 |---|---|---|---|
-| 工况数据自检 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py` | 25 个工况、83 个步骤、4 项前置缺口 | 见第 9 节 |
+| 工况数据自检 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py` | 25 个工况、83 个步骤、4 项前置缺口 | 见第 10 节 |
 | 产物是否最新 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py --check` | 通过 | 同上 |
 | 点表漂移检查 | `python3 -I ... --list-dump <vgpoint list 输出>` | 一致时通过；改动 `temp` 的 crit 后报不一致并返回 1 | 本轮用合成样本验证过两个方向 |
 | 规则与编码单元测试 | `make -C app/velaguard/host_tests test_alarm_boundary` | ok（14 点、83 步骤、132 条预期） | `evidence/2026-10-18-current-i8-boundary.log` |
@@ -246,7 +246,21 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/maintenance_rtu_slav
 离线测试没有覆盖什么：串口收发本身（脚本自检不开串口）、屏幕渲染、`pending_alarm.txt`
 的真实落盘、MQTT 与 Agent 链路、以及一切需要真实从站或真实总线的时序。
 
-## 9. 测试前置缺口
+## 9. 2026-10-18 真机结果
+
+本节的板端结果使用本轮候选固件 `c20177f`，不把未完成的工况写成通过，也不把该
+候选固件称为最终冻结版本。
+
+| 工况 | 结论 | 依据 |
+|---|---|---|
+| I8 | 未验证 | `drop 7 0 32` 后从站只记录 4 次 drop，请求累计停在 3758/3754，板端 NSH 随后零响应；没有取得 16 个连续失败采样或恢复状态。见 [G-I8 板端失稳记录](../maintenance-evidence/2026-10-18/final-g-i8-board-failure.md)。 |
+| I9 | 通过 | 22:30:59.126 的一次 door `action=drop` 后，22:30:59.768 的重试 `action=reply value=0`；22:31:19 板端 `door online=1 kind=none`，无新增 raise 事件。见 [I8/I9 板端验收记录](../maintenance-evidence/2026-10-18/final-f-i8-i9-board-acceptance.md)。 |
+| I10 | 待执行 | 尚未下发 `drop 5 0 20`，不能判断同从站各点是否独立计数。 |
+
+I8 的失败现场同时是 QA-04 的第二次复现。恢复后 14 点在线只能证明复位成功，不能
+证明 I8 的离线滑窗行为通过，也不能关闭串口失联问题。
+
+## 10. 测试前置缺口
 
 这四项在当前点表下无法在板端覆盖，需要改点表才能补，属于候选表变更，必须走
 “候选、试读、展示结果、人工确认、单独 apply”的流程，本任务不执行。
@@ -258,7 +272,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/maintenance_rtu_slav
 | G3 | FC04 输入寄存器路径 | 点表里所有点都是 `fc=3`，没有点会走 FC04 | 无；需要一张含 `fc=4` 点的候选表 |
 | G4 | `cmp` 有值但 `warn`/`crit` 都空的点 | 点表里没有这样的点 | 无；需要候选表补充 |
 
-## 10. 仍需人工确认、物理操作或真机观察的项目
+## 11. 仍需人工确认、物理操作或真机观察的项目
 
 - 真机验收本身：本清单的所有工况都要在开发板上执行一次，离线结果不能替代。
 - 屏幕目视：告警页弹出、分栏数量、等级文字、状态栏告警 chip 变暗时机。

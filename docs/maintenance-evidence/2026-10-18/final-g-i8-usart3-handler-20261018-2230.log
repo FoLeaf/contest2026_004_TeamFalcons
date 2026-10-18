@@ -1,0 +1,9 @@
+0x90001024 in exception_common ()
+0x24003ff8 <g_irqvector+440>:	0x90000945	0x240000cc
+up_interrupt + 1 in section .text
+0x4000481c:	0x0ce010f8
+0x40004824:	0x00000067
+0x40004800:	0x2000002d
+0x40004820:	0x00000000
+[Inferior 1 (Remote target) detached]
+GDB_RC=0

@@ -1,0 +1,50 @@
+########## boot settle len=630 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## cat /data/velaguard/reports/alarm_advice.txt ########## len=220
+cat /data/velaguard/reports/alarm_advice.txt
+VGADV1
+boot=30c5638c
+req=3
+n=1
+[1]
+id=temp
+epoch=2
+sev=warn
+unres=0
+sum=温度30度超限建议通风降温
+ev=实测30C超28C告警阈未达35C严重线点位在线数据新鲜
+att=关注空调回风25C与设定24C的温差确认制冷是否正常
+END
+nsh> [K
+
+########## vgagent advice ########## len=643
+vgagent advice
+round: state=idle gen=3 owner=none
+llm: credentials=ready provision_file=present
+reply: OK: wrote 253 bytes to /data/velaguard/reports/alarm_advice.txt
+advice: state=ready loaded=1 boot=30c5638c req=3 doc_n=1 covered=1
+advice: alarms=1
+advice: point=temp epoch=2 advice=hit
+nsh> [Kvgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent status ########## len=599
+vgagent status
+round: state=idle gen=3 owner=none
+llm: credentials=ready provision_file=present
+reply: OK: wrote 253 bytes to /data/velaguard/reports/alarm_advice.txt
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+

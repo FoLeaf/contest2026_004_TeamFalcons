@@ -28,3 +28,4 @@ RESET 2026-10-18 18:52 reason=OpenOCD telnet "reset run"，150 ms 工况
 RESET 2026-10-18 18:41 reason=OpenOCD 启动 -c "init" -c "reset run"，时序测量前的复位
 NOTE  2026-10-18 傍晚 各工况 60-300 秒窗口内 bus boot_timeout=0、boot_crc=0、boot_other=0，
       未发现非预期复位。
+RESET 2026-10-18T22:24:35+08:00 reason=G-I8 板端 tick 停止、NSH 零响应、USART3 RX 中断风暴；人工 OpenOCD reset run 恢复（先保存 PC/USART/NVIC 现场）

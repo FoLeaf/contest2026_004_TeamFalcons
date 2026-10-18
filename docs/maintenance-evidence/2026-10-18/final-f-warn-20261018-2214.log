@@ -1,0 +1,135 @@
+########## boot settle len=1323 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tool_files] write_file: /data/velaguard/reports/alarm_advice.txt (1758 bytes)
+[agent] Tool write_file result: 64 bytes
+[agent] Local tool shortcut: skip LLM round
+[trace:6ad5429f35c3b13a] END status=ok iters=3 tools=3 llm_ms=108100 elapsed=118s backend=0
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[agent] Dispatching response → local_client:velaguard:2
+[vgagent] round finished: reply
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[vgadvice] asked for 1 alarms req=3
+[vgagent] round submitted: 739 bytes
+[agent] Processing message from local_client:velaguard:3
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint get temp ########## len=1019
+vgpoint get temp
+vgpoint: VALUE id=temp value=30 ok=1 unit=C age_ms=2040
+vgpoint: OK cmd=get table=commi[tskills] Skills summary: t1086 bytes
+ed [context] System prompt bun=1
+nsh> [ilt: K3127 bytes
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad543297c9701b3] BEGIN chat=velaguard:3 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 6426 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:3
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792361258
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## cat /data/velaguard/pending_alarm.txt ########## len=1081
+cat /data/velaguard/pending_alarm.txt
+type=threshold
+tag=temp
+slave=1
+reg=0
+value=30
+threshold=28
+hint=use alarm_interpretation skill
+nsh> [K[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 1: 1 calls
+[trace:6ad543297c9701b3] iter=0 tool=read_file latency=4300ms llm=ok backend=0
+[agent] Tool call: read_file args={"path": "/data/agent/skills/alarm_interpretation.md"}
+[tools] Executing tool: read_file
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+[agent] Tool read_file result: 1874 bytes
+[agent] Instruction file read — no shortcut, LLM will process
+[llm] OpenAI API with tools (model: mimo-v2.5, 8621 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+[llm] Response: 0 bytes text, 2 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=2
+[agent] Tool iter 2: 2 calls
+[trace:6ad543297c9701b3] iter=1 tool=vg_run_report latency=4540ms llm=ok backend=0
+[tools] Executed vg tool: vg_run_report
+
+
+########## vgruntime dump ########## len=8593
+vgruntime dump
+vgruntime: uptime_s=880 wall=2026-10-18T22:07:50
+vgruntime: slave=1 boot_total=630 boot_ok=588 boot_crc=0 boot_timeout=42 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=315 boot_ok=295 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=90 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=315 boot_ok=295 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=90 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=945 boot_ok=885 boot_crc=0 boot_timeout=60 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=200 boot_lat_avg=25 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=945 boot_ok=886 boot_crc=0 boot_timeout=59 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=670 boot_lat_avg=25 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=945 boot_ok=885 boot_crc=0 boot_timeout=60 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=130 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=315 boot_ok=295 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=100 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=4410 boot_ok=4129 boot_crc=0 boot_timeout=281 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=611840 offline_s=0 last_ok_ago_s=2 value=30 kind=threshold
+vgruntime: point id=humid slave=1 online=1 online_ms=611850 offline_s=0 last_ok_ago_s=2 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=613900 offline_s=0 last_ok_ago_s=2 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=613910 offline_s=0 last_ok_ago_s=2 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=613920 offline_s=0 last_ok_ago_s=2 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=613930 offline_s=0 last_ok_ago_s=2 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=613940 offline_s=0 last_ok_ago_s=2 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=613950 offline_s=0 last_ok_ago_s=2 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=613960 offline_s=0 last_ok_ago_s=2 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=615970 offline_s=0 last_ok_ago_s=2 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=597220 offline_s=0 last_ok_ago_s=2 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=597230 offline_s=0 last_ok_ago_s=2 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=597240 offline_s=0 last_ok_ago_s=2 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=597250 offline_s=0 last_ok_ago_s=2 value=0 kind=none
+vgruntime: event t_boot_s=55 wall=2026-10-18T21:54:04 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=55 wall=2026-10-18T21:54:04 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=55 wall=2026-10-18T21:54:04 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=500 wall=2026-10-18T22:01:29 id=volt_a action=raise kind=offline value=230 thr=0 cmp=le reason=modbus_fail_offline
+vgruntime: event t_boot_s=500 wall=2026-10-18T22:01:29 id=pwr_kw action=raise kind=offline value=3 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=500 wall=2026-10-18T22:01:29 id=energy_kwh action=raise kind=offline value=123.4 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=500 wall=2026-10-18T22:01:29 id=door action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=temp action=raise kind=offline value=24 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=humid action=raise kind=offline value=50 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=flood action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=smoke action=raise kind=offline value=1 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=acu_ret action=raise kind=offline value=25 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=acu_set action=raise kind=offline value=24 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=acu_run action=raise kind=offline value=1 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=ups_load action=raise kind=offline value=40 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=ups_soc action=raise kind=offline value=80 thr=0 cmp=le reason=modbus_fail_offline
+vgruntime: event t_boot_s=519 wall=2026-10-18T22:01:48 id=ups_bypass action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=730 wall=2026-10-18T22:05:19 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=732 wall=2026-10-18T22:05:21 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=732 wall=2026-10-18T22:05:21 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=853 wall=2026-10-18T22:07:23 id=temp action=raise kind=threshold value=30 thr=28 cmp=ge reason=threshold_ge
+nsh> [K[agent] Tool vg_run_report result: 760 bytes
+[tools] Executed vg tool: vg_point_read
+[agent] Tool vg_point_read result: 88 bytes
+[llm] OpenAI API with tools (model: mimo-v2.5, 9928 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 3: 1 calls
+[trace:6ad543297c9701b3] iter=2 tool=write_file latency=6830ms llm=ok backend=0
+[agent] Tool call: write_file args={"path": "/data/velaguard/reports/alarm_advice.txt", "content": "VGADV1\nboot=30c5638c\nreq=3\nn=1\n[1]\nid=temp\nepoch=2\nsev=warn\nunres=0\nsum=温度30度超限建议通风降温\nev=实测30C超28C告警阈未达35C严重线点位在线数据新鲜\natt=关注空调回风25C与设定24C的温差确认制冷是否正常\nEND\n"}
+

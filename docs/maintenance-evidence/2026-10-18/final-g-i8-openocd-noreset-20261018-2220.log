@@ -1,0 +1,40 @@
+Open On-Chip Debugger 0.11.0+dev-snapshot (2026-02-25-15:11)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 1000 kHz
+
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+Info : clock speed 1800 kHz
+Info : STLINK V3J17M11 (API v3) VID:PID 0483:374E
+Info : Target voltage: 3.274035
+Info : [stm32h7x.cpu0] Cortex-M7 r1p1 processor detected
+Info : [stm32h7x.cpu0] target has 8 breakpoints, 4 watchpoints
+[stm32h7x.cpu0] Target successfully examined.
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Warn : DEPRECATED! use 'read_memory' not 'mem2array'
+Info : starting gdb server for stm32h7x.cpu0 on 3333
+Info : Listening on port 3333 for gdb connections
+Warn : target was in unknown state when halt was requested
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001082 msp: 0x24048030
+halted
+pc (/32): 0x90001082
+
+lr (/32): 0xffffffe9
+
+sp (/32): 0x24048030
+
+register xpsr not found in current target
+
+0xe000ed28: 00000000 00000000 0000000b 00000000 00000000 00000000 00000030 00000200 
+
+shutdown command invoked
+OPENOCD_RC=0

@@ -1,0 +1,38 @@
+0x90001082 in exception_common ()
+r0             0x24048030          604274736
+r1             0x24047fc0          604274624
+r2             0x20000000          536870912
+r3             0x0                 0
+r4             0x24003d5c          603995484
+r5             0x0                 0
+r6             0x24003cd8          603995352
+r7             0x24000264          603980388
+r8             0x3                 3
+r9             0x5                 5
+r10            0x2                 2
+r11            0x0                 0
+r12            0x0                 0
+sp             0x24048030          0x24048030
+lr             0xffffffe9          -23
+pc             0x90001082          0x90001082 <exception_common+122>
+xPSR           0x2100000e          553648142
+fpscr          0x0                 0
+msp            0x24048030          0x24048030
+psp            0x240480cc          0x240480cc
+primask        0x0                 0
+basepri        0x80                -128
+faultmask      0x0                 0
+control        0x0                 0
+0x24048030:	0x00000002	0x24003d5c	0x380003d0	0x00000001
+0x24048040:	0x00000002	0x90001783	0x9000177e	0x81000200
+0x24048050:	0x00000000	0x00000000	0x00000000	0x00000000
+0x24048060:	0x00000000	0x00000000	0x00000000	0x00000000
+#0  0x90001082 in exception_common ()
+#1  0x00000000 in ?? ()
+No symbol "g_nxthreads" in current context.
+'g_readytorun' has unknown type; cast it to its declared type
+No symbol "g_alltasks" in current context.
+  Id   Target Id         Frame 
+* 1    Remote target     0x90001082 in exception_common ()
+[Inferior 1 (Remote target) detached]
+GDB_RC=0

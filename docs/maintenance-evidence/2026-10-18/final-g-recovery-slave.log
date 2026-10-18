@@ -1,0 +1,158 @@
+START 2026-10-18T22:05:17.4189774+08:00 port=COM7 mode=slave-only baud=9600 rts=False dtr=False reply_delay_ms=0 request_log=False
+CONTROL 2026-10-18T22:05:17.4342266+08:00 written=2026-10-18T22:05:11.4360601+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-18T22:05:17.4342266+08:00 elapsed_s=0.0 mode=normal requests=0 replies=0 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+RX 2026-10-18T22:05:17.4695229+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-18T22:05:17.6077370+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-18T22:05:17.7621519+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-18T22:05:17.8406903+08:00 04-03-00-01-00-01-D5-9F
+RX 2026-10-18T22:05:17.9327038+08:00 04-03-00-02-00-01-25-9F
+RX 2026-10-18T22:05:18.0097432+08:00 05-03-00-00-00-01-85-8E
+RX 2026-10-18T22:05:18.1019071+08:00 05-03-00-01-00-01-D4-4E
+RX 2026-10-18T22:05:18.1786057+08:00 05-03-00-02-00-01-24-4E
+RX 2026-10-18T22:05:18.2714874+08:00 06-03-00-00-00-01-85-BD
+RX 2026-10-18T22:05:18.3496841+08:00 06-03-00-01-00-01-D4-7D
+RX 2026-10-18T22:05:18.4434744+08:00 06-03-00-02-00-01-24-7D
+RX 2026-10-18T22:05:18.6283245+08:00 07-03-00-00-00-01-84-6C
+RX 2026-10-18T22:05:19.4183597+08:00 01-03-00-00-00-01-84-0A
+RX 2026-10-18T22:05:19.4958272+08:00 01-03-00-01-00-01-D5-CA
+RX 2026-10-18T22:05:19.8519630+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-18T22:05:19.9914321+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-18T22:05:20.0691258+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-18T22:05:20.1612576+08:00 04-03-00-01-00-01-D5-9F
+RX 2026-10-18T22:05:20.2400812+08:00 04-03-00-02-00-01-25-9F
+RX 2026-10-18T22:05:20.3306042+08:00 05-03-00-00-00-01-85-8E
+RX 2026-10-18T22:05:20.4130406+08:00 05-03-00-01-00-01-D4-4E
+RX 2026-10-18T22:05:20.4906870+08:00 05-03-00-02-00-01-24-4E
+RX 2026-10-18T22:05:20.6285353+08:00 06-03-00-00-00-01-85-BD
+RX 2026-10-18T22:05:20.7664336+08:00 06-03-00-01-00-01-D4-7D
+RX 2026-10-18T22:05:20.8566510+08:00 06-03-00-02-00-01-24-7D
+RX 2026-10-18T22:05:20.9358693+08:00 07-03-00-00-00-01-84-6C
+RX 2026-10-18T22:05:21.8840080+08:00 01-03-00-00-00-01-84-0A
+RX 2026-10-18T22:05:22.0534449+08:00 01-03-00-01-00-01-D5-CA
+RX 2026-10-18T22:05:22.1300908+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-18T22:05:22.2330302+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-18T22:05:22.3142094+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-18T22:05:22.3917065+08:00 04-03-00-01-00-01-D5-9F
+STATUS 2026-10-18T22:05:27.4460123+08:00 elapsed_s=10.0 mode=normal requests=68 replies=68 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:05:37.4529137+08:00 elapsed_s=20.0 mode=normal requests=138 replies=138 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:05:47.4552162+08:00 elapsed_s=30.0 mode=normal requests=208 replies=208 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:05:57.4558134+08:00 elapsed_s=40.0 mode=normal requests=278 replies=278 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:07.4605829+08:00 elapsed_s=50.0 mode=normal requests=348 replies=348 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:17.4722870+08:00 elapsed_s=60.1 mode=normal requests=418 replies=418 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:27.4748720+08:00 elapsed_s=70.1 mode=normal requests=489 replies=489 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:37.4857841+08:00 elapsed_s=80.1 mode=normal requests=558 replies=558 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:47.4931170+08:00 elapsed_s=90.1 mode=normal requests=628 replies=628 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:06:57.5128183+08:00 elapsed_s=100.1 mode=normal requests=698 replies=698 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:07:07.5195935+08:00 elapsed_s=110.1 mode=normal requests=767 replies=767 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:07:17.5284784+08:00 elapsed_s=120.1 mode=normal requests=838 replies=838 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-18T22:07:20.4061415+08:00 written=2026-10-18T22:07:20.2920687+08:00 line="value 1 0 300" effect=value slave=1 reg=0 raw=300
+STATUS 2026-10-18T22:07:27.5411538+08:00 elapsed_s=130.1 mode=normal requests=894 replies=894 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:07:37.5653202+08:00 elapsed_s=140.1 mode=normal requests=957 replies=957 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:07:47.5691730+08:00 elapsed_s=150.1 mode=normal requests=1020 replies=1020 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:07:57.5831227+08:00 elapsed_s=160.2 mode=normal requests=1084 replies=1084 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+CONTROL 2026-10-18T22:08:04.9166854+08:00 written=2026-10-18T22:08:04.6520715+08:00 line="value 1 0 360" effect=value slave=1 reg=0 raw=360
+STATUS 2026-10-18T22:08:07.5899623+08:00 elapsed_s=170.2 mode=normal requests=1146 replies=1146 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:08:17.5947150+08:00 elapsed_s=180.2 mode=normal requests=1214 replies=1214 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:08:27.6095608+08:00 elapsed_s=190.2 mode=normal requests=1280 replies=1280 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:08:37.6140589+08:00 elapsed_s=200.2 mode=normal requests=1343 replies=1343 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:08:47.6262846+08:00 elapsed_s=210.2 mode=normal requests=1410 replies=1410 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:08:57.6439795+08:00 elapsed_s=220.2 mode=normal requests=1469 replies=1469 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:07.6480114+08:00 elapsed_s=230.2 mode=normal requests=1537 replies=1537 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:17.6531534+08:00 elapsed_s=240.2 mode=normal requests=1594 replies=1594 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:27.6649471+08:00 elapsed_s=250.2 mode=normal requests=1661 replies=1661 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:37.6757625+08:00 elapsed_s=260.3 mode=normal requests=1721 replies=1721 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:47.6907941+08:00 elapsed_s=270.3 mode=normal requests=1790 replies=1790 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:09:57.6911551+08:00 elapsed_s=280.3 mode=normal requests=1851 replies=1851 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+CONTROL 2026-10-18T22:10:06.8653940+08:00 written=2026-10-18T22:10:06.6280778+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-18T22:10:07.6930130+08:00 elapsed_s=290.3 mode=normal requests=1917 replies=1917 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:10:17.6935195+08:00 elapsed_s=300.3 mode=normal requests=1986 replies=1986 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:10:27.6941577+08:00 elapsed_s=310.3 mode=normal requests=2059 replies=2059 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:10:37.6956628+08:00 elapsed_s=320.3 mode=normal requests=2126 replies=2126 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:10:47.6971291+08:00 elapsed_s=330.3 mode=normal requests=2201 replies=2201 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-18T22:10:50.8234012+08:00 written=2026-10-18T22:10:50.6640806+08:00 line="value 5 1 40" effect=value slave=5 reg=1 raw=40
+STATUS 2026-10-18T22:10:57.6979005+08:00 elapsed_s=340.3 mode=normal requests=2266 replies=2266 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:11:07.6986275+08:00 elapsed_s=350.3 mode=normal requests=2331 replies=2331 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:11:17.7005032+08:00 elapsed_s=360.3 mode=normal requests=2396 replies=2396 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:11:27.7020969+08:00 elapsed_s=370.3 mode=normal requests=2465 replies=2465 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+CONTROL 2026-10-18T22:11:35.0358429+08:00 written=2026-10-18T22:11:34.8440838+08:00 line="value 5 1 20" effect=value slave=5 reg=1 raw=20
+STATUS 2026-10-18T22:11:37.7038714+08:00 elapsed_s=380.3 mode=normal requests=2532 replies=2532 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:11:47.7059023+08:00 elapsed_s=390.3 mode=normal requests=2588 replies=2588 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:11:57.7068697+08:00 elapsed_s=400.3 mode=normal requests=2658 replies=2658 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:12:07.7083415+08:00 elapsed_s=410.3 mode=normal requests=2726 replies=2726 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:12:17.7095353+08:00 elapsed_s=420.3 mode=normal requests=2793 replies=2793 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+CONTROL 2026-10-18T22:12:22.1434939+08:00 written=2026-10-18T22:12:22.1040866+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-18T22:12:27.7108653+08:00 elapsed_s=430.3 mode=normal requests=2856 replies=2856 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:12:37.7108758+08:00 elapsed_s=440.3 mode=normal requests=2924 replies=2924 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:12:47.7126276+08:00 elapsed_s=450.3 mode=normal requests=2996 replies=2996 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:12:57.7141694+08:00 elapsed_s=460.3 mode=normal requests=3066 replies=3066 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-18T22:13:07.1423366+08:00 written=2026-10-18T22:13:07.0560891+08:00 line="value 2 2 1" effect=value slave=2 reg=2 raw=1
+STATUS 2026-10-18T22:13:07.7146932+08:00 elapsed_s=470.3 mode=normal requests=3141 replies=3141 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:13:17.7157063+08:00 elapsed_s=480.3 mode=normal requests=3204 replies=3204 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:13:27.7164124+08:00 elapsed_s=490.3 mode=normal requests=3267 replies=3267 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:13:37.7162952+08:00 elapsed_s=500.3 mode=normal requests=3331 replies=3331 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+STATUS 2026-10-18T22:13:47.7171214+08:00 elapsed_s=510.3 mode=normal requests=3400 replies=3400 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=1 drops=0
+CONTROL 2026-10-18T22:13:51.5401615+08:00 written=2026-10-18T22:13:51.4280916+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-18T22:13:57.7185597+08:00 elapsed_s=520.3 mode=normal requests=3470 replies=3470 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:14:07.7192601+08:00 elapsed_s=530.3 mode=normal requests=3540 replies=3540 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:14:17.7190580+08:00 elapsed_s=540.3 mode=normal requests=3615 replies=3615 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-18T22:14:27.7202202+08:00 elapsed_s=550.3 mode=normal requests=3688 replies=3688 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-18T22:14:32.8698597+08:00 written=2026-10-18T22:14:32.7600941+08:00 line="drop 7 0 32" effect=drop slave=7 reg=0 n=32
+STATUS 2026-10-18T22:14:37.7218162+08:00 elapsed_s=560.3 mode=normal requests=3752 replies=3748 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:14:47.7233946+08:00 elapsed_s=570.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:14:57.7254198+08:00 elapsed_s=580.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:07.7275197+08:00 elapsed_s=590.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:17.7309286+08:00 elapsed_s=600.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:27.7327283+08:00 elapsed_s=610.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:37.7345898+08:00 elapsed_s=620.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:47.7348514+08:00 elapsed_s=630.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:15:57.7366831+08:00 elapsed_s=640.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:07.7377971+08:00 elapsed_s=650.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:17.7394821+08:00 elapsed_s=660.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:27.7416834+08:00 elapsed_s=670.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:37.7428364+08:00 elapsed_s=680.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:47.7443465+08:00 elapsed_s=690.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:16:57.7463712+08:00 elapsed_s=700.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:07.7495835+08:00 elapsed_s=710.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:17.7511733+08:00 elapsed_s=720.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:27.7512246+08:00 elapsed_s=730.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:37.7523140+08:00 elapsed_s=740.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:47.7530993+08:00 elapsed_s=750.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:17:57.7533665+08:00 elapsed_s=760.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:07.7549010+08:00 elapsed_s=770.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:17.7553474+08:00 elapsed_s=780.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:27.7564575+08:00 elapsed_s=790.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:37.7581423+08:00 elapsed_s=800.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:47.7598206+08:00 elapsed_s=810.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:18:57.7609291+08:00 elapsed_s=820.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:07.7626290+08:00 elapsed_s=830.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:17.7648876+08:00 elapsed_s=840.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:27.7660958+08:00 elapsed_s=850.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:37.7666755+08:00 elapsed_s=860.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:47.7673848+08:00 elapsed_s=870.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:19:57.7675644+08:00 elapsed_s=880.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:07.7678806+08:00 elapsed_s=890.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:17.7684336+08:00 elapsed_s=900.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:27.7691997+08:00 elapsed_s=910.3 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:37.7700185+08:00 elapsed_s=920.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:47.7703407+08:00 elapsed_s=930.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:20:57.7711691+08:00 elapsed_s=940.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:07.7720065+08:00 elapsed_s=950.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:17.7733868+08:00 elapsed_s=960.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:27.7734881+08:00 elapsed_s=970.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:37.7752242+08:00 elapsed_s=980.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:47.7755921+08:00 elapsed_s=990.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:21:57.7800685+08:00 elapsed_s=1000.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:07.7823688+08:00 elapsed_s=1010.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:17.7819364+08:00 elapsed_s=1020.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:27.7826040+08:00 elapsed_s=1030.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:37.7844012+08:00 elapsed_s=1040.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:47.7864317+08:00 elapsed_s=1050.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:22:57.7872847+08:00 elapsed_s=1060.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:23:07.7876932+08:00 elapsed_s=1070.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:23:17.7898866+08:00 elapsed_s=1080.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:23:27.7901429+08:00 elapsed_s=1090.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:23:37.7904891+08:00 elapsed_s=1100.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+STATUS 2026-10-18T22:23:47.7929258+08:00 elapsed_s=1110.4 mode=normal requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4 silent=- overrides=0 drops=1
+CONTROL 2026-10-18T22:23:53.9799064+08:00 written=2026-10-18T22:23:53.8529284+08:00 line="normal" effect=mode=normal
+CONTROL 2026-10-18T22:23:56.0866320+08:00 written=2026-10-18T22:23:55.8521304+08:00 line="stop" effect=stop
+STOP 2026-10-18T22:23:56.0866320+08:00 requests=3758 replies=3754 suppressed=0 crc_scan=0 dropped=4
