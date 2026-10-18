@@ -412,6 +412,45 @@ int main(void)
   expect(vg_provision_load(&llm) < 0,
          "an MQTT record is not accepted as an LLM credential");
 
+  /* Coexistence, both directions.  The records use different files, so
+   * replacing one must not modify or invalidate the other. */
+
+  put_record(VG_PROVISION_FILE, LLM_JSON);
+  put_record(VG_MQTT_CRED_FILE, MQTT_JSON("coexist", "pw-mqtt"));
+  before_len = read_record(VG_PROVISION_FILE, before, sizeof(before));
+  expect(before_len > 0, "the LLM record is present before MQTT install");
+
+  seal_into(MQTT_JSON("replacement", "pw-mqtt-new"), blob, sizeof(blob),
+            &blob_len);
+  expect(vg_mqtt_cred_install(blob, blob_len) == 0,
+         "a good MQTT record can replace the MQTT file");
+  after_len = read_record(VG_PROVISION_FILE, after, sizeof(after));
+  expect(after_len == before_len && memcmp(before, after, before_len) == 0,
+         "installing MQTT credentials leaves the LLM record byte-for-byte");
+  memset(&llm, 0, sizeof(llm));
+  expect(vg_provision_load(&llm) == 0 &&
+         strcmp(llm.api_key, "tp-test") == 0,
+         "the LLM record still loads after the MQTT install");
+
+  put_record(VG_MQTT_CRED_FILE, MQTT_JSON("keep-mqtt", "pw-keep"));
+  before_len = read_record(VG_MQTT_CRED_FILE, before, sizeof(before));
+  expect(before_len > 0, "the MQTT record is present before LLM seal");
+
+  memset(&llm, 0, sizeof(llm));
+  snprintf(llm.host, sizeof(llm.host), "llm2.example.invalid");
+  snprintf(llm.path, sizeof(llm.path), "/v1/chat/completions");
+  snprintf(llm.port, sizeof(llm.port), "443");
+  snprintf(llm.model, sizeof(llm.model), "test-model-2");
+  snprintf(llm.api_key, sizeof(llm.api_key), "tp-test-2");
+  expect(vg_provision_seal(&llm) == 0, "a good LLM record still seals");
+  after_len = read_record(VG_MQTT_CRED_FILE, after, sizeof(after));
+  expect(after_len == before_len && memcmp(before, after, before_len) == 0,
+         "sealing LLM credentials leaves the MQTT record byte-for-byte");
+  memset(&cred, 0, sizeof(cred));
+  expect(vg_mqtt_cred_load(&cred) == 0 &&
+         strcmp(cred.username, "keep-mqtt") == 0,
+         "the MQTT record still loads after the LLM seal");
+
   /* A missing record, and one that fails its integrity check. */
 
   remove(VG_MQTT_CRED_FILE);

@@ -343,6 +343,7 @@ int main(int argc, FAR char *argv[])
       if (vg_mqtt_topic(topic, sizeof(topic), devid, "status") != 0)
         {
           fprintf(stderr, "ERROR: topic\n");
+          drop_credentials();
           return ERROR;
         }
 
@@ -352,6 +353,7 @@ int main(int argc, FAR char *argv[])
   if (vg_mqtt_format_lwt(will, sizeof(will), devid) != 0)
     {
       fprintf(stderr, "ERROR: lwt\n");
+      drop_credentials();
       return ERROR;
     }
 
@@ -370,6 +372,7 @@ int main(int argc, FAR char *argv[])
     {
       fprintf(stderr, "ERROR: cannot connect to %s:%s (%s)\n",
               cfg.host, cfg.port, strerror(errno));
+      drop_credentials();
       return ERROR;
     }
 

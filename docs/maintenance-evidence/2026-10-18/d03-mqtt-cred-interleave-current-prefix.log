@@ -1,0 +1,14 @@
+evidence=d03-mqtt-cred-interleave-current-prefix
+fixture_source_commit=9e88868
+fixture_source_path=app/velaguard/vg_provision.c
+fixture_source_sha256=0d50f9121b7da187c882d5e5a3b0a3bad190ee593934968b2f1bef6f9b3294ac
+test_source=working-tree app/velaguard/host_tests/test_mqtt_cred.c
+test_source_sha256=7244b6bf8823364a67d445277fc76326a9adccbe1a63f8f5e3010553be17263d
+command=cc -Wall -Werror -I.. -pthread -I<openvela>/apps/include -o test_mqtt_cred test_mqtt_cred.c ../vg_file_store.c -Wl,--wrap=rename,--wrap=read
+--- build output ---
+BUILD_EXIT_STATUS=0
+--- test output ---
+FAIL: a second load cannot read the shared buffer while the first is still between its read and its check
+FAIL: the first loader still gets the record it read
+test_mqtt_cred: 2 failure(s)
+EXIT_STATUS=1

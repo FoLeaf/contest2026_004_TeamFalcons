@@ -54,7 +54,7 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/flash.ps1
 板子复位后，在没有 MQTT 记录的板子上让网络管理器尝试建链，串口应出现：
 
 ```text
-vgnet: no MQTT credentials in the provision store (err 2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
 ```
 
 逐项确认：
@@ -66,7 +66,7 @@ vgnet: no MQTT credentials in the provision store (err 2); provision with 'vgpro
 
 ```text
 nsh> vgprovision mqtt status
-vgprovision: mqtt credentials: MISSING (err 2)
+vgprovision: mqtt credentials: MISSING (err -2)
 ```
 
 ## 3. 写入凭证

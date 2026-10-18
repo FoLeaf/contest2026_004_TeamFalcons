@@ -101,6 +101,8 @@ vgprovision: file=/data/velaguard/provision/mqtt_secrets.v1 persistent=yes
 - 生命周期：记录读进一个模块静态结构体，`mqtt_connect()` 同步把 CONNECT 打包进发送
   缓冲后立刻清零。MQTT-C 会把打包好的报文留在发送缓冲里直到队列回收，这部分明文
   驻留是 MQTT-C 的既有行为，本模块没有改动，也不宣称已经消除。
+- 失败清理：`vgmqtt` 在主题或遗嘱构造失败、TCP 建链失败时同样清除静态明文副本，
+  不会把已读取的口令留到下一次命令。
 - 并发：`vg_mqtt_cred_load()` 的模块级互斥锁覆盖封存文件打开、读取、UID 派生、
   解密、解析和明文清零。常驻网络管理器与 `vgmqtt` 调试入口同时读取时，共享的
   封存字节、解密文本和 UID 缓冲不会互相覆盖；`out` 在任何失败路径上都会被清零，
@@ -112,9 +114,9 @@ vgprovision: file=/data/velaguard/provision/mqtt_secrets.v1 persistent=yes
 
 | 情况 | 返回 | 板端表现 |
 |---|---|---|
-| 没有记录 | `-ENOENT` | `vgnet: no MQTT credentials in the provision store (err 2)`，不连 |
-| 完整性校验不过 | `-EACCES` | 同上，`err 13` |
-| 明文不是 MQTT 记录 | `-EINVAL` | 同上，`err 22` |
+| 没有记录 | `-ENOENT` | `vgnet: no MQTT credentials in the provision store (err -2)`，不连 |
+| 完整性校验不过 | `-EACCES` | 同上，`err -13` |
+| 明文不是 MQTT 记录 | `-EINVAL` | 同上，`err -22` |
 | 存储不可读 | 其它负值 | 同上 |
 | 写入中途失败 | `vg_file_replace` 的错误 | 保留上一条记录，`commit` 打印 refused |
 
@@ -162,6 +164,8 @@ make -C app/velaguard/host_tests test
 - 长度边界：刚好填满缓冲的用户名可以往返，超一个字符返回 `-ENOSPC`
 - 空用户名、空口令、外来 `kind` 标签被拒绝，且失败后不残留任何字段
 - 用途隔离双向：LLM 记录放到 MQTT 路径被拒，MQTT 记录放到 LLM 路径被拒
+- 两类记录共存：安装 MQTT 记录不改动 LLM 文件，封存新 LLM 记录也不改动 MQTT
+  文件，之后两边仍分别可读
 - 缺失记录（`-ENOENT`）、完整性校验失败（`-EACCES`）及对应的 `status` 文案
 - `status` 输出不含口令、不含完整用户名，用户名按 `ve****rd` 脱敏
 - 写入中途失败（`--wrap=rename` 让发布那一步失败）后旧记录逐字节不变
@@ -184,13 +188,17 @@ make -C app/velaguard/host_tests test
 - `test_mqtt_session_auth`：记录缺失时 `vg_tcp_open()` 调用数为 0；首次会话读取记录；
   关闭后替换记录，下一次会话重新读取新用户名和口令，不复用上一会话的明文副本。
 - `test_mqtt_vgmqtt_auth`：不传 `-u` / `-P` 时从同一封存路径读取；替换记录后重新读取
-  新值；记录缺失时完整入口在网络包装函数被调用前返回。网络系统调用计数必须为 0。
+  新值；记录缺失时完整入口在网络包装函数被调用前返回。网络系统调用计数必须为 0；
+  已读取记录后若 TCP 建链失败，完整入口返回错误且静态明文副本被清零。
 
 原始构建和运行输出见
 [d03-mqtt-auth-entrypoints.log](maintenance-evidence/2026-10-18/d03-mqtt-auth-entrypoints.log)。
-集成后的完整主机测试记录见
+本轮 closeout 重新编译并运行三个 MQTT 定向测试的原始输出见
+[d03-mqtt-runtime-credentials-current-regression.log](maintenance-evidence/2026-10-18/d03-mqtt-runtime-credentials-current-regression.log)，
+其中包含两类记录共存和 `vgmqtt` 失败清理断言，`OVERALL_EXIT_STATUS=0`。较早的集成后
+完整主机测试记录见
 [host-tests-mqtt-integration.log](maintenance-evidence/2026-10-18/host-tests-mqtt-integration.log)，
-`EXIT_STATUS=0`。
+它不包含本轮新增断言。
 
 另外用 `gcc -fsyntax-only -Wall -Wextra -Werror` 检查了 `vgprovision.c`、
 `velaguard_mqtt.c`、`vg_mqtt_session.c`，`CONFIG_VG_MQTT_CREDENTIALS` 打开和关闭两种

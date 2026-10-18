@@ -194,6 +194,14 @@ int main(void)
   assert(strcmp(cfg.user, "replaced-user") == 0);
   assert(strcmp(cfg.pass, "replaced-password") == 0);
 
+  /* A full entry-point failure after the record is loaded must not leave the
+   * clear-text copy in the module's static credential buffer. */
+  write_credential("wipe-user", "wipe-password");
+  g_network_calls = 0;
+  assert(vgmqtt_main(3, argv) == ERROR);
+  assert(g_network_calls == 1);
+  assert(g_cred.username[0] == '\0' && g_cred.password[0] == '\0');
+
   fixture_clean_records();
   puts("test_mqtt_vgmqtt_auth: OK (default record path and missing-record refusal)");
   return 0;

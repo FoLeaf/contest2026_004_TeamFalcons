@@ -1,15 +1,14 @@
 evidence=d03-mqtt-cred-interleave-post-fix
-base_commit=375b582
-tested_source=375b582 plus working-tree app/velaguard/vg_provision.c concurrency patch
-test_source_sha256=88dff8c6e8a6d2c06d3072beed0a6c76a44da80ccb2e42abb97bbc68ca30d1f9
+worktree=/home/hello19y/openvela/.vg-maintenance-closeout
+head=95d45ca
+test_source=working-tree app/velaguard/host_tests/test_mqtt_cred.c
+test_source_sha256=7244b6bf8823364a67d445277fc76326a9adccbe1a63f8f5e3010553be17263d
 fixed_source_sha256=7df500f7ea9121eb03e583f54e171c25fa36ab2e93093444fbd34fa21746d99b
-build_command=make -C app/velaguard/host_tests test_mqtt_cred
-BUILD_EXIT_STATUS=0
+build_command=make -B test_mqtt_cred
 --- build output ---
-make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
 cc -Wall -Werror -I.. -pthread -I../../../../apps/include -o test_mqtt_cred test_mqtt_cred.c ../vg_file_store.c \
   -Wl,--wrap=rename,--wrap=read
-make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+BUILD_EXIT_STATUS=0
 --- test output ---
 test_mqtt_cred: OK
 EXIT_STATUS=0
