@@ -81,3 +81,26 @@ b4c708943a1fa71644127f41e60e18c6f9e47e8aaea1091f890cf50c51672f2f  .debug/nuttx.h
 # 构建日志：build-d04-fix.log；烧录日志：flash-d04-fix.log（两段均 verified）
 2964f76ed3a3d9da6788a4f477a699e123b8cec45c9a647f1bf4aabc77c47dde  .debug/nuttx.hex
 afdfd57679379771ddaa4de43157e758a8f555041f334c51a253134b82676551  .debug/nuttx.bin
+
+# --- 第六次构建：维护主线统一集成后（2026-10-18 21:28:32 - 21:29:54）---
+# 变更：集成 MQTT 运行时凭证、Agent 审查补修、长测脚本、告警工况和阶段 D
+#       候选总线等待等维护成果。
+# 命令：bash scripts/build.sh --clean   (TARGET=velaguard-lvgl)
+# 参赛仓：codex/maintenance-closeout 75fc04d21e0f3b6a6fbd4f187c7f2d66a97ce165
+# NuttX：  velaguard/eth-mii-stm32h750b-dk 2373ab4a45ddfebe67706110db460b27f3a8d127 (clean)
+# apps：   velaguard/netinit-esp8266 0ea954b79740756318ce1f0b13271dd94235fe2a
+#          （跟踪源码 clean；三个 testing/drivers/nist-sts 未跟踪目录为构建前既有状态）
+# ai_agent：velaguard/llm-tls-send-retry 7dc0a8816292cd58675863e9a1cde8b1cd96a535 (clean)
+# MQTT-C： velaguard/mqtt-pal-hook 4dbb7f321ceeed47822171787e0742df2ddb4959 (clean)
+# 配置：   defconfig d02be7adf022e9de81bd9a1eb35b44347be21ee5e5d720e60da9943b3a2a4ccb
+#          nuttx/.config c4150e92cb327fd96b210f6db853f1130d21d6c6a349fdae98522079e90ac646
+# 静态内存：flash 1,265,756 B / sram 294,092 B（56.09%）
+# 告警：6 处，0 error，均为既有源码 warning
+# 构建日志：final-clean-build-20261018-212832.log
+# 凭证扫描：final-security-scan.log；MQTT 明文键名和历史口令值均 0 命中，
+#           CONFIG_VG_WIFI_PASSWORD 静态值仍命中，保留为独立问题
+# 本构建尚未烧录，不得把产物哈希当作板端固件身份或板验通过证据
+72089db0dd3ea6da88cdf9a6d2f3bcf9a76ecb6f377fae0166b9fe8a7e1e2119  .debug/nuttx.hex
+3bd1100d43e241141e314f15d5b73c6292f425fe088507f699bc019f3e3e63f8  .debug/nuttx.bin
+ad62c10da3dfe84ec8f87233e569cfe2b9733f2edf3b6641f9b757be66d27765  .debug/nuttx.elf
+877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex

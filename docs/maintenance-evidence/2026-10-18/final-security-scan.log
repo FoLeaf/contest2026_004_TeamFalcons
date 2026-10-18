@@ -1,0 +1,15 @@
+evidence=final-security-scan
+captured_at=2026-10-18T21:30:20+08:00
+contest_head=75fc04d21e0f3b6a6fbd4f187c7f2d66a97ce165
+config=/home/hello19y/openvela/nuttx/.config
+config_sha256=c4150e92cb327fd96b210f6db853f1130d21d6c6a349fdae98522079e90ac646
+mqtt_runtime_credentials=1
+mqtt_compile_username_keys=0
+mqtt_compile_password_keys=0
+mqtt_key_name_hits_in_bin_elf=0
+legacy_mqtt_password_value_hits_in_bin_elf=0
+wifi_static_password_key_present=1
+wifi_static_password_value_hits_in_bin_elf=2
+scan_scope=.debug/nuttx.bin and .debug/nuttx.elf; key/value contents are not printed
+mqtt_result=PASS
+wifi_result=KNOWN_RESIDUAL
