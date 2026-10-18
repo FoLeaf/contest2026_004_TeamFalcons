@@ -174,46 +174,123 @@ static void test_thresholds_exactly_representable(void)
 static void test_fixture_steps(void)
 {
   unsigned i;
-  unsigned j;
 
-  for (i = 0; i < VG_AFX_STEP_COUNT; i++)
+  i = 0;
+  while (i < VG_AFX_STEP_COUNT)
     {
-      const struct vg_afx_step *s = &vg_afx_steps[i];
+      const char *case_id = vg_afx_steps[i].case_id;
+      struct vg_alarm_window windows[VG_AFX_POINT_COUNT];
+      int online[VG_AFX_POINT_COUNT];
+      unsigned j;
+      unsigned p;
 
-      for (j = 0; j < s->count; j++)
+      memset(windows, 0, sizeof(windows));
+      for (p = 0; p < VG_AFX_POINT_COUNT; p++)
         {
-          const struct vg_afx_expect *e = &vg_afx_expects[s->first + j];
-          const struct vg_afx_point *p = &vg_afx_points[e->point];
           struct vg_alarm_rule rule;
-          enum vg_alarm_kind want = kind_from_int(e->kind);
-          enum vg_alarm_kind got;
-          float value;
           float thr = 0.0f;
 
-          rule_of(p, &rule);
-          value = decode_raw(p, e->raw);
+          online[p] = 1;
+          rule_of(&vg_afx_points[p], &rule);
+          vg_alarm_sample(&rule, &windows[p], 1,
+                          decode_raw(&vg_afx_points[p],
+                                     vg_afx_baseline[p]), &thr);
+        }
 
-          if (e->offline_n == 0)
+      /* 每个点的窗口要跨步骤保留。I8 第二步开始时已经有第一步留下的
+       * 4 个失败位，所以第二步的第一次失败就是累计第 5 次。 */
+
+      while (i < VG_AFX_STEP_COUNT &&
+             strcmp(vg_afx_steps[i].case_id, case_id) == 0)
+        {
+          const struct vg_afx_step *s = &vg_afx_steps[i];
+
+          for (j = 0; j < s->count; j++)
             {
-              got = vg_alarm_eval(&rule, 1, 0, value, &thr);
+              const struct vg_afx_expect *e = &vg_afx_expects[s->first + j];
+              const struct vg_afx_point *point = &vg_afx_points[e->point];
+              struct vg_alarm_rule rule;
+              enum vg_alarm_kind want = kind_from_int(e->kind);
+              enum vg_alarm_kind got;
+              float value = decode_raw(point, e->raw);
+              float thr = 0.0f;
+
+              rule_of(point, &rule);
+              CHECK(windows[e->point].failures == e->offline_before,
+                    "%s/%s：%s 进入本步前应有 %u 个历史失败位，实际 %u",
+                    s->case_id, s->label, point->id, e->offline_before,
+                    (unsigned)windows[e->point].failures);
+
+              if (e->offline_n == 0)
+                {
+                  got = vg_alarm_sample(&rule, &windows[e->point], 1, value,
+                                        &thr);
+                  online[e->point] = 1;
+                }
+              else
+                {
+                  unsigned k;
+                  unsigned trigger = 0;
+                  int online_before_step = online[e->point];
+
+                  for (k = 0; k < e->offline_n; k++)
+                    {
+                      int before_online = online[e->point];
+                      int expected_offline;
+
+                      got = vg_alarm_sample(&rule, &windows[e->point], 0,
+                                            value, &thr);
+                      expected_offline =
+                        !online_before_step ||
+                        (e->offline_trigger != 0 &&
+                         k + 1 >= e->offline_trigger);
+                      CHECK((got == VG_ALARM_KIND_OFFLINE) == expected_offline,
+                            "%s/%s：%s 第 %u 次失败离线状态错误",
+                            s->case_id, s->label, point->id, k + 1);
+
+                      online[e->point] =
+                        got != VG_ALARM_KIND_OFFLINE;
+                      if (before_online && !online[e->point] && trigger == 0)
+                        {
+                          trigger = k + 1;
+                        }
+                    }
+
+                  CHECK(trigger == e->offline_trigger,
+                        "%s/%s：%s 离线应在本步第 %u 次失败触发，实际第 %u 次",
+                        s->case_id, s->label, point->id, e->offline_trigger,
+                        trigger);
+                }
+
               CHECK(got == want,
                     "%s/%s：%s raw=%u 值=%.9g 判成 %s，预期 %s",
-                    s->case_id, s->label, p->id, e->raw, (double)value,
+                    s->case_id, s->label, point->id, e->raw, (double)value,
                     kind_name(got), kind_name(want));
+              CHECK(windows[e->point].failures == e->offline_after,
+                    "%s/%s：%s 完成后应有 %u 个历史失败位，实际 %u",
+                    s->case_id, s->label, point->id, e->offline_after,
+                    (unsigned)windows[e->point].failures);
+              if (e->online_after >= 0)
+                {
+                  CHECK(online[e->point] == e->online_after,
+                        "%s/%s：%s 在线标志为 %d，预期 %d",
+                        s->case_id, s->label, point->id, online[e->point],
+                        e->online_after);
+                }
 
               if (want == VG_ALARM_KIND_WARN)
                 {
-                  CHECK(thr == p->warn,
+                  CHECK(thr == point->warn,
                         "%s/%s：%s 触发阈值应为 warn %.9g，实际 %.9g",
-                        s->case_id, s->label, p->id, (double)p->warn,
-                        (double)thr);
+                        s->case_id, s->label, point->id,
+                        (double)point->warn, (double)thr);
                 }
               else if (want == VG_ALARM_KIND_CRIT)
                 {
-                  CHECK(thr == p->crit,
+                  CHECK(thr == point->crit,
                         "%s/%s：%s 触发阈值应为 crit %.9g，实际 %.9g",
-                        s->case_id, s->label, p->id, (double)p->crit,
-                        (double)thr);
+                        s->case_id, s->label, point->id,
+                        (double)point->crit, (double)thr);
                 }
               else
                 {
@@ -221,59 +298,8 @@ static void test_fixture_steps(void)
                         s->case_id, s->label);
                 }
             }
-          else
-            {
-              struct vg_alarm_window window;
-              unsigned k;
-              unsigned need = vg_alarm_fail_n(&rule);
-              enum vg_alarm_kind last = VG_ALARM_KIND_NONE;
 
-              memset(&window, 0, sizeof(window));
-              for (k = 0; k < e->offline_n; k++)
-                {
-                  last = vg_alarm_sample(&rule, &window, 0, value, &thr);
-
-                  if (k + 1 < need)
-                    {
-                      CHECK(last == VG_ALARM_KIND_NONE,
-                            "%s/%s：%s 第 %u 次失败不应触发，实际 %s",
-                            s->case_id, s->label, p->id, k + 1,
-                            kind_name(last));
-                    }
-                  else
-                    {
-                      CHECK(last == VG_ALARM_KIND_OFFLINE,
-                            "%s/%s：%s 第 %u 次失败应触发离线，实际 %s",
-                            s->case_id, s->label, p->id, k + 1,
-                            kind_name(last));
-                    }
-                }
-
-              CHECK(last == want,
-                    "%s/%s：%s 连续失败 %u 次判成 %s，预期 %s",
-                    s->case_id, s->label, p->id, e->offline_n,
-                    kind_name(last), kind_name(want));
-
-              /* 一次成功采样立即恢复在线，但只清掉当前槽位那一位：滑窗里
-               * 其余历史失败位要再经过 8 轮才被覆盖。这是 8 轮失败率窗口的
-               * 既有行为，板验时不能把恢复后的提前重触发当成新缺陷。 */
-              last = vg_alarm_sample(&rule, &window, 1, value, &thr);
-              CHECK(last == VG_ALARM_KIND_NONE,
-                    "%s/%s：%s 成功采样后应恢复，实际 %s",
-                    s->case_id, s->label, p->id, kind_name(last));
-
-              {
-                unsigned bits = e->offline_n < WINDOW_SIZE ? e->offline_n
-                                                           : WINDOW_SIZE;
-                unsigned slot = e->offline_n % WINDOW_SIZE;
-                unsigned expected = bits - ((slot < bits) ? 1u : 0u);
-
-                CHECK(window.failures == expected,
-                      "%s/%s：%s 恢复后滑窗应剩 %u 个历史失败位，实际 %u",
-                      s->case_id, s->label, p->id, expected,
-                      (unsigned)window.failures);
-              }
-            }
+          i++;
         }
     }
 }

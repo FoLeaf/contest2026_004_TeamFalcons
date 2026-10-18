@@ -113,6 +113,23 @@ static void feed_baseline(void)
     }
 }
 
+static const vg_sensor_t * get_sensor(unsigned point, const char * case_id,
+                                      const char * label)
+{
+  const vg_sensor_t * sensors;
+  uint16_t n = 0;
+
+  sensors = vg_model_get_sensors(&n);
+  if (point >= n)
+    {
+      check(0, case_id, label, "点下标 %u 超出模型点数 %u，预期 %d", point,
+            (unsigned)n, VG_AFX_POINT_COUNT);
+      return NULL;
+    }
+
+  return &sensors[point];
+}
+
 static void assert_step(const struct vg_afx_step * step)
 {
   unsigned j;
@@ -183,13 +200,17 @@ static void assert_step(const struct vg_afx_step * step)
     }
 }
 
-static void run_case(const char * case_id, unsigned first, unsigned count)
+static void run_case(unsigned first, unsigned count)
 {
+  int online[VG_AFX_POINT_COUNT];
   unsigned i;
 
-  (void)case_id;
   import_table();
   feed_baseline();
+  for (i = 0; i < VG_AFX_POINT_COUNT; i++)
+    {
+      online[i] = 1;
+    }
 
   for (i = first; i < first + count; i++)
     {
@@ -202,19 +223,75 @@ static void run_case(const char * case_id, unsigned first, unsigned count)
         {
           const struct vg_afx_expect * e = &vg_afx_expects[step->first + j];
           const struct vg_afx_point * p = &vg_afx_points[e->point];
+          const vg_sensor_t * sensor;
+          int online_before_step;
           float value = decode_raw(p, e->raw);
           unsigned k;
+
+          sensor = get_sensor((unsigned)e->point, step->case_id, step->label);
+          if (sensor == NULL)
+            {
+              continue;
+            }
+
+          check(sensor->fail_window.failures == e->offline_before,
+                step->case_id, step->label,
+                "%s 进入本步前应有 %u 个历史失败位，实际 %u", p->id,
+                e->offline_before, (unsigned)sensor->fail_window.failures);
+          check(sensor->online == (online[e->point] != 0), step->case_id,
+                step->label, "%s 进入本步前在线标志 %d，预期 %d", p->id,
+                sensor->online ? 1 : 0, online[e->point]);
+          online_before_step = online[e->point];
 
           if (e->offline_n == 0)
             {
               vg_model_set_live((uint16_t)e->point, value, true);
+              online[e->point] = 1;
             }
           else
             {
               for (k = 0; k < e->offline_n; k++)
                 {
+                  int expected_online;
+
                   vg_model_set_live((uint16_t)e->point, value, false);
+                  sensor = get_sensor((unsigned)e->point, step->case_id,
+                                      step->label);
+                  if (sensor == NULL)
+                    {
+                      break;
+                    }
+
+                  expected_online =
+                    online_before_step &&
+                    (e->offline_trigger == 0 ||
+                     k + 1 < e->offline_trigger);
+                  check(sensor->online == (expected_online != 0),
+                        step->case_id, step->label,
+                        "%s 第 %u 次失败在线标志 %d，预期 %d", p->id, k + 1,
+                        sensor->online ? 1 : 0, expected_online);
                 }
+
+              if (k == e->offline_n)
+                {
+                  sensor = get_sensor((unsigned)e->point, step->case_id,
+                                      step->label);
+                }
+              if (sensor != NULL)
+                {
+                  online[e->point] = sensor->online ? 1 : 0;
+                }
+            }
+
+          sensor = get_sensor((unsigned)e->point, step->case_id, step->label);
+          if (sensor != NULL)
+            {
+              online[e->point] = sensor->online ? 1 : 0;
+              check(sensor->fail_window.failures == e->offline_after,
+                    step->case_id, step->label,
+                    "%s 完成后应有 %u 个历史失败位，实际 %u", p->id,
+                    e->offline_after,
+                    (unsigned)sensor->fail_window.failures);
             }
         }
 
@@ -259,7 +336,7 @@ int main(int argc, char ** argv)
           i++;
         }
 
-      run_case(case_id, first, i - first);
+      run_case(first, i - first);
       cases++;
     }
 

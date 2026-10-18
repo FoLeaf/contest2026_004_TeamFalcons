@@ -505,16 +505,19 @@ def build_cases(points):
     door = by_id["door"]
     window_steps = []
     for label, fails, active, primary in (
-            ("累计失败 4 次", 4, 0, ("", "none")),
-            ("累计失败 12 次（第 5 次触发离线）", 12, 1, ("door", "offline"))):
+            ("本步新增 4 次失败（累计 4 次）", 4, 0, ("", "none")),
+            ("本步新增 12 次失败（累计第 5 次触发）",
+             12, 1, ("door", "offline"))):
         window_steps.append(mk_step(
             "%s（door，单点从站）" % label,
             "drop %d %d %d" % (door["addr"], door["reg"], fails * 2),
             [offline_spec(door, base["door"], fails,
                           online_after=0 if fails >= WINDOW_MIN_FAILURES else 1)],
-            "每轮 2 次请求（1 次重试）；%d 次失败，%s"
-            % (fails, "不满 5 次不触发" if fails < WINDOW_MIN_FAILURES
-               else "第 5 次触发离线，drop 用尽后一轮内自动恢复"),
+            "每轮 2 次请求（1 次重试）；本步 %d 次失败，%s"
+            % (fails, "前一步留下 4 个失败位，不满 5 次不触发"
+               if fails < WINDOW_MIN_FAILURES
+               else "本步第 1 次失败就是累计第 5 次，立即触发离线；"
+                    "drop 用尽后的下一次成功采样恢复在线"),
             active=active, primary=primary))
     cases.append({
         "id": "I8-offline-window",
@@ -550,6 +553,67 @@ def build_cases(points):
     })
 
     return cases
+
+
+def offline_need(point):
+    """Effective failed-sample threshold for one point."""
+    return max(WINDOW_MIN_FAILURES,
+               min(WINDOW_SAMPLES, point.get("fail_n", 3)))
+
+
+def annotate_sample_history(points, cases):
+    """Record where each case first enters the offline state.
+
+    The board keeps one sliding window per point for the whole case, including
+    across consecutive scenario steps.  A step's offline_n is therefore not
+    enough to calculate its trigger position: failures left by earlier steps
+    still occupy the window.  Simulate that documented window here so the
+    fixture states the expected trigger explicitly instead of letting a
+    consumer restart the count at every step.
+    """
+    for case in cases:
+        windows = {point["id"]: [False] * WINDOW_SAMPLES for point in points}
+        online = {point["id"]: True for point in points}
+        by_id = {point["id"]: point for point in points}
+
+        # Both C harnesses feed one normal baseline sample for every point
+        # before running the case steps.
+        for point_id in windows:
+            windows[point_id].pop(0)
+            windows[point_id].append(False)
+
+        for step in case["steps"]:
+            for entry in step["expects"]:
+                point_id = entry["point"]
+                point = by_id[point_id]
+                failures = entry.get("offline_n", 0)
+                window = windows[point_id]
+                before = sum(window)
+                trigger = 0
+
+                if failures:
+                    need = offline_need(point)
+                    for sample in range(1, failures + 1):
+                        was_offline = not online[point_id]
+                        window.pop(0)
+                        window.append(True)
+                        now_offline = sum(window) >= need
+                        online[point_id] = not now_offline
+                        if now_offline and not was_offline and trigger == 0:
+                            trigger = sample
+
+                    entry["expect"] = ("offline" if not online[point_id]
+                                        else "none")
+                else:
+                    window.pop(0)
+                    window.append(False)
+                    online[point_id] = True
+
+                entry["offline_before"] = before
+                entry["offline_after"] = sum(window)
+                entry["offline_trigger"] = trigger
+                entry["online_after"] = 0 if not online[point_id] else 1
+
 
 def build_gaps(points):
     """记录当前点表覆盖不到的测试前置缺口。"""
@@ -733,6 +797,10 @@ def emit_header(points, cases, path):
     lines.append(" * raw: the 16-bit register value the simulated slave returns; for")
     lines.append(" *      int16 points a value above 0x7FFF is a negative reading.")
     lines.append(" * offline_n: >0 means feed this many failed samples instead of a read.")
+    lines.append(" * offline_before/offline_after: failed bits in the eight-sample")
+    lines.append(" * window before and after this step.")
+    lines.append(" * offline_trigger: 1-based failed sample in this step that enters")
+    lines.append(" * offline, or 0 when it does not enter during this step.")
     lines.append(" * online_after: 0/1 assert the model online flag, -1 skip. */")
     lines.append("struct vg_afx_expect")
     lines.append("{")
@@ -741,6 +809,9 @@ def emit_header(points, cases, path):
     lines.append("  unsigned offline_n;")
     lines.append("  int kind;")
     lines.append("  int online_after;")
+    lines.append("  unsigned offline_before;")
+    lines.append("  unsigned offline_after;")
+    lines.append("  unsigned offline_trigger;")
     lines.append("};")
     lines.append("")
     lines.append("/* primary_kind: -1 not asserted, else the expected primary alarm kind.")
@@ -786,7 +857,10 @@ def emit_header(points, cases, path):
                 raw = entry["raw"]
                 expects.append((index[entry["point"]], raw, offline_n,
                                 KIND_NAME_REVERSE[entry["expect"]],
-                                entry.get("online_after", -1)))
+                                entry.get("online_after", -1),
+                                entry.get("offline_before", 0),
+                                entry.get("offline_after", 0),
+                                entry.get("offline_trigger", 0)))
             primary = step.get("expect_primary")
             if primary is None:
                 primary_point = -1
@@ -822,8 +896,9 @@ def emit_header(points, cases, path):
     lines.append("static const struct vg_afx_expect vg_afx_expects[] =")
     lines.append("{")
     for entry in expects:
-        lines.append("  {%d, %d, %d, %d, %d},"
-                     % (entry[0], entry[1], entry[2], entry[3], entry[4]))
+        lines.append("  {%d, %d, %d, %d, %d, %d, %d, %d},"
+                     % (entry[0], entry[1], entry[2], entry[3], entry[4],
+                        entry[5], entry[6], entry[7]))
     lines.append("};")
     lines.append("")
     lines.append("#define VG_AFX_STEP_COUNT %d" % len(steps))
@@ -855,12 +930,35 @@ def check_expectations(points, cases):
             for entry in step["expects"]:
                 point = by_id[entry["point"]]
                 if "offline_n" in entry:
-                    fails = entry["offline_n"]
-                    expected = "offline" if fails >= WINDOW_MIN_FAILURES else "none"
+                    need = offline_need(point)
+                    expected = ("offline"
+                                if entry["offline_after"] >= need else "none")
                     if entry["expect"] != expected:
-                        problems.append("%s/%s: 失败 %d 次应判 %s，写成 %s"
-                                        % (case["id"], entry["point"], fails,
-                                           expected, entry["expect"]))
+                        problems.append("%s/%s: 窗口内 %d 次失败应判 %s，写成 %s"
+                                        % (case["id"], entry["point"],
+                                           entry["offline_after"], expected,
+                                           entry["expect"]))
+                    expected_online = 0 if expected == "offline" else 1
+                    if entry["online_after"] != expected_online:
+                        problems.append("%s/%s: 失败 %d 次后的在线标志写成 %d"
+                                        % (case["id"], entry["point"],
+                                           entry["offline_n"],
+                                           entry["online_after"]))
+                    if entry["offline_trigger"] > entry["offline_n"]:
+                        problems.append("%s/%s: 离线触发位置 %d 超出本步失败数 %d"
+                                        % (case["id"], entry["point"],
+                                           entry["offline_trigger"],
+                                           entry["offline_n"]))
+                    if (entry["offline_before"] < need
+                            and entry["offline_before"]
+                                + entry["offline_n"] >= need):
+                        expected_trigger = need - entry["offline_before"]
+                        if entry["offline_trigger"] != expected_trigger:
+                            problems.append(
+                                "%s/%s: 应在累计第 %d 次失败触发，工况写 %d"
+                                % (case["id"], entry["point"],
+                                   expected_trigger,
+                                   entry["offline_trigger"]))
                 else:
                     value = decode_raw(entry["raw"], point["dtype"], point["scale"])
                     if value != f32(entry["value"]):
@@ -922,6 +1020,7 @@ def main():
               % table_path.relative_to(REPO_ROOT))
 
     cases = build_cases(points)
+    annotate_sample_history(points, cases)
     problems = check_expectations(points, cases)
     if problems:
         for problem in problems:
