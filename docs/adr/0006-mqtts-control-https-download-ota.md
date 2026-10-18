@@ -22,4 +22,4 @@ MQTTS和HTTPS验证服务器身份，并分别控制设备与下载权限。受�
 
 当前四类MQTT上报业务保持，现有明文MQTT、LLM的HTTPS链路和启动stub不构成本方案已实现的证据。MQTTS、OTA订阅/协议、HTTPS下载器、签名校验、安装恢复及资源预算均须按后续任务实现。具体主题与载荷以待制定的OTA协议为准，取消旧 `ota/chunk/*` 固件传输规划。
 
-手机PDF候选配置与语音会话接口独立设计；本决策不开放通过MQTT下发点表、AI请求或音频。
+手机PDF候选配置与语音会话接口独立设计；本OTA决策不开放配置通道。后续同日用户选择MQTT候选传输，见 [ADR 0007](0007-mqtt-candidate-import-with-local-confirmation.md)，仅候选通道取代原先禁止MQTT传候选的范围，人工本地确认保持；AI请求与音频仍不走MQTT。
