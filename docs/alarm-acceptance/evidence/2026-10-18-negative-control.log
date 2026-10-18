@@ -1,0 +1,24 @@
+负向对照：确认离线测试不是恒真
+日期 2026-10-18，worktree .vg-alarm-wt，分支 codex/alarm-test-scenarios
+
+改动（改完已重新生成，工作区不留痕）：
+1) alarm_scenarios_fixture.h 里 temp raw=279 的预期种类由 none(0) 改成 warn(1)
+2) 同一文件里 B2-legacy-modes/warn 模式的主告警预期由 warn(1) 改成 crit(2)
+
+结果：
+$ ./app/velaguard/host_tests/test_alarm_boundary
+FAIL test_alarm_boundary.c:199: B3-ge-temp/低于 warn（27.9）：temp raw=279 值=27.8999996 判成 none，预期 warn
+FAIL test_alarm_boundary.c:206: B3-ge-temp/低于 warn（27.9）：temp 触发阈值应为 warn 28，实际 0
+test_alarm_boundary: 2 fail(s)
+exit=1
+
+$ ./.debug/alarm-headless/alarm_scenario_check .
+FAIL B2-legacy-modes/warn 模式: 主告警等级 warn，预期 crit
+FAIL B3-ge-temp/低于 warn（27.9）: temp 等级 ok，预期 warn
+FAIL B3-ge-temp/低于 warn（27.9）: temp 告警期 0，预期 1
+alarm_scenario_check: 3 fail(s)
+exit=1
+
+恢复：重新运行 gen_alarm_scenarios.py 生成，再跑两项测试：
+test_alarm_boundary: ok (14 points, 84 steps, 133 expects)
+alarm_scenario_check: ok (25 cases, 84 steps, 14 points)
