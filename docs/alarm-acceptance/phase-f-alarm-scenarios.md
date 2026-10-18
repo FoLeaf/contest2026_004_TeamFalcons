@@ -106,9 +106,14 @@
 | I5 | 严重压过离线 | `value 1 0 350` + `offline 5` | 5 号从站 3 点离线，主告警仍是温度 | 活动告警 4 条，主告警为 temp 且等级严重 |
 | I6 | 单从站静默 | `offline 5`，然后 `normal` | 只有 5 号从站 3 点离线，其余 11 点正常 | 主告警为 `ups_load`（离线）；恢复后 3 条告警期同时结束 |
 | I7 | 全部静默再恢复 | `offline`，然后 `normal` | 14 点全部离线，主告警为 `temp` | 恢复后待处理文件删除，无残留告警 |
-| I8 | 离线滑窗计数 | `drop 7 0 8`（本步 4 次失败）→ 无告警；接着 `drop 7 0 24`（本步 12 次失败） | 前一步留下 4 个失败位；后一步第 1 次失败就是累计第 5 次，立即触发离线 | 事件日志里的 raise 对应后一步第 1 次失败；后一步第 12 次失败时仍离线，drop 用尽后的下一次成功采样恢复 |
+| I8 | 离线滑窗计数 | 先用 `reset` 取得至少 8 个正常应用样本，再只下发一次 `drop 7 0 32`，不再修改控制文件 | 从站请求日志中出现连续 16 个失败采样，每轮包含两次 `action=drop`；前 4 个失败采样无告警，第 5 个触发离线，第 16 个仍离线，drop 用尽后的首个成功采样恢复 | RequestLog 的实际请求、重试和恢复顺序与上述连续序列一致，板端事件只在第 5 个失败采样进入离线，恢复后为 `online=1`。若无法确认基线已清零，本次 I8 记为未验证，不对触发次数下结论 |
 | I9 | 单次丢帧被重试吸收 | `drop 7 0 1` | 无失败采样 | 无告警事件，`vgruntime dump` 里该点 `online=1` |
 | I10 | 同从站内各点独立计数 | `drop 5 0 20` | 只有 `ups_load` 离线 | `ups_soc`、`ups_bypass` 仍在线，活动告警 1 条 |
+
+离线模型把一次采集轮次里的两次失败请求折算为一个失败采样。`drop 7 0 32`
+对应 16 个连续失败采样；模型在该步骤内不插入成功采样。板验必须用 RequestLog
+证明这 16 个失败采样确实连续，并在 drop 用尽后取得成功采样；如果基线清零或连续
+性无法确认，I8 只能记为未验证。
 
 ### 4.1 阈值边界的具体原始值
 
@@ -125,12 +130,13 @@
 | ups_load（scale 0.1） | ge | warn 70 / crit 90 | 699 / 899 | 700 / 900 | 701 / 901 |
 | acu_ret（scale 0.1） | ge | warn 28 / crit 32 | 279 / 319 | 280 / 320 | 281 / 321 |
 | pwr_kw（scale 0.01） | ge | warn 8 / crit 10 | 799 / 999 | 800 / 1000 | 801 / 1001 |
-| ups_soc（scale 1） | le | warn 40 / crit 20 | 41 / 21（无告警 / 预警） | 40 / 20（预警 / 严重） | 39 / 19（预警 / 严重） |
-| volt_a（scale 0.1） | le | warn 200 / crit 180 | 2001 / 1801（无告警 / 预警） | 2000 / 1800（预警 / 严重） | 1999 / 1799（预警 / 严重） |
+| ups_soc（scale 1） | le | warn 40 / crit 20 | 39 / 19（预警 / 严重） | 40 / 20（预警 / 严重） | 41 / 21（无告警 / 预警） |
+| volt_a（scale 0.1） | le | warn 200 / crit 180 | 1999 / 1799（预警 / 严重） | 2000 / 1800（预警 / 严重） | 2001 / 1801（无告警 / 预警） |
 | flood、ups_bypass、door（scale 1） | eq | crit 1 | 0 → 无告警 | 1 → 严重 | 2 → 无告警 |
 
-`le` 的方向与 `ge` 相反：数值越小越严重，所以“阈值下方”反而更危险，上表的
-括号里写的是该点的实际预期。执行时逐条改一个寄存器即可，其他点保持基线。
+`le` 的方向与 `ge` 相反：数值越小越严重，表头按原始值大小排列，因此
+`阈值下方`列是更危险的取值，括号里写的是该点的实际预期。执行时逐条改一个寄存器
+即可，其他点保持基线。
 
 ## 5. 每个工况需要的前置点表字段
 
@@ -193,13 +199,13 @@ docs/alarm-acceptance/evidence/<日期>-board/
 
 | 项目 | 命令 | 结果 | 证据 |
 |---|---|---|---|
-| 工况数据自检 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py` | 25 个工况、84 个步骤、4 项前置缺口 | 见第 9 节 |
+| 工况数据自检 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py` | 25 个工况、83 个步骤、4 项前置缺口 | 见第 9 节 |
 | 产物是否最新 | `python3 -I scripts/alarm_scenarios/gen_alarm_scenarios.py --check` | 通过 | 同上 |
 | 点表漂移检查 | `python3 -I ... --list-dump <vgpoint list 输出>` | 一致时通过；改动 `temp` 的 crit 后报不一致并返回 1 | 本轮用合成样本验证过两个方向 |
-| 规则与编码单元测试 | `make -C app/velaguard/host_tests test_alarm_boundary` | ok（14 点、84 步骤、133 条预期） | `evidence/2026-10-18-host-tests.log` |
-| 板端模型集成检查 | `cmake --build .debug/alarm-headless --target alarm_scenario_check` 后运行 | ok（25 个工况、84 个步骤、14 点） | `evidence/2026-10-18-alarm-scenario-check.log` |
+| 规则与编码单元测试 | `make -C app/velaguard/host_tests test_alarm_boundary` | ok（14 点、83 步骤、132 条预期） | `evidence/2026-10-18-current-i8-boundary.log` |
+| 板端模型集成检查 | `cmake --build .debug/alarm-headless --target alarm_scenario_check` 后运行 | ok（25 个工况、83 个步骤、14 点） | `evidence/2026-10-18-current-i8-boundary.log` |
 | 无头检查回归 | `ctest --test-dir .debug/alarm-headless` | 6 项全过（原有 5 项 + 新增 1 项） | `evidence/2026-10-18-ctest-headless.log` |
-| 从站脚本自检 | `powershell -File scripts/maintenance_rtu_slave.ps1 -SelfTest` | SELF-TEST: ok，186 条断言全过：CRC 向量 9、帧解析与拒帧 12、模式/覆盖值/静默/drop/兼容 20、非法控制行 9、工况原始值 132、应答帧 3 | `evidence/2026-10-18-selftest-rtu-slave.log` |
+| 从站脚本自检 | `powershell -File scripts/maintenance_rtu_slave.ps1 -SelfTest` | SELF-TEST: ok，185 条 PASS 行；其中工况原始值 131 项、应答帧 3 项 | `evidence/2026-10-18-current-rtu-selftest.log` |
 | 全量主机测试 | `make -C app/velaguard/host_tests test` | 全部通过 | 同上 host-tests 日志 |
 | 负向对照 | 手工改坏工况数据里两条预期后重跑 | 单元测试报 2 条失败，集成检查报 3 条失败 | 见本轮报告 |
 

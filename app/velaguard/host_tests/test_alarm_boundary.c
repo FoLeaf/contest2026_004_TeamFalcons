@@ -197,8 +197,9 @@ static void test_fixture_steps(void)
                                      vg_afx_baseline[p]), &thr);
         }
 
-      /* 每个点的窗口要跨步骤保留。I8 第二步开始时已经有第一步留下的
-       * 4 个失败位，所以第二步的第一次失败就是累计第 5 次。 */
+      /* 每个点的窗口要跨步骤保留。I8 用一次 drop 生成一段连续失败，
+       * 前 4 次不触发，第 5 次进入离线；不能假设两次人工控制之间没有
+       * 成功的采样。 */
 
       while (i < VG_AFX_STEP_COUNT &&
              strcmp(vg_afx_steps[i].case_id, case_id) == 0)

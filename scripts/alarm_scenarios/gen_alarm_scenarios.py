@@ -501,24 +501,20 @@ def build_cases(points):
         ],
     })
 
-    # I8 离线滑窗：单点连续失败计数
+    # I8 离线滑窗：一次连续 drop，避免两次人工控制之间插入成功采样
     door = by_id["door"]
-    window_steps = []
-    for label, fails, active, primary in (
-            ("本步新增 4 次失败（累计 4 次）", 4, 0, ("", "none")),
-            ("本步新增 12 次失败（累计第 5 次触发）",
-             12, 1, ("door", "offline"))):
-        window_steps.append(mk_step(
-            "%s（door，单点从站）" % label,
-            "drop %d %d %d" % (door["addr"], door["reg"], fails * 2),
-            [offline_spec(door, base["door"], fails,
-                          online_after=0 if fails >= WINDOW_MIN_FAILURES else 1)],
-            "每轮 2 次请求（1 次重试）；本步 %d 次失败，%s"
-            % (fails, "前一步留下 4 个失败位，不满 5 次不触发"
-               if fails < WINDOW_MIN_FAILURES
-               else "本步第 1 次失败就是累计第 5 次，立即触发离线；"
-                    "drop 用尽后的下一次成功采样恢复在线"),
-            active=active, primary=primary))
+    failed_samples = 16
+    window_steps = [
+        mk_step(
+            "连续 %d 个失败采样（door，单点从站）" % failed_samples,
+            "drop %d %d %d" % (door["addr"], door["reg"],
+                               failed_samples * 2),
+            [offline_spec(door, base["door"], failed_samples,
+                          online_after=0)],
+            "一次控制后连续观察：前 4 个失败采样不告警；第 5 个触发离线；"
+            "第 16 个失败采样仍离线；drop 用尽后的首个成功采样立即恢复在线",
+            active=1, primary=("door", "offline")),
+    ]
     cases.append({
         "id": "I8-offline-window",
         "title": "离线滑窗：连续失败计数与实际窗口",

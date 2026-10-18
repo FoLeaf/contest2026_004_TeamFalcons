@@ -85,7 +85,7 @@ static const unsigned vg_afx_baseline[VG_AFX_BASELINE_COUNT] =
   240, 500, 0, 10, 250, 240, 1, 400, 80, 0, 2300, 300, 1234, 0,
 };
 
-#define VG_AFX_EXPECT_COUNT 133
+#define VG_AFX_EXPECT_COUNT 132
 
 static const struct vg_afx_expect vg_afx_expects[] =
 {
@@ -216,15 +216,14 @@ static const struct vg_afx_expect vg_afx_expects[] =
   {11, 300, 0, 0, 1, 6, 6, 0},
   {12, 1234, 0, 0, 1, 6, 6, 0},
   {13, 0, 0, 0, 1, 6, 6, 0},
-  {13, 0, 4, 0, 1, 0, 4, 0},
-  {13, 0, 12, 3, 0, 4, 8, 1},
+  {13, 0, 16, 3, 0, 0, 8, 5},
   {13, 0, 0, 0, 1, 0, 0, 0},
   {7, 400, 10, 3, 0, 0, 8, 5},
   {8, 80, 0, 0, 1, 0, 0, 0},
   {9, 0, 0, 0, 1, 0, 0, 0},
 };
 
-#define VG_AFX_STEP_COUNT 84
+#define VG_AFX_STEP_COUNT 83
 
 static const struct vg_afx_step vg_afx_steps[] =
 {
@@ -308,10 +307,9 @@ static const struct vg_afx_step vg_afx_steps[] =
   {"I6-single-slave-silent", "5 号从站恢复", "normal", 96, 3, 0, -1, 0},
   {"I7-all-slaves-silent", "全部静默", "offline", 99, 14, 14, 0, 3},
   {"I7-all-slaves-silent", "全部恢复", "normal", 113, 14, 0, -1, 0},
-  {"I8-offline-window", "本步新增 4 次失败（累计 4 次）（door，单点从站）", "drop 7 0 8", 127, 1, 0, -1, 0},
-  {"I8-offline-window", "本步新增 12 次失败（累计第 5 次触发）（door，单点从站）", "drop 7 0 24", 128, 1, 1, 13, 3},
-  {"I9-single-drop", "丢 1 次应答（door）", "drop 7 0 1", 129, 1, 0, -1, 0},
-  {"I10-per-point-window", "只丢 ups_load 的应答", "drop 5 0 20", 130, 3, 1, 7, 3},
+  {"I8-offline-window", "连续 16 个失败采样（door，单点从站）", "drop 7 0 32", 127, 1, 1, 13, 3},
+  {"I9-single-drop", "丢 1 次应答（door）", "drop 7 0 1", 128, 1, 0, -1, 0},
+  {"I10-per-point-window", "只丢 ups_load 的应答", "drop 5 0 20", 129, 3, 1, 7, 3},
 };
 
 #endif /* VG_ALARM_SCENARIOS_FIXTURE_H */

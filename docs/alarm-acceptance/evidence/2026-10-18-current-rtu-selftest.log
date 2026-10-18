@@ -1,0 +1,189 @@
+evidence=alarm-current-rtu-selftest
+commit_before_test=1be0809e4f8f17403fe52693d814446e0feb3b7b
+command=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/maintenance_rtu_slave.ps1 -SelfTest
+PASS CRC req s1 fc3 reg0 qty1: 0x0A84 期望 0x0A84
+PASS CRC req s1 fc3 reg1 qty1: 0xCAD5 期望 0xCAD5
+PASS CRC req s2 fc3 reg2 qty1: 0xF925 期望 0xF925
+PASS CRC req s5 fc3 reg1 qty1: 0x4ED4 期望 0x4ED4
+PASS CRC req s7 fc3 reg0 qty1: 0x6C84 期望 0x6C84
+PASS CRC req s1 fc4 reg0 qty1: 0xCA31 期望 0xCA31
+PASS CRC resp s1 temp=240: 0x00B8 期望 0x00B8
+PASS CRC resp s1 temp=280: 0xDEB9 期望 0xDEB9
+PASS CRC resp s7 door=1: 0x84F1 期望 0x84F1
+PASS 解析 req s1 fc3 reg0 qty1
+PASS CRC 错帧被拒 req s1 fc3 reg0 qty1
+PASS 解析 req s1 fc3 reg1 qty1
+PASS CRC 错帧被拒 req s1 fc3 reg1 qty1
+PASS 解析 req s2 fc3 reg2 qty1
+PASS CRC 错帧被拒 req s2 fc3 reg2 qty1
+PASS 解析 req s5 fc3 reg1 qty1
+PASS CRC 错帧被拒 req s5 fc3 reg1 qty1
+PASS 解析 req s7 fc3 reg0 qty1
+PASS CRC 错帧被拒 req s7 fc3 reg0 qty1
+PASS 解析 req s1 fc4 reg0 qty1
+PASS CRC 错帧被拒 req s1 fc4 reg0 qty1
+PASS normal 模式温度 240
+PASS warn 模式温度 300
+PASS critical 模式温度 360
+PASS warn/critical 不影响其他寄存器
+PASS 覆盖值优先于模式
+PASS normal 清掉覆盖值
+PASS 有符号点可写负值等价的原始值
+PASS reset 清掉覆盖值
+PASS 控制文件带 BOM 时首行仍可识别
+PASS offline 5 只静默 5 号从站
+PASS offline 2,3 覆盖列表
+PASS offline1 只静默 1 号从站
+PASS offline 静默全部
+PASS normal 取消静默
+PASS drop 第 1 次命中
+PASS drop 第 2 次命中
+PASS drop 用尽后不再丢
+PASS drop 不影响同从站其他寄存器
+PASS drop 不影响其他从站
+PASS drop 剩余次数可读
+PASS 非法控制行被拒: value 1 0
+PASS 非法控制行被拒: value 1 0 abc
+PASS 非法控制行被拒: value 0 0 1
+PASS 非法控制行被拒: value 1 0 99999
+PASS 非法控制行被拒: drop 1 0
+PASS 非法控制行被拒: clear 1
+PASS 非法行按空列表处理: offline 999
+PASS 非法控制行被拒: gt 1 0 1
+PASS 非法控制行不改读数
+PASS B1-baseline/全部从站正常读数: temp 读数 240 期望 240
+PASS B1-baseline/全部从站正常读数: humid 读数 500 期望 500
+PASS B1-baseline/全部从站正常读数: flood 读数 0 期望 0
+PASS B1-baseline/全部从站正常读数: smoke 读数 10 期望 10
+PASS B1-baseline/全部从站正常读数: acu_ret 读数 250 期望 250
+PASS B1-baseline/全部从站正常读数: acu_set 读数 240 期望 240
+PASS B1-baseline/全部从站正常读数: acu_run 读数 1 期望 1
+PASS B1-baseline/全部从站正常读数: ups_load 读数 400 期望 400
+PASS B1-baseline/全部从站正常读数: ups_soc 读数 80 期望 80
+PASS B1-baseline/全部从站正常读数: ups_bypass 读数 0 期望 0
+PASS B1-baseline/全部从站正常读数: volt_a 读数 2300 期望 2300
+PASS B1-baseline/全部从站正常读数: pwr_kw 读数 300 期望 300
+PASS B1-baseline/全部从站正常读数: energy_kwh 读数 1234 期望 1234
+PASS B1-baseline/全部从站正常读数: door 读数 0 期望 0
+PASS B2-legacy-modes/warn 模式: temp 读数 300 期望 300
+PASS B2-legacy-modes/critical 模式: temp 读数 360 期望 360
+PASS B2-legacy-modes/normal 模式: temp 读数 240 期望 240
+PASS B3-ge-temp/低于 warn（27.9）: temp 读数 279 期望 279
+PASS B3-ge-temp/等于 warn（28）: temp 读数 280 期望 280
+PASS B3-ge-temp/高于 warn（28.1）: temp 读数 281 期望 281
+PASS B3-ge-temp/低于 crit（34.9）: temp 读数 349 期望 349
+PASS B3-ge-temp/等于 crit（35）: temp 读数 350 期望 350
+PASS B3-ge-temp/高于 crit（35.1）: temp 读数 351 期望 351
+PASS B3-ge-humid/低于 warn（69.9）: humid 读数 699 期望 699
+PASS B3-ge-humid/等于 warn（70）: humid 读数 700 期望 700
+PASS B3-ge-humid/高于 warn（70.1）: humid 读数 701 期望 701
+PASS B3-ge-humid/低于 crit（84.9）: humid 读数 849 期望 849
+PASS B3-ge-humid/等于 crit（85）: humid 读数 850 期望 850
+PASS B3-ge-humid/高于 crit（85.1）: humid 读数 851 期望 851
+PASS B3-eq-flood/低于 crit（0）: flood 读数 0 期望 0
+PASS B3-eq-flood/等于 crit（1）: flood 读数 1 期望 1
+PASS B3-eq-flood/高于 crit（2）: flood 读数 2 期望 2
+PASS B3-ge-smoke/低于 warn（4.9）: smoke 读数 49 期望 49
+PASS B3-ge-smoke/等于 warn（5）: smoke 读数 50 期望 50
+PASS B3-ge-smoke/高于 warn（5.1）: smoke 读数 51 期望 51
+PASS B3-ge-smoke/低于 crit（9.9）: smoke 读数 99 期望 99
+PASS B3-ge-smoke/等于 crit（10）: smoke 读数 100 期望 100
+PASS B3-ge-smoke/高于 crit（10.1）: smoke 读数 101 期望 101
+PASS B3-ge-acu_ret/低于 warn（27.9）: acu_ret 读数 279 期望 279
+PASS B3-ge-acu_ret/等于 warn（28）: acu_ret 读数 280 期望 280
+PASS B3-ge-acu_ret/高于 warn（28.1）: acu_ret 读数 281 期望 281
+PASS B3-ge-acu_ret/低于 crit（31.9）: acu_ret 读数 319 期望 319
+PASS B3-ge-acu_ret/等于 crit（32）: acu_ret 读数 320 期望 320
+PASS B3-ge-acu_ret/高于 crit（32.1）: acu_ret 读数 321 期望 321
+PASS B3-ge-ups_load/低于 warn（69.9）: ups_load 读数 699 期望 699
+PASS B3-ge-ups_load/等于 warn（70）: ups_load 读数 700 期望 700
+PASS B3-ge-ups_load/高于 warn（70.1）: ups_load 读数 701 期望 701
+PASS B3-ge-ups_load/低于 crit（89.9）: ups_load 读数 899 期望 899
+PASS B3-ge-ups_load/等于 crit（90）: ups_load 读数 900 期望 900
+PASS B3-ge-ups_load/高于 crit（90.1）: ups_load 读数 901 期望 901
+PASS B3-le-ups_soc/高于 warn（41）: ups_soc 读数 41 期望 41
+PASS B3-le-ups_soc/等于 warn（40）: ups_soc 读数 40 期望 40
+PASS B3-le-ups_soc/低于 warn（39）: ups_soc 读数 39 期望 39
+PASS B3-le-ups_soc/高于 crit（21）: ups_soc 读数 21 期望 21
+PASS B3-le-ups_soc/等于 crit（20）: ups_soc 读数 20 期望 20
+PASS B3-le-ups_soc/低于 crit（19）: ups_soc 读数 19 期望 19
+PASS B3-eq-ups_bypass/低于 crit（0）: ups_bypass 读数 0 期望 0
+PASS B3-eq-ups_bypass/等于 crit（1）: ups_bypass 读数 1 期望 1
+PASS B3-eq-ups_bypass/高于 crit（2）: ups_bypass 读数 2 期望 2
+PASS B3-le-volt_a/高于 warn（200.1）: volt_a 读数 2001 期望 2001
+PASS B3-le-volt_a/等于 warn（200）: volt_a 读数 2000 期望 2000
+PASS B3-le-volt_a/低于 warn（199.9）: volt_a 读数 1999 期望 1999
+PASS B3-le-volt_a/高于 crit（180.1）: volt_a 读数 1801 期望 1801
+PASS B3-le-volt_a/等于 crit（180）: volt_a 读数 1800 期望 1800
+PASS B3-le-volt_a/低于 crit（179.9）: volt_a 读数 1799 期望 1799
+PASS B3-ge-pwr_kw/低于 warn（7.99）: pwr_kw 读数 799 期望 799
+PASS B3-ge-pwr_kw/等于 warn（8）: pwr_kw 读数 800 期望 800
+PASS B3-ge-pwr_kw/高于 warn（8.01）: pwr_kw 读数 801 期望 801
+PASS B3-ge-pwr_kw/低于 crit（9.99）: pwr_kw 读数 999 期望 999
+PASS B3-ge-pwr_kw/等于 crit（10）: pwr_kw 读数 1000 期望 1000
+PASS B3-ge-pwr_kw/高于 crit（10.01）: pwr_kw 读数 1001 期望 1001
+PASS B3-eq-door/低于 crit（0）: door 读数 0 期望 0
+PASS B3-eq-door/等于 crit（1）: door 读数 1 期望 1
+PASS B3-eq-door/高于 crit（2）: door 读数 2 期望 2
+PASS B4-int16-negative/原始值 0xFF9C 应按 int16 解为 -10.0 C: acu_ret 读数 65436 期望 65436
+PASS B5-no-cmp/设定温度 取极端值仍不告警: acu_set 读数 30000 期望 30000
+PASS B5-no-cmp/空调运行 取极端值仍不告警: acu_run 读数 65535 期望 65535
+PASS B5-no-cmp/正向电能 取极端值仍不告警: energy_kwh 读数 65535 期望 65535
+PASS I1-warn-to-crit/温度到 warn: temp 读数 280 期望 280
+PASS I1-warn-to-crit/温度升到 crit: temp 读数 350 期望 350
+PASS I2-recover/温度到 crit: temp 读数 350 期望 350
+PASS I2-recover/温度回正常: temp 读数 240 期望 240
+PASS I3-retrigger/第一次 warn: temp 读数 280 期望 280
+PASS I3-retrigger/回正常: temp 读数 240 期望 240
+PASS I3-retrigger/第二次 warn: temp 读数 280 期望 280
+PASS I4-primary-crit-over-warn/温度预警 + 水浸严重: temp 读数 280 期望 280
+PASS I4-primary-crit-over-warn/温度预警 + 水浸严重: flood 读数 1 期望 1
+PASS I4-primary-crit-over-warn/水浸恢复，温度仍在预警: flood 读数 0 期望 0
+PASS I5-primary-crit-over-offline/温度严重 + 5 号从站静默: temp 读数 350 期望 350
+PASS I5-primary-crit-over-offline/温度严重 + 5 号从站静默: ups_load 读数 400 期望 400
+PASS I5-primary-crit-over-offline/温度严重 + 5 号从站静默: ups_soc 读数 80 期望 80
+PASS I5-primary-crit-over-offline/温度严重 + 5 号从站静默: ups_bypass 读数 0 期望 0
+PASS I6-single-slave-silent/5 号从站静默: ups_load 读数 400 期望 400
+PASS I6-single-slave-silent/5 号从站静默: ups_soc 读数 80 期望 80
+PASS I6-single-slave-silent/5 号从站静默: ups_bypass 读数 0 期望 0
+PASS I6-single-slave-silent/5 号从站恢复: ups_load 读数 400 期望 400
+PASS I6-single-slave-silent/5 号从站恢复: ups_soc 读数 80 期望 80
+PASS I6-single-slave-silent/5 号从站恢复: ups_bypass 读数 0 期望 0
+PASS I7-all-slaves-silent/全部静默: temp 读数 240 期望 240
+PASS I7-all-slaves-silent/全部静默: humid 读数 500 期望 500
+PASS I7-all-slaves-silent/全部静默: flood 读数 0 期望 0
+PASS I7-all-slaves-silent/全部静默: smoke 读数 10 期望 10
+PASS I7-all-slaves-silent/全部静默: acu_ret 读数 250 期望 250
+PASS I7-all-slaves-silent/全部静默: acu_set 读数 240 期望 240
+PASS I7-all-slaves-silent/全部静默: acu_run 读数 1 期望 1
+PASS I7-all-slaves-silent/全部静默: ups_load 读数 400 期望 400
+PASS I7-all-slaves-silent/全部静默: ups_soc 读数 80 期望 80
+PASS I7-all-slaves-silent/全部静默: ups_bypass 读数 0 期望 0
+PASS I7-all-slaves-silent/全部静默: volt_a 读数 2300 期望 2300
+PASS I7-all-slaves-silent/全部静默: pwr_kw 读数 300 期望 300
+PASS I7-all-slaves-silent/全部静默: energy_kwh 读数 1234 期望 1234
+PASS I7-all-slaves-silent/全部静默: door 读数 0 期望 0
+PASS I7-all-slaves-silent/全部恢复: temp 读数 240 期望 240
+PASS I7-all-slaves-silent/全部恢复: humid 读数 500 期望 500
+PASS I7-all-slaves-silent/全部恢复: flood 读数 0 期望 0
+PASS I7-all-slaves-silent/全部恢复: smoke 读数 10 期望 10
+PASS I7-all-slaves-silent/全部恢复: acu_ret 读数 250 期望 250
+PASS I7-all-slaves-silent/全部恢复: acu_set 读数 240 期望 240
+PASS I7-all-slaves-silent/全部恢复: acu_run 读数 1 期望 1
+PASS I7-all-slaves-silent/全部恢复: ups_load 读数 400 期望 400
+PASS I7-all-slaves-silent/全部恢复: ups_soc 读数 80 期望 80
+PASS I7-all-slaves-silent/全部恢复: ups_bypass 读数 0 期望 0
+PASS I7-all-slaves-silent/全部恢复: volt_a 读数 2300 期望 2300
+PASS I7-all-slaves-silent/全部恢复: pwr_kw 读数 300 期望 300
+PASS I7-all-slaves-silent/全部恢复: energy_kwh 读数 1234 期望 1234
+PASS I7-all-slaves-silent/全部恢复: door 读数 0 期望 0
+PASS I8-offline-window/连续 16 个失败采样（door，单点从站）: door 读数 0 期望 0
+PASS I9-single-drop/丢 1 次应答（door）: door 读数 0 期望 0
+PASS I10-per-point-window/只丢 ups_load 的应答: ups_load 读数 400 期望 400
+PASS I10-per-point-window/只丢 ups_load 的应答: ups_soc 读数 80 期望 80
+PASS I10-per-point-window/只丢 ups_load 的应答: ups_bypass 读数 0 期望 0
+PASS 工况文件里的原始值都核对过（131 项）
+PASS 温度基线应答帧为 0x00F0
+PASS 未映射寄存器回非法数据地址
+PASS 非 FC03/FC04 回非法功能码
+SELF-TEST: ok

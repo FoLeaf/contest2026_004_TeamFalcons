@@ -1,0 +1,48 @@
+evidence=alarm-current-i8-boundary
+base_commit=1be0809e4f8f17403fe52693d814446e0feb3b7b
+branch=codex/maintenance-closeout
+working_diff_sha256=567c313da04bbdef5d9c1d1a69596b025a70c564b0c53a21c427e78b50924cf4
+--- changed file hashes ---
+145c117b09c80797d07bb4bb2ed8910d3246d8ca575e8cd31aa102f32fff6e6a  app/velaguard/host_tests/test_alarm_boundary.c
+d98797933b568e0308cfaeea8f36f426a2ac92fb51f4524efeab2d823975e56a  docs/alarm-acceptance/phase-f-alarm-scenarios.md
+ea3e05a93cc2ebd4969e8ee743b26c4cf74f4258a766b9f8a2c5420287c178fc  scripts/alarm_scenarios/gen_alarm_scenarios.py
+434b6ca0764d7e9a0bb86cfc5112eaddfffdd802183178b67504df2a3dfbea51  scripts/alarm_scenarios/scenarios.json
+ebce68309ef38b64f69f9eec25a36e300dadaa61076a1fc46482a58865e3ce36  scripts/alarm_scenarios/alarm_scenarios_fixture.h
+--- generator generation ---
+生成 scenarios.json：25 个工况，83 个步骤
+生成 alarm_scenarios_fixture.h
+测试前置缺口 4 项（见 scenarios.json 的 gaps）
+--- generator check ---
+产物校验通过：scenarios.json 与 alarm_scenarios_fixture.h 都是最新的
+--- alarm boundary build/run ---
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -I../../../scripts/alarm_scenarios -o test_alarm_boundary test_alarm_boundary.c ../vg_alarm_eval.c -lm
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+test_alarm_boundary: ok (14 points, 83 steps, 132 expects)
+--- headless build/run ---
+[ 84%] Built target lvgl
+[ 94%] Built target lvgl_thorvg
+[100%] Built target vg_ui_board
+[100%] Building C object CMakeFiles/alarm_scenario_check.dir/alarm_scenario_check_main.c.o
+[100%] Linking C executable alarm_scenario_check
+[100%] Built target alarm_scenario_check
+alarm_scenario_check: ok (25 cases, 83 steps, 14 points)
+--- headless ctest ---
+Internal ctest changing into directory: /home/hello19y/openvela/.vg-maintenance-closeout/.debug/alarm-headless
+Test project /home/hello19y/openvela/.vg-maintenance-closeout/.debug/alarm-headless
+    Start 1: alarm_check
+1/6 Test #1: alarm_check ......................   Passed    0.09 sec
+    Start 2: trend_check
+2/6 Test #2: trend_check ......................   Passed    0.05 sec
+    Start 3: fixture_check
+3/6 Test #3: fixture_check ....................   Passed    0.10 sec
+    Start 4: lifecycle_render_check
+4/6 Test #4: lifecycle_render_check ...........   Passed    3.45 sec
+    Start 5: interaction_check
+5/6 Test #5: interaction_check ................   Passed    0.20 sec
+    Start 6: alarm_scenario_check
+6/6 Test #6: alarm_scenario_check .............   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =   3.92 sec
