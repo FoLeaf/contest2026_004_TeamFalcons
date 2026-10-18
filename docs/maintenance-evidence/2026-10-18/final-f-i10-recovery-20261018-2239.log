@@ -1,0 +1,92 @@
+########## boot settle len=2717 ##########
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad54a6f35c3b13a] BEGIN chat=velaguard:2 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 6435 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:2
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792363119
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] Response: 0 bytes text, 2 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=2
+[agent] Tool iter 1: 2 calls
+[trace:6ad54a6f35c3b13a] iter=0 tool=read_file latency=5520ms llm=ok backend=0
+[tools] Executing tool: read_file
+[tools] Executed vg tool: vg_point_read
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[agent] Tool vg_point_read result: 108 bytes
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[agent] Tool read_file result: 1874 bytes
+[llm] OpenAI API with tools (model: mimo-v2.5, 8948 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 2: 1 calls
+[trace:6ad54a6f35c3b13a] iter=1 tool=vg_run_report latency=1950ms llm=ok backend=0
+[agent] Tool call: vg_run_report args={}
+[tools] Executed vg tool: vg_run_report
+[agent] Tool vg_run_report result: 780 bytes
+[llm] OpenAI API with tools (model: mimo-v2.5, 9979 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgruntime dump ########## len=5674
+vgruntime dump
+vgruntime: uptime_s=843 wall=2026-10-18T22:39:00
+vgruntime: slave=1 boot_total=706 boot_ok=686 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=180 boot_lat_avg=21 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=353 boot_ok=343 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=50 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=353 boot_ok=343 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=40 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=1059 boot_ok=1029 boot_crc=0 boot_timeout=30 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=110 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=1059 boot_ok=1019 boot_crc=0 boot_timeout=40 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=30 boot_lat_avg=20 win_total=64 win_ok=54 win_crc=0 win_timeout=10 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=1058 boot_ok=1029 boot_crc=0 boot_timeout=29 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=190 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=352 boot_ok=343 boot_crc=0 boot_timeout=9 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=660 boot_lat_avg=22 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=4940 boot_ok=4792 boot_crc=0 boot_timeout=148 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=678190 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=678200 offline_s=0 last_ok_ago_s=1 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=678210 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=678220 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=678230 offline_s=0 last_ok_ago_s=1 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=678230 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=678240 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=658110 offline_s=0 last_ok_ago_s=1 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=678260 offline_s=0 last_ok_ago_s=1 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=678270 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=678280 offline_s=0 last_ok_ago_s=1 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=678280 offline_s=0 last_ok_ago_s=1 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=680720 offline_s=0 last_ok_ago_s=1 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=680730 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: event t_boot_s=162 wall=2026-10-18T22:27:40 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=162 wall=2026-10-18T22:27:40 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_rvgnet: no MQTT credentials in the provision store (err -2); provecovered
+ision with 'vgprovision mqtt' and retry
+vgruntime: event t_boot_s=810 wall=2026-10-18T22:38:27 id=ups_load action=raise kind=offline value=40 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=830 wall=2026-10-18T22:38:47 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## ls /data/velaguard/pending_alarm.txt ########## len=176
+ls /data/velaguard/pending_alarm.txt
+nsh: ls: stat failed: 2
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+

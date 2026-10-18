@@ -255,7 +255,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/maintenance_rtu_slav
 |---|---|---|
 | I8 | 未验证 | `drop 7 0 32` 后从站只记录 4 次 drop，请求累计停在 3758/3754，板端 NSH 随后零响应；没有取得 16 个连续失败采样或恢复状态。见 [G-I8 板端失稳记录](../maintenance-evidence/2026-10-18/final-g-i8-board-failure.md)。 |
 | I9 | 通过 | 22:30:59.126 的一次 door `action=drop` 后，22:30:59.768 的重试 `action=reply value=0`；22:31:19 板端 `door online=1 kind=none`，无新增 raise 事件。见 [I8/I9 板端验收记录](../maintenance-evidence/2026-10-18/final-f-i8-i9-board-acceptance.md)。 |
-| I10 | 待执行 | 尚未下发 `drop 5 0 20`，不能判断同从站各点是否独立计数。 |
+| I10 | 通过 | `drop 5 0 20` 后只有 `ups_load` 离线，同从站 `ups_soc`、`ups_bypass` 保持在线；drop 耗尽后自动恢复。见 [I10 板端验收记录](../maintenance-evidence/2026-10-18/final-f-i10-board-acceptance.md)。 |
 
 I8 的失败现场同时是 QA-04 的第二次复现。恢复后 14 点在线只能证明复位成功，不能
 证明 I8 的离线滑窗行为通过，也不能关闭串口失联问题。
