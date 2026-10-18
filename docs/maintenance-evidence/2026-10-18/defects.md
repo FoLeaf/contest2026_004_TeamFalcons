@@ -131,6 +131,18 @@ dump_assert_info: Assertion failed panic: at file: :0 task: velaguard_app_main p
 
 所以既不是 `cmd_mv` 或 `rename` 的通用缺陷，也不是文件名、文件大小或文件内容的问题，而是**这个目录自身的磁盘状态**。
 
+### 已验证但不成立的假设：NSH 线程栈过小
+
+`ps` 显示控制台线程（PID 4，pthread `velaguard_app_main`）的栈只有 **2024 字节**，而 `velaguard.c` 用 `pthread_create(&tid, NULL, nsh_thread, NULL)`，拿到的是 `CONFIG_PTHREAD_STACK_DEFAULT=2048`。其余任务的栈分别是 8136（主任务）、49104（vghmi）、32696（ai_agent）、12264 等。
+
+同一份仓库里 SYS-01 已经修过同类问题：注释明确写着系统入口任务原来的 2 KiB 栈"overflows inside open()/getumask()"，且在 FAT 写路径上。
+
+疑似机理：控制台栈溢出会冲掉位于栈底的 TCB，而 `getpid()` 正好读 TCB 的 `group` 字段，和观测到的故障点吻合。于是做了实验：新增 `CONFIG_VG_NSH_STACKSIZE=8192` 并显式设置线程栈，重新构建烧录后，在保留的受损目录里重跑同一复现步骤。
+
+**结果：仍然崩溃**，签名完全一致（`CFSR=0x00008200`、`BFAR=0x3b`、`getpid` 内同一指令）。假设不成立，该改动已回退，未留在仓库里。
+
+控制台线程 2 KiB 这个事实本身仍记为观察项（见下），但没有证据说明它在本问题里起作用；在受损目录之外，2 KiB 的线程跑 `vgpoint`、`cp`、`rm` 都正常。
+
 ### 现场修复与复验
 
 把受损目录整体改名保留为 `discover_bad/`，新建 `/data/velaguard/discover/`，把两个文件复制回去。修复后同一操作不再崩溃：

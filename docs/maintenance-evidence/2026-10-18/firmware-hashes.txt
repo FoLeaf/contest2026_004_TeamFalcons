@@ -46,3 +46,15 @@ f38a5356ab61147b83eabd581345d3ecc9266ed9c83637f182bfdfa173bfd1bd  .debug/nuttx.b
 877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex
 # 静态内存：flash 1,262,744 B / sram 292,252 B（与修复前一致）
 # 构建日志：build-d01-fix.log；烧录日志：flash-d01-fix.log（两段均 verified）
+
+# --- 第三次构建：回退未成立的栈改动后，重新构建已提交代码（2026-10-18 16:58:34）---
+# 变更：仅包含已提交的 D-01 修复；--clean 重新生成 .config，移除试验用
+#       CONFIG_VG_NSH_STACKSIZE。
+# 命令：bash scripts/build.sh --clean   (TARGET=velaguard-lvgl)
+# 固件内嵌构建时间: Oct 18 2026 16:58:34
+# 静态内存：flash 1,262,756 B / sram 292,252 B
+# 告警：6 处，全部为既有第三方/其他模块告警（agent_loop.c、stm32h7 sdmmc、
+#       skill_loader.c、vg_page_diagnosis.c），本次改动文件无告警。
+# 构建日志：build-final.log；烧录日志：flash-final.log（两段均 verified）
+a2fbb03784f310d5ccdae6d898ab0642a7e7094dc8c0b70a8f9a148e3b534894  .debug/nuttx.hex
+9f8f62a172f78b65de03fbe013004712f2da64328d8f9ce7622bb50ab210451f  .debug/nuttx.bin
