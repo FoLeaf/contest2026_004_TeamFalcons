@@ -18,3 +18,13 @@ RESET 2026-10-18 17:48 reason=栈填充会话 attach（connect_assert_srst 复�
 RESET 2026-10-18 17:50 reason=高水位回读会话 attach + 结束 monitor reset run
 RESET 2026-10-18 17:53 reason=栈高水位测量会话 attach + 结束 monitor reset run
 NOTE  2026-10-18 17:50 复位后 uptime 显示 "up 0:00"，与上面这次人工复位一致，未发现额外复位。
+
+# --- 2026-10-18 傍晚：D-04 定位、修复与延迟工况复验 ---
+RESET 2026-10-18 18:44 reason=scripts/flash.ps1 烧录 D-04 修复固件（18:41:50 构建，两段 Download verified）
+RESET 2026-10-18 18:46 reason=OpenOCD telnet "reset run"，0 ms 工况清零计数
+RESET 2026-10-18 18:48 reason=OpenOCD telnet "reset run"，5 ms 工况
+RESET 2026-10-18 18:50 reason=OpenOCD telnet "reset run"，20 ms 工况
+RESET 2026-10-18 18:52 reason=OpenOCD telnet "reset run"，150 ms 工况
+RESET 2026-10-18 18:41 reason=OpenOCD 启动 -c "init" -c "reset run"，时序测量前的复位
+NOTE  2026-10-18 傍晚 各工况 60-300 秒窗口内 bus boot_timeout=0、boot_crc=0、boot_other=0，
+      未发现非预期复位。

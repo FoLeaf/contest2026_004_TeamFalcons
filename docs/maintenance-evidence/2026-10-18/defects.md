@@ -1,8 +1,10 @@
 # 新固件板端缺陷记录（2026-10-18）
 
-本文件记录本轮在 COM3 上发现并跟进的两个缺陷，以及一项凭据问题。D-01 已定位并修复，板端复验通过；D-02 已定位到具体目录并现场修复，但底层成因仍未查明。
+本文件记录本轮在板上发现并跟进的四个缺陷，以及一项凭据问题。D-01、D-02、D-04 都已定位根因、修复并板端复验；D-03 是凭据管理问题，只做记录，待人工决定处理方式。
 
-固件版本：首次复现于 `75cbc8eb7a5`（构建 2026-10-18 14:37:55），D-01 修复后为同提交的 16:09:56 构建。
+固件版本：首次复现于 `75cbc8eb7a5`（构建 2026-10-18 14:37:55）。D-01 修复后为同提交的
+16:09:56 构建，回退栈试验后重新构建为 16:58:34，D-02 修复后为 17:43:24，
+D-04 修复后为 `43702275f28` 的 18:41:50 构建。
 
 ---
 
@@ -238,9 +240,10 @@ ERROR: publish failed: MQTT_ERROR_SOCKET_ERROR
 
 ---
 
-## D-04：从站回复过快时板子丢帧（2026-10-18 傍晚，RS485 换新收发器后发现）
+## D-04：从站回复过快时板子丢帧（**根因已定位并修复**）
 
-优先级 P1。这条正是 BUS-03 关闭条件里点名的"剩余驱动窗口"，本轮第一次用快速从站实测到。
+优先级 P1。这条正是 BUS-03 关闭条件里点名的"剩余驱动窗口"。2026-10-18 傍晚换新收发器
+后第一次用快速从站实测到，当天完成定位与修复。
 
 ### 环境
 
@@ -251,54 +254,115 @@ ERROR: publish failed: MQTT_ERROR_SOCKET_ERROR
 链路本身是通的：从站在 20 s 内收到 69 个请求并全部应答，
 `crc_scan=0`、`suppressed=0`，请求帧格式正确（例如 `06-03-00-00-00-01-85-BD`）。
 
-### 现象
+### 现象（修复前）
 
 同一份固件（`75cbc8eb7a5`，构建 2026-10-18 17:43:24），只改从站的回复延迟：
 
-| 从站回复延迟 | 总线请求 | 成功 | 超时 | other | CRC 错 | 在线点位 | 请求间隔 |
-|---|---|---|---|---|---|---|---|
-| 0 ms（第 1 次） | 274 | 38 | 223 | 13 | 0 | 4 / 14 | 76-88 ms 与 644 ms 交替 |
-| 0 ms（第 2 次） | 131 | 88 | 29 | 14 | 0 | 12 / 14 | - |
-| 5 ms | 1183 | 1183 | 0 | 0 | 0 | 14 / 14 | 稳定 93 ms |
-| 20 ms | 805 | 795 | 10 | 0 | 0 | 14 / 14 | - |
-| 150 ms | 265 | 265 | 0 | 0 | 0 | 14 / 14 | 230-310 ms |
+| 从站回复延迟 | 总线请求 | 成功 | 超时 | other | CRC 错 | 在线点位 |
+|---|---|---|---|---|---|---|
+| 0 ms（第 1 次） | 274 | 38 | 223 | 13 | 0 | 4 / 14 |
+| 0 ms（第 2 次） | 131 | 88 | 29 | 14 | 0 | 12 / 14 |
+| 5 ms | 1183 | 1183 | 0 | 0 | 0 | 14 / 14 |
+| 20 ms | 805 | 795 | 10 | 0 | 0 | 14 / 14 |
+| 150 ms | 265 | 265 | 0 | 0 | 0 | 14 / 14 |
 
-0 ms 两次相差较大（14% 与 67% 成功），说明这是一个**余量很薄的边界**，不是硬阈值：
-PC 侧从站进程的回复时刻本身有抖动，落在窗口内就丢帧，落在窗口外就正常。
-5 ms 及以上两次都是 100%。
+`boot_crc=0`、`boot_echo=0` 说明板子不是收到坏帧，而是整帧没收到。
 
-`boot_crc=0`、`boot_echo=0` 说明板子不是收到坏帧，而是整帧没收到：
-超时请求对应的回复在总线上被完全丢掉。从站日志里能看到板子对同一个寄存器反复重发
-（例如 `06-03-00-02` 在 18:01:56.432 和 18:01:57.076 各发一次）。
+### 根因：DIR 释放挂在 tcdrain 的轮询上，而轮询被 10 ms 系统 tick 拉长
 
-延迟 150 ms 时请求间隔约 240 ms（按回复驱动，符合预期）；延迟 5 ms 时约 93 ms；
-延迟 0 ms 时正常周期 76-88 ms、失败后约 644 ms 重试。
-
-### 定位到的大致范围
-
-板子侧 RS485 方向控制在这一版 NuttX 里已经改过
-（`../nuttx/arch/arm/src/stm32h7/stm32_serial.c`）：
+方向控制在这一版 NuttX 里是改过的（`../nuttx/arch/src/stm32h7/stm32_serial.c`）：
 
 - `up_send()` / `up_txint(enable)` 把 DIR 置为发送；
-- 接收方向的切换只在 `up_txempty()` 里做，`up_txempty()` 由 `tcdrain()` 调用；
-- `up_txempty()` 等到 TXE|TC 之后再 `up_udelay(400)`，才把 DIR 切回接收；
-- TX 完成的 ISR 里**故意不**切 DIR，注释写明 "Do NOT drop DIR to RX here"，
-  原因是"ISR-only DIR drops were implicated in mid-frame bus floats"。
+- **接收方向的切换只在 `up_txempty()` 里做**，`up_txempty()` 由 `tcdrain()` 调用；
+- `up_txempty()` 等到 TXE\|TC 之后再 `up_udelay(400)`，才把 DIR 切回接收；
+- TX 完成中断里**故意不切** DIR（注释写明 "Do NOT drop DIR to RX here"）。
 
-所以从最后一个停止位到接收使能之间，有一个固定的保持窗口。0 ms 从站的回复落在这个
-窗口里，整帧丢失；5 ms 及以上就落在窗口外。窗口宽度按实测落在 0 到 5 ms 之间。
+而 `tcdrain()` 的等待循环是（`../nuttx/drivers/serial/serial.c`）：
 
-这一段代码里 400 µs 的保持是有来历的：注释记录了上一支 USB 转串口在 DIR 立刻释放时
-会把 `0x7F/0xFF` 附到正常 CRC 后面（`Communication_log_4: D5 CA 7F`）。
-所以不能直接删掉，需要按新收发器实测 TC 到接收使能的时间重新定。
+```c
+      while (!uart_txempty(dev))
+        {
+          nxsig_usleep(POLL_DELAY_USEC);   /* POLL_DELAY_USEC = 1000 us */
+          ...
+        }
+```
 
-### 未证实
+`nxsig_usleep(1000)` 会向上取整到系统 tick，而本板 `CONFIG_USEC_PER_TICK=10000`，
+tick 是 10 ms。
 
-- 到底是板子 DIR 释放太晚，还是新收发器自身的发送/接收切换慢，本轮没有分开测。
-  需要同时看 DI 与 DIR 的时序才能定。
-- `up_udelay(400)` 在板上的实际时长没有直接测过。如果
-  `CONFIG_BOARD_LOOPSPERMSEC=43103` 与实际主频不符，实际保持时间可能明显大于 400 µs。
-- 20 ms 那组的 10 次超时（805 中）原因不明，可能是从站进程自身的抖动。
+板端实测（用 DWT 周期计数器，CPUCLK = 400 MHz；断点设在 `up_txempty()` 的
+RS485 分支里，所以不会混进控制台 UART3）：
+
+```
+POLL     203936122  isr_mask=0xc0  since_last=5228225 cyc = 13071 us
+DIRDROP  203936157  since_last_poll=35 cyc = 0 us
+POLL     459950887  isr_mask=0xc0  since_last=5259113 cyc = 13148 us
+POLL     695849786  isr_mask=0xc0  since_last=5108647 cyc = 12772 us
+```
+
+一次轮询间隔 **12.7-13.8 ms**，不是 `POLL_DELAY_USEC` 写的 1 ms。
+也就是说 TC 置位后 DIR 最多要等约 13 ms 才释放。
+
+同时量了 `up_udelay(400)` 本身：三次采样分别 353.9 / 420.2 / 357.1 µs，
+`CONFIG_BOARD_LOOPSPERMSEC=43103` 的标定是准的，写 GPIO 只要 6-15 µs。
+**问题不在那 400 µs 的保持，在轮询粒度。**
+
+这解释了全部观测：
+
+- 0 ms 从站的回复（约 1-2 ms 到达）必然落在约 13 ms 的窗口里，整帧被丢掉；
+- Windows 的 `Thread.Sleep(5)` 实际约 5-16 ms，所以 5 ms 那组刚好躲开；
+- 20 ms 那 10 次超时来自从站进程自身抖动；
+- 150 ms 远离窗口，全通。
+
+### 修复
+
+把 DIR 释放放回 TX 完成中断，与上游 NuttX 的 STM32 驱动一致，也等同 STM32 硬件
+自己的 DE 输出在 DEDT = 0 时的行为：
+
+```c
+  if ((priv->sr & USART_ISR_TC) != 0 &&
+      (priv->ie & USART_CR1_TCIE) != 0 &&
+      (priv->ie & USART_CR1_TXEIE) == 0)
+    {
+      if (priv->rs485_dir_gpio != 0)
+        {
+          stm32_gpiowrite(priv->rs485_dir_gpio, !priv->rs485_dir_polarity);
+        }
+
+      up_restoreusartint(priv, priv->ie & ~USART_CR1_TCIE);
+    }
+```
+
+`up_txempty()` 改回纯查询语义：TXE\|TC 都置位才算空闲，并保留一次 DIR 写入作为兜底
+（覆盖从未使能 TCIE 的发送路径），但不再在那里做 400 µs 的忙等。原来那句
+`up_udelay(400)` 一并删掉，理由是它的保护作用靠不住：它只把总线悬空推迟 400 µs，
+并不能消除悬空；真正需要的是总线偏置，而不是在接收路径上压一个固定的延迟。
+
+### 板端复验（`43702275f28`，构建 2026-10-18 18:41:50）
+
+| 从站回复延迟 | 总线请求 | 成功 | 超时 | CRC | echo | other | 在线点位 | 从站 crc_scan |
+|---|---|---|---|---|---|---|---|---|
+| 0 ms | 649 | 649 | 0 | 0 | 0 | 0 | 14 / 14 | 0 |
+| 5 ms | 525 | 525 | 0 | 0 | 0 | 0 | 14 / 14 | 0 |
+| 20 ms | 471 | 471 | 0 | 0 | 0 | 0 | 14 / 14 | 1（早期一次性） |
+| 150 ms | 454+ | 454+ | 0 | 0 | 0 | 0 | 14 / 14 | 2（早期一次性） |
+
+0 ms 从站由修复前的 14% / 67% 变为 **649/649 全通**。四组 `boot_timeout`、
+`boot_crc`、`boot_echo`、`boot_other` 全部为 0。
+
+D-02 的栈修复在同一版固件上复测仍有效：`mv` 在 `discover_bad/` 里通过、`cat` 得到
+`AAA`、`ps` 里 PID 4 栈仍是 `0008168`、`vgpoint list` 仍为 `committed n=14`。
+
+### 未关闭的部分
+
+- 从站侧的 `crc_scan` 在 20 ms 与 150 ms 两组各出现 1 次和 2 次，都发生在开始后
+  20-90 秒内，之后 600 多个请求不再增加；0 ms 与 5 ms 两组全程为 0。
+  目前按**启动瞬态**处理，没有把它当成稳定现象，也没有证据说它与本次改动相关。
+  要确认需要在更长时间的长测里继续观察，本轮不据此下结论。
+- 0 ms 与 5 ms 两组全程 `crc_scan=0`，说明旧的"尾部杂字节"症状没有回来。
+  但这一结论只对当前这支收发器成立，没有覆盖历史上出问题的那支适配器。
+- 修复删掉了 400 µs 的保持。如果以后换回会在总线悬空时误读的适配器，
+  这个症状可能重现；届时应从总线偏置入手，而不是在接收路径上加延迟。
 
 ### 复现步骤
 
@@ -309,11 +373,18 @@ powershell -File scripts/maintenance_rtu_slave.ps1 -ComPort COM7 -ReplyDelayMs 0
 # COM3: vgruntime dump
 ```
 
-期望：`bus boot_timeout` 接近 `bus boot_total`，只有 3-4 个点位 `online=1`。
-把 `-ReplyDelayMs` 改成 5 或更大，同样步骤得到 `boot_timeout=0`、14 个点位全部在线。
+修复前：`bus boot_timeout` 与 `bus boot_total` 同量级，只有 3-4 个点位 `online=1`。
+修复后：`boot_timeout=0`、`boot_crc=0`、`boot_other=0`，14 个点位全部在线。
 
 ### 原始日志
 
-- `slave-com7.log`、`slave-com7-0ms2.log`：0 ms 两次从站日志。
-- `slave-com7-5ms.log`、`slave-com7-20ms.log`、`slave-com7-150ms.log`、`slave-com7-150ms2.log`：其余对照。
-- `vgruntime-0ms.log`、`vgruntime-5ms.log`、`vgruntime-150ms.log`：板端 `vgruntime dump`。
+- `slave-com7.log`、`slave-com7-0ms2.log`、`slave-com7-5ms.log`、`slave-com7-20ms.log`、
+  `slave-com7-150ms.log`、`slave-com7-150ms2.log`：修复前的从站日志。
+- `vgruntime-0ms.log`、`vgruntime-5ms.log`、`vgruntime-150ms.log`：修复前的板端 dump。
+- `d04-fixed-0ms-slave.log`、`d04-fixed-5ms-slave.log`、`d04-fixed-20ms-slave.log`、
+  `d04-fixed-150ms-slave.log`：修复后的从站日志。
+- `d04-fixed-vgruntime-0ms.log`、`d04-fixed-vgruntime-5ms.log`、
+  `d04-fixed-vgruntime-20ms.log`、`d04-fixed-vgruntime-150ms.log`：修复后的板端 dump。
+- `d04-fix-d02-recheck.log`：同一版固件上 D-02 复测。
+- `build-d04-fix.log`、`flash-d04-fix.log`：修复后的构建与烧录。
+- `.debug/gdb/measure-dir-delay.cmd`、`.debug/gdb/measure-tc-to-dir.cmd`：时序测量脚本。

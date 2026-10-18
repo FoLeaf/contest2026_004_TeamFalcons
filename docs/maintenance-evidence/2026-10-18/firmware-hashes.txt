@@ -70,3 +70,14 @@ a2fbb03784f310d5ccdae6d898ab0642a7e7094dc8c0b70a8f9a148e3b534894  .debug/nuttx.h
 b4c708943a1fa71644127f41e60e18c6f9e47e8aaea1091f890cf50c51672f2f  .debug/nuttx.hex
 006eef2a8c233effb89203f7fd6b16137ff576207503d9f96d410698a3d9c5fe  .debug/nuttx.bin
 877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex
+
+# --- 第五次构建：D-04 修复后（2026-10-18 18:41:50）---
+# 变更：公共树 nuttx 把 RS485 DIR 释放从 up_txempty() 挪到 TX 完成中断，
+#       去掉那里 400 us 的忙等（见 defects.md 的 D-04）。
+# 命令：bash scripts/build.sh   (TARGET=velaguard-lvgl，增量)
+# 固件内嵌构建时间: Oct 18 2026 18:41:50
+# 静态内存：flash 1,262,892 B / sram 292,252 B
+# 告警：0 处（增量构建只重编了改动文件及其依赖）
+# 构建日志：build-d04-fix.log；烧录日志：flash-d04-fix.log（两段均 verified）
+2964f76ed3a3d9da6788a4f477a699e123b8cec45c9a647f1bf4aabc77c47dde  .debug/nuttx.hex
+afdfd57679379771ddaa4de43157e758a8f555041f334c51a253134b82676551  .debug/nuttx.bin
