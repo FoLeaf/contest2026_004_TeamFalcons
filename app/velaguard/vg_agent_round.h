@@ -19,6 +19,7 @@
 #define __APP_VELAGUARD_VG_AGENT_ROUND_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 enum vg_agent_round_state
@@ -102,15 +103,21 @@ void vg_agent_round_clear(void);
 
 #define VG_AGENT_ROUND_RECLAIM_MS 30000u
 
+/* Maximum diagnostic reply snapshot, including the terminating NUL. */
+
+#define VG_AGENT_ROUND_REPLY_MAX 192
+
 /* Releases somebody else's finished-but-unread round once it has been
  * sitting for grace_ms.  Consumers call this with their own owner; returns
  * true when a stale result was released. */
 
 bool vg_agent_round_reclaim(enum vg_agent_round_owner mine, uint32_t grace_ms);
 
-/* Last reply text, truncated for diagnostics (NSH readback, logs). */
+/* Copy the last reply into the caller's buffer under the round lock.  The
+ * returned snapshot is always NUL-terminated and never exposes a pointer to
+ * the shared buffer.  Returns -EINVAL for a null or zero-sized buffer. */
 
-const char *vg_agent_round_last_reply(void);
+int vg_agent_round_copy_last_reply(char *buffer, size_t size);
 
 /* Monotonic milliseconds.  Every deadline and rate limit on this path uses
  * this base: the wall clock jumps when vgtime syncs a minute after boot, and

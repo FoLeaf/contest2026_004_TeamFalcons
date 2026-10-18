@@ -93,6 +93,14 @@ static void complete_round(const char *text, enum vg_agent_round_owner owner)
     STATE_IS(VG_AGENT_ROUND_DONE);
 }
 
+static void expect_reply(const char *expected)
+{
+    char reply[VG_AGENT_ROUND_REPLY_MAX];
+
+    assert(vg_agent_round_copy_last_reply(reply, sizeof(reply)) == 0);
+    assert(!strcmp(reply, expected));
+}
+
 /* ── tests ─────────────────────────────────────────────────────────── */
 
 /* The bus never comes up: the round must be released by the queue watchdog,
@@ -138,6 +146,11 @@ static void test_argument_guards(void)
     big[sizeof(big) - 1] = '\0';
     assert(vg_agent_round_queue(big) == -E2BIG);
     STATE_IS(VG_AGENT_ROUND_IDLE);          /* a refused request changes nothing */
+    assert(vg_agent_round_copy_last_reply(NULL, 16) == -EINVAL);
+    {
+        char reply[VG_AGENT_ROUND_REPLY_MAX];
+        assert(vg_agent_round_copy_last_reply(reply, 0) == -EINVAL);
+    }
 
     big[REQ_MAX - 1] = '\0';                /* exactly REQ_MAX - 1 bytes */
     assert(strlen(big) == REQ_MAX - 1);
@@ -163,7 +176,14 @@ static void test_late_callback_cannot_cross_rounds(void)
     complete_round("first", VG_AGENT_ROUND_OWNER_ADVICE);
     gen_before = vg_agent_round_generation();
     assert(vg_agent_round_owner() == VG_AGENT_ROUND_OWNER_ADVICE);
-    assert(!strcmp(vg_agent_round_last_reply(), "first"));
+    expect_reply("first");
+    {
+        char truncated[4];
+
+        assert(vg_agent_round_copy_last_reply(truncated,
+                                              sizeof(truncated)) == 0);
+        assert(!strcmp(truncated, "fir"));
+    }
 
     /* A terminal result is not free until its owner reads it. */
     assert(vg_agent_round_queue("blocked") == -EBUSY);
@@ -188,14 +208,14 @@ static void test_late_callback_cannot_cross_rounds(void)
     vg_agent_round_tick();
     STATE_IS(VG_AGENT_ROUND_DONE);
     assert(vg_agent_round_generation() == gen_before + 1);
-    assert(!strcmp(vg_agent_round_last_reply(), "fresh"));
+    expect_reply("fresh");
 
     /* A duplicate of the current reply is ignored as well. */
     cb_slot(0, "again", cookie_slot);
     vg_agent_round_tick();
     STATE_IS(VG_AGENT_ROUND_DONE);
     assert(vg_agent_round_generation() == gen_before + 1);
-    assert(!strcmp(vg_agent_round_last_reply(), "fresh"));
+    expect_reply("fresh");
 
     vg_agent_round_clear();
 }
@@ -222,7 +242,7 @@ static void test_reply_while_queued_is_kept(void)
     vg_agent_round_tick();                  /* the kept reply is consumed */
     STATE_IS(VG_AGENT_ROUND_DONE);
     assert(vg_agent_round_generation() == gen_before + 1);
-    assert(!strcmp(vg_agent_round_last_reply(), sync_text));
+    expect_reply(sync_text);
 
     vg_agent_round_clear();
 }
@@ -263,7 +283,7 @@ static void test_submit_failure_is_isolated(void)
     cb_slot(0, "after-answer", cookie_slot);
     vg_agent_round_tick();
     STATE_IS(VG_AGENT_ROUND_DONE);
-    assert(!strcmp(vg_agent_round_last_reply(), "after-answer"));
+    expect_reply("after-answer");
     vg_agent_round_clear();
 }
 

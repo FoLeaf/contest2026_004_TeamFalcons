@@ -182,6 +182,8 @@ static const char *owner_name(enum vg_agent_round_owner owner)
 
 static void print_status(void)
 {
+  char reply[VG_AGENT_ROUND_REPLY_MAX];
+
   printf("round: state=%s gen=%u owner=%s\n",
          state_name(vg_agent_round_state()),
          (unsigned)vg_agent_round_generation(),
@@ -196,9 +198,10 @@ static void print_status(void)
          vg_llm_credentials_ready() ? "ready" : "MISSING",
          vg_provision_is_present() ? "present" : "absent");
 
-  if (vg_agent_round_last_reply()[0] != '\0')
+  if (vg_agent_round_copy_last_reply(reply, sizeof(reply)) == 0 &&
+      reply[0] != '\0')
     {
-      printf("reply: %s\n", vg_agent_round_last_reply());
+      printf("reply: %s\n", reply);
     }
 }
 

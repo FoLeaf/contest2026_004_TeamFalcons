@@ -8,6 +8,7 @@
 
 #include <errno.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <string.h>
 #include <syslog.h>
 #include <time.h>
@@ -19,8 +20,6 @@
 #define TAG "vgagent"
 
 #define VG_ROUND_REQ_MAX   1536
-#define VG_ROUND_REPLY_MAX 192
-
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static velaclaw_client_t          *g_client;
@@ -35,7 +34,7 @@ static enum vg_agent_round_owner   g_owner;
 static uint32_t                    g_finished_ms;
 
 static char g_req[VG_ROUND_REQ_MAX];
-static char g_reply[VG_ROUND_REPLY_MAX];
+static char g_reply[VG_AGENT_ROUND_REPLY_MAX];
 
 uint32_t vg_agent_round_now_ms(void)
 {
@@ -325,9 +324,17 @@ void vg_agent_round_clear(void)
   pthread_mutex_unlock(&g_lock);
 }
 
-const char *vg_agent_round_last_reply(void)
+int vg_agent_round_copy_last_reply(char *buffer, size_t size)
 {
-  return g_reply;
+  if (buffer == NULL || size == 0)
+    {
+      return -EINVAL;
+    }
+
+  pthread_mutex_lock(&g_lock);
+  snprintf(buffer, size, "%s", g_reply);
+  pthread_mutex_unlock(&g_lock);
+  return 0;
 }
 
 #endif /* CONFIG_EXAMPLES_AI_AGENT_VELA */

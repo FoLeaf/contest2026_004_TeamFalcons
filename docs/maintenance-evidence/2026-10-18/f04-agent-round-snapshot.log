@@ -1,0 +1,57 @@
+task=F-04 agent round reply snapshot isolation
+started_utc=2026-10-18T12:29:18Z
+head=3367192f3cddd53441b7d6e9b587cf9169ffc067
+worktree_status:
+ M app/velaguard/host_tests/agent_review/test_round_isolation.c
+ M app/velaguard/vg_agent_round.c
+ M app/velaguard/vg_agent_round.h
+ M app/velaguard/vgagent.c
+ M docs/velaguard-agent-tool-review.md
+?? app/velaguard/host_tests/agent_review/test_file_policy_extra
+?? app/velaguard/host_tests/agent_review/test_round_isolation
+?? app/velaguard/host_tests/agent_review/test_runner_budget
+?? app/velaguard/host_tests/agent_review/test_shell_gate
+?? app/velaguard/host_tests/agent_review/test_tool_guard_rate
+?? docs/maintenance-evidence/2026-10-18/f04-agent-round-snapshot.log
+7de94fde04e5f4ee21e0911149078c037681614cec29e6955555741950e98aa9  app/velaguard/host_tests/agent_review/Makefile
+603c1f4acbff06cfc259c3cf96ae7d50d9ebcc51a3f65a4de5dd6b3a46419c56  app/velaguard/host_tests/agent_review/test_round_isolation.c
+0172376b563094c12f7939e210b31670dbbf16f1d042221528eed994ccfef3c0  app/velaguard/vg_agent_round.c
+79e9f32bc45039900fecf5c3ff1caa79b0f881298e727cbc467d6437616b01b7  app/velaguard/vg_agent_round.h
+88f9cc1f5dab708b1a146f3ea26369c92aa65c12e35043e3ec971c79afa97638  app/velaguard/vgagent.c
+command=make -C app/velaguard/host_tests/agent_review clean test
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+rm -f test_runner_budget test_round_isolation test_file_policy_extra \
+      test_shell_gate test_tool_guard_rate repro_symlink_write_escape
+cc -Wall -Werror -pthread -I../../../../../packages/ai_agent/src -o test_runner_budget test_runner_budget.c ../../../../../packages/ai_agent/src/tools/tool_shell_runner.c
+cc -Wall -Werror -pthread -I../stubs -I../.. -I../../../../../packages/ai_agent/include -o test_round_isolation \
+  test_round_isolation.c ../../vg_agent_round.c -Wl,--wrap=clock_gettime
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON \
+  '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' \
+  '-DVG_DATA_ROOT="data/velaguard"' \
+  -o test_file_policy_extra test_file_policy_extra.c ../../../../../packages/ai_agent/src/tools/tool_files.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -DCONFIG_VG_HMI -o test_shell_gate \
+  test_shell_gate.c ../../../../../packages/ai_agent/src/tools/tool_shell_runner.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -o test_tool_guard_rate ../../../../../packages/ai_agent/tests/test_tool_guard_rate.c \
+  ../../../../../apps/netutils/cjson/cJSON/cJSON.c -Wl,--wrap=time -lm
+./test_runner_budget
+test_runner_budget: OK (endless output, deadline accuracy, descendant reclaim, fd/zombie leaks, signalled child, cap canaries)
+./test_round_isolation
+test_round_isolation: OK (queue watchdog, stale/duplicate replies, early reply, submit failure isolation, reclaim)
+./test_file_policy_extra
+test_file_policy_extra: OK (credential/config read guard, edit_file parity, symlink targets, .. refusal, small-buffer canaries)
+./test_shell_gate
+sh: 1: vgstats: not found
+sh: 1: vgstats: not found
+sh: 1: vgcfg: not found
+sh: 1: vgruntime: not found
+sh: 1: vgnet: not found
+sh: 1: heap_info: not found
+sh: 1: net_status: not found
+sh: 1: router_status: not found
+test_shell_gate: OK (vgpoint/vgdiscover/vgmodbus refused, per-command subcommand gate, metadata-only allowlist, positive rows)
+./test_tool_guard_rate
+test_tool_guard_rate: OK (failed calls count, check/reserve is atomic)
+agent_review: regression set OK
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+exit_code=0
+finished_utc=2026-10-18T12:29:22Z
