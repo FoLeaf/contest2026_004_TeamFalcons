@@ -1,0 +1,5 @@
+START 2026-10-18T21:45:36.1118577+08:00 port=COM7 mode=slave-only baud=9600 rts=False dtr=False reply_delay_ms=0 request_log=True
+CONTROL 2026-10-18T21:45:36.1349838+08:00 written=2026-10-18T21:45:34.3328443+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-18T21:45:36.1359839+08:00 elapsed_s=0.0 mode=normal requests=0 replies=0 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+RX 2026-10-18T21:45:36.3981502+08:00 07-03-00-00-00-01-84-6C
+REQ 2026-10-18T21:45:36.3981502+08:00 slave=7 fc=3 reg=0 qty=1 action=reply error=0 value=0

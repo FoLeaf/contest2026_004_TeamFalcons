@@ -22,7 +22,9 @@ afd8f1e30d42aa3ae33fb58eaa8039ee17bcadf62ddc9ea7e3fb06c6697cf493  .debug/nuttx.h
 # 主机回归：host-tests-full-after-d06-current.log；退出码 0，32 个目标通过
 # 凭证扫描：final-security-scan-after-d06.log；MQTT 明文键名和历史口令值均 0 命中，
 #           CONFIG_VG_WIFI_PASSWORD 静态值仍命中，保留为独立问题
-# 记录写入时尚未烧录，不能据此记录板端 uname 或板验结论
+# 本次构建已烧录；板端 uname 为 NuttX 0.0.0 2373ab4a45d Oct 18 2026 21:50:34
+# D-06 补修后连续 8 次试读成功，共 112 条 READ 全部 ok=1，无 bus_busy；
+# apply 尚未执行，人工确认与生效一致性另见 final-d06-board-acceptance.md
 7691d831488b9b108a3eec2e7d7771a9e6afa3a0f06e5308b8642d21a707e015  .debug/nuttx.hex
 02e745bdd268bb6695b23e148045db3fcd237742752919d6cf7b06d76c748db4  .debug/nuttx.bin
 ac15ea0d234bf0aeb3d885769037b8d48a1fd58a0e1ec09cde92b54aca56b774  .debug/nuttx.elf

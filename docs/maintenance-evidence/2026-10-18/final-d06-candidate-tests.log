@@ -1,0 +1,199 @@
+########## boot settle len=2031 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 3: 1 calls
+[trace:6ad53d9c35c3b13a] iter=2 tool=write_file latency=95640ms llm=ok backend=0
+[agent] Tool call: write_file args={"path": "/data/velaguard/reports/alarm_advice.txt", "content": "VGADV1\nboot=30c39d20\nreq=2\nn=8\n[1]\nid=temp\nepoch=2\nsev=offline\nunres=0\nsum=温度疑似总线通信中断\nev=八点同时离线17秒，总线成功率81%，超时85次\natt=先查从站1链路与接线，恢复后再核对读数\n[2]\nid=humid\nepoch=2\nsev=offline\nunres=0\nsum=湿度点位随总线离线\nev=八点同时离线17秒，总线成功率81%，超时85次\natt=先查从站1链路与接线，恢复后再核对
+[tools] Executing tool: write_file
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tool_files] write_file: /data/velaguard/reports/alarm_advice.txt (1603 bytes)
+[agent] Tool write_file result: 64 bytes
+[agent] Local tool shortcut: skip LLM round
+[trace:6ad53d9c35c3b13a] END status=ok iters=3 tools=3 llm_ms=103700 elapsed=109s backend=0
+[agent] Dispatching response → local_client:velaguard:2
+[vgagent] round finished: reply
+[vgadvice] advice loaded: 8 entries file_req=2 live_req=2
+[vgadvice] round ended, advice for this alarm set kept
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=389
+vgpoint test
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=74
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [K
+
+########## vgpoint test ########## len=74
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [K
+
+########## vgpoint test ########## len=98
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: join 19y failed
+
+
+########## vgpoint test ########## len=284
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=284
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=284
+vgpoint test
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=284
+vgpoint test
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint get ########## len=1111
+vgpoint get
+vgpoint: VALUE id=temp value=- ok=0 unit=C age_ms=17860
+vgpoint: VALUE id=humid value=- ok=0 unit=%RH age_ms=17860
+vgpoint: VALUE id=flood value=- ok=0 unit=- age_ms=17860
+vgpoint: VALUE id=smoke value=- ok=0 unit=% age_ms=17860
+vgpoint: VALUE id=acu_ret value=- ok=0 unit=C age_ms=17860
+vgpoint: VALUE id=acu_set value=- ok=0 unit=C age_ms=17860
+vgpoint: VALUE id=acu_run value=- ok=0 unit=- age_ms=17860
+vgpoint: VALUE id=ups_load value=- ok=0 unit=% age_ms=17860
+vgpoint: VALUE id=ups_soc value=- ok=0 unit=% age_ms=17860
+vgpoint: VALUE id=ups_bypass value=- ok=0 unit=- age_ms=17860
+vgpoint: VALUE id=volt_a value=- ok=0 unit=V age_ms=17860
+vgpoint: VALUE id=pwr_kw value=- ok=0 unit=kW age_ms=17860
+vgpoint: VALUE id=energy_kwh value=- ok=0 unit=kWh age_ms=17860
+vgpoint: VALUE id=door value=- ok=0 unit=- age_ms=17860
+vgpoint: OK cmd=get table=committed n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgruntime dump ########## len=7740
+vgruntime dump
+vgruntime: uptime_s=668 wall=2026-10-18T21:46:37
+vgruntime: slave=1 boot_total=276 boot_ok=226 boot_crc=0 boot_timeout=50 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=56 win_total=64 win_ok=34 win_crc=0 win_timeout=30 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=138 boot_ok=113 boot_crc=0 boot_timeout=25 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=54 win_total=64 win_ok=49 win_crc=0 win_timeout=15 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=137 boot_ok=114 boot_crc=0 boot_timeout=23 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=55 win_total=64 win_ok=50 win_crc=0 win_timeout=14 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=411 boot_ok=342 boot_crc=0 boot_timeout=69 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=210 boot_lat_avg=54 win_total=64 win_ok=22 win_crc=0 win_timeout=42 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=411 boot_ok=343 boot_crc=0 boot_timeout=68 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=54 win_total=64 win_ok=22 win_crc=0 win_timeout=42 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=411 boot_ok=341 boot_crc=0 boot_timeout=70 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=55 win_total=64 win_ok=22 win_crc=0 win_timeout=42 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=137 boot_ok=115 boot_crc=0 boot_timeout=22 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=56 win_total=64 win_ok=50 win_crc=0 win_timeout=14 win_echo=0 win_other=0
+vgruntime: bus boot_total=1921 boot_ok=1594 boot_crc=0 boot_timeout=327 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=24 kind=offline
+vgruntime: point id=humid slave=1 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=50 kind=offline
+vgruntime: point id=flood slave=2 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=0 kind=offline
+vgruntime: point id=smoke slave=3 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=1 kind=offline
+vgruntime: point id=acu_ret slave=4 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=25 kind=offline
+vgruntime: point id=acu_set slave=4 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=24 kind=offline
+vgruntime: point id=acu_run slave=4 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=1 kind=offline
+vgruntime: point id=ups_load slave=5 online=0 online_ms=360170 offline_s=169 last_ok_ago_s=187 value=40 kind=offline
+vgruntime: point id=ups_soc slave=5 online=0 online_ms=362470 offline_s=169 last_ok_ago_s=187 value=80 kind=offline
+vgruntime: point id=ups_bypass slave=5 online=0 online_ms=362470 offline_s=169 last_ok_ago_s=187 value=0 kind=offline
+vgruntime: point id=volt_a slave=6 online=0 online_ms=362470 offline_s=169 last_ok_ago_s=187 value=230 kind=offline
+vgruntime: point id=pwr_kw slave=6 online=0 online_ms=362470 offline_s=169 last_ok_ago_s=187 value=3 kind=offline
+vgruntime: point id=energy_kwh slave=6 online=0 online_ms=362470 offline_s=169 last_ok_ago_s=187 value=123.4 kind=offline
+vgruntime: point id=door slave=7 online=0 online_ms=380940 offline_s=41 last_ok_ago_s=59 value=0 kind=offline
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=temp action=raise kind=offline value=24 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=humid action=raise kind=offline value=50 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=flood action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=smoke action=raise kind=offline value=1 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=acu_ret action=raise kind=offline value=25 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=acu_set action=raise kind=offline value=24 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=acu_run action=raise kind=offline value=1 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=ups_load action=raise kind=offline value=40 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=ups_soc action=raise kind=offline value=80 thr=0 cmp=le reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=ups_bypass action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=volt_a action=raise kind=offline value=230 thr=0 cmp=le reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=pwr_kw action=raise kind=offline value=3 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=energy_kwh action=raise kind=offline value=123.4 thr=0 cmp=- reason=modbus_fail_offline
+vgruntime: event t_boot_s=499 wall=2026-10-18T21:43:48 id=door action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+vgruntime: event t_boot_s=609 wall=2026-10-18T21:45:37 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=627 wall=2026-10-18T21:45:56 id=door action=raise kind=offline value=0 thr=0 cmp=eq reason=modbus_fail_offline
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint list -c ########## len=1966
+vgpoint list -c
+vgpoint: POINT id=temp name=温度验收 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=candidate n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint list ########## len=1961
+vgpoint list
+vgpoint: POINT id=temp name=温度 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=committed n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+

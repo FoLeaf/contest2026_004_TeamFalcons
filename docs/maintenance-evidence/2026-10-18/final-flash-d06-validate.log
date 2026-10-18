@@ -1,0 +1,4 @@
+Main QSPI image : 0x90000000..0x90135060
+Internal stub   : 0x08000000..0x080002d0
+External Loader : D:\Develop\STM32CubeCLT_1.21.0\STM32CubeProgrammer\bin\ExternalLoader\MT25TL01G_STM32H750B-DISCO.stldr
+Validation completed; hardware was not accessed.

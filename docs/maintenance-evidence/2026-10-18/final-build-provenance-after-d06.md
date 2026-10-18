@@ -1,10 +1,10 @@
 # D-06 补修后的最终维护构建来源
 
-记录时间：2026-10-18 22:02（Asia/Shanghai）
+记录时间：2026-10-18 22:10（Asia/Shanghai）
 
 本构建取代 `75fc04d` 的 21:29 构建。取代原因是阶段 D 板验发现 1000 ms
 总线等待仍会与完整 14 点采集轮次冲突，因此把上界调整为 3000 ms，并加入持锁
-1200 ms 的确定性回归。记录写入时产物尚未烧录，不能单独作为板端验收证据。
+1200 ms 的确定性回归。
 
 ## 构建命令与结果
 
@@ -73,6 +73,41 @@ ai_agent、诊断页面和 skill_loader，本构建没有新增 warning。
 - 历史 MQTT 口令候选值在 bin/elf 中命中数为 0。
 - `CONFIG_VG_WIFI_PASSWORD` 静态值仍在镜像中命中，保留为独立问题。
 - SEC-01 仍需板端 MQTT 连接、复位、缺失、损坏和恢复验收。
+
+## 烧录与板端身份
+
+- 烧录时间：2026-10-18 21:52（Asia/Shanghai）
+- 烧录入口：`scripts/flash.ps1`
+- 烧录结果：外部 QSPI 主镜像和内部 boot stub 均为
+  `Download verified successfully`，随后由脚本复位目标。
+- 原始日志：
+  [烧录记录](final-flash-d06-20261018-2204.log)；
+  [烧录对象校验](final-flash-d06-validate.log)
+- 板端 `uname -a`：
+  `NuttX 0.0.0 2373ab4a45d Oct 18 2026 21:50:34 arm stm32h750b-dk`
+- 板端身份记录：
+  [final-board-identity-after-d06.log](final-board-identity-after-d06.log)
+
+板端内嵌构建时间 `21:50:34` 与本页 21:50:39 完成的产物一致。`uname` 仅表示
+NuttX 提交和构建时间；完整多仓源码身份仍以上表的五个提交为准。
+
+## D-06 板端试读
+
+补修后的固件在周期采集持续运行时连续执行 8 次 `vgpoint test`，8 次均返回
+`OK cmd=test table=candidate n=14`。8 次共产生 112 条 `READ`，全部
+`ok=1`，没有 `bus_busy`。同一时间窗内 COM7 从站最终记录 2264 个请求和
+2264 个应答，`crc_scan=0`。
+
+候选表与已确认表均为 14 点，唯一差异是 `temp.name` 在候选中为 `温度验收`，
+在已确认表中仍为 `温度`。截至本页写入时，真实用户尚未确认 `apply`，因此
+只读复查仍显示候选未生效、`vgcfg seq=6` 未变化。
+
+原始记录：
+
+- [补修后 8 次试读](final-d06-candidate-tests-after-fix.log)
+- [从站请求与应答](final-d06-slave-after-fix.log)
+- [当前候选与只读状态](final-d06-state-before-confirm.log)
+- [最终固件 D-02 复验](final-d02-recheck-after-d06.log)
 
 ## 身份边界
 
