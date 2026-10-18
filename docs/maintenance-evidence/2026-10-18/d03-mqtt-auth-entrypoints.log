@@ -1,0 +1,32 @@
+evidence=d03-mqtt-auth-entrypoints
+base_commit=375b582
+tested_source=375b582 plus working-tree MQTT credential concurrency and authentication-entrypoint changes
+session_test_sha256=6d2d22d665319ae2c8e0eb802497893167a4f47ebe6e9a219e9092088629affc
+vgmqtt_test_sha256=3b62e288b1edbba3831bf660a6e3df5d50d04574b080013e61610da5f7ea5f4a
+fixture_sha256=76eb8f0c5f9ed131c5af20c4c814b3bbfd6187df1e66df7acf4e04ceaa0dbefe
+build_command=make -C app/velaguard/host_tests test_mqtt_session_auth test_mqtt_vgmqtt_auth
+BUILD_EXIT_STATUS=0
+--- build output ---
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -Istubs -include stubs/vg_host_shim.h \
+  -I../../../../apps/netutils/mqttc/MQTT-C/include \
+  -o test_mqtt_session_auth test_mqtt_session_auth.c ../vg_file_store.c \
+  ../vg_mqtt_payload.c -Wl,--gc-sections -lm
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -Istubs -include stubs/vg_host_shim.h \
+  -I../../../../apps/netutils/mqttc/MQTT-C/include \
+  -o test_mqtt_vgmqtt_auth test_mqtt_vgmqtt_auth.c ../vg_file_store.c \
+  ../vg_mqtt_payload.c -Wl,--gc-sections \
+  -Wl,--wrap=getaddrinfo,--wrap=socket,--wrap=connect -lm
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+--- session test output ---
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: mqtt online network=eth0 backend=test device=test-device
+vgnet: mqtt online network=eth0 backend=test device=test-device
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+test_mqtt_session_auth: OK (missing record blocks connect, reconnect reloads)
+SESSION_EXIT_STATUS=0
+--- vgmqtt test output ---
+ERROR: no MQTT credentials in the provision store (err -2); run 'vgprovision mqtt' on the board, or pass -u/-P
+ERROR: no MQTT credentials in the provision store (err -2); run 'vgprovision mqtt' on the board, or pass -u/-P
+test_mqtt_vgmqtt_auth: OK (default record path and missing-record refusal)
+VGMQTT_EXIT_STATUS=0

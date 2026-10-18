@@ -98,8 +98,10 @@ vgprovision: file=/data/velaguard/provision/mqtt_secrets.v1 persistent=yes
 - 生命周期：记录读进一个模块静态结构体，`mqtt_connect()` 同步把 CONNECT 打包进发送
   缓冲后立刻清零。MQTT-C 会把打包好的报文留在发送缓冲里直到队列回收，这部分明文
   驻留是 MQTT-C 的既有行为，本模块没有改动，也不宣称已经消除。
-- 并发：`vg_mqtt_cred_load()` 用一把互斥锁保护解密用的静态缓冲，明文在释放锁之前
-  清零；`out` 在任何失败路径上都会被清零，调用方即使忽略返回值也拿不到半个凭证。
+- 并发：`vg_mqtt_cred_load()` 的模块级互斥锁覆盖封存文件打开、读取、UID 派生、
+  解密、解析和明文清零。常驻网络管理器与 `vgmqtt` 调试入口同时读取时，共享的
+  封存字节、解密文本和 UID 缓冲不会互相覆盖；`out` 在任何失败路径上都会被清零，
+  调用方即使忽略返回值也拿不到半个凭证。
 - 长度与终止：`username` 缓冲 64 字节、`password` 缓冲 128 字节，扫描器最多接受
   比缓冲少一个字符的值，超长返回 `-ENOSPC`，不会截断成一个更短但能通过认证的值。
 
@@ -151,8 +153,7 @@ vgprovision: file=/data/velaguard/provision/mqtt_secrets.v1 persistent=yes
 make -C app/velaguard/host_tests test
 ```
 
-全套通过，包括新增的 `test_mqtt_cred` 与原有的 `test_provision_creds`、
-`test_mqtt_session`。`test_mqtt_cred` 覆盖：
+`test_mqtt_cred` 覆盖：
 
 - 合法记录往返（用户名和口令都逐字节比对）
 - 长度边界：刚好填满缓冲的用户名可以往返，超一个字符返回 `-ENOSPC`
@@ -163,6 +164,27 @@ make -C app/velaguard/host_tests test
 - 写入中途失败（`--wrap=rename` 让发布那一步失败）后旧记录逐字节不变
 - 外来记录在 `install` 阶段被拒，旧记录同样不变
 - 空 blob、超长 blob 被拒；合法 blob 能替换记录
+- 两个加载并发时不能同时进入共享封存缓冲；测试固定了第一个加载已读、尚未校验时的
+  窗口，第二个记录替换后仍必须各自读到自己打开时的内容
+- 四个普通并发加载都要成功并返回同一份记录
+
+共享缓冲测试对 `9e88868` 的修前源码先失败，再对修复源码通过：
+
+- [修前原始输出](maintenance-evidence/2026-10-18/d03-mqtt-cred-interleave-pre-fix.log)
+  为 `EXIT_STATUS=1`，两条并发断言失败。
+- [修后原始输出](maintenance-evidence/2026-10-18/d03-mqtt-cred-interleave-post-fix.log)
+  为 `EXIT_STATUS=0`。
+
+认证入口测试使用真实的 `vg_mqtt_session_open()`、`vgmqtt` 参数解析和默认凭证函数，
+只替换设备 UID、封存加解密、MQTT-C、传输或网络系统调用：
+
+- `test_mqtt_session_auth`：记录缺失时 `vg_tcp_open()` 调用数为 0；首次会话读取记录；
+  关闭后替换记录，下一次会话重新读取新用户名和口令，不复用上一会话的明文副本。
+- `test_mqtt_vgmqtt_auth`：不传 `-u` / `-P` 时从同一封存路径读取；替换记录后重新读取
+  新值；记录缺失时完整入口在网络包装函数被调用前返回。网络系统调用计数必须为 0。
+
+原始构建和运行输出见
+[d03-mqtt-auth-entrypoints.log](maintenance-evidence/2026-10-18/d03-mqtt-auth-entrypoints.log)。
 
 另外用 `gcc -fsyntax-only -Wall -Wextra -Werror` 检查了 `vgprovision.c`、
 `velaguard_mqtt.c`、`vg_mqtt_session.c`，`CONFIG_VG_MQTT_CREDENTIALS` 打开和关闭两种
