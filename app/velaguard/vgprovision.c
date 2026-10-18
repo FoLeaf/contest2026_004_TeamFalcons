@@ -1,5 +1,9 @@
 /****************************************************************************
- * NSH: vgprovision — seal / inspect encrypted LLM credentials on eMMC.
+ * NSH: vgprovision — install / inspect encrypted credentials on eMMC.
+ *
+ * Two records live in the same store: the LLM one the agent boots from, and
+ * the MQTT one the network manager reads whenever it opens a session.  The
+ * 'mqtt' subcommands handle the second.
  ****************************************************************************/
 
 #include <errno.h>
@@ -24,11 +28,23 @@ static void usage(void)
   printf("  vgprovision put <hex>\n");
   printf("  vgprovision commit\n");
   printf("  vgprovision apply\n");
+  printf("  vgprovision mqtt put <hex>\n");
+  printf("  vgprovision mqtt commit\n");
+  printf("  vgprovision mqtt status\n");
+  printf("  vgprovision mqtt wipe\n");
+  printf("\n");
+  printf("  <hex> is the sealed blob, not the secret.  Pack it on the host:\n");
+  printf("    vg-provision-pack.py <uid> <plain.json>\n");
 }
 
 #define VG_STAGING_FILE "/data/velaguard/provision/.staging"
 #define VG_PROVISION_DIR  "/data/velaguard/provision"
 #define VG_APPLY_FLAG     "/data/velaguard/provision/.apply_on_boot"
+
+/* A separate staging name, so a half-pushed MQTT record can never be picked
+ * up by the LLM commit, or the other way round. */
+
+#define VG_MQTT_STAGING_FILE "/data/velaguard/provision/.staging.mqtt"
 
 static int hex_nibble(char c)
 {
@@ -50,7 +66,7 @@ static int hex_nibble(char c)
   return -1;
 }
 
-static int cmd_put(const char *hex)
+static int cmd_put_to(const char *staging, const char *hex)
 {
   uint8_t buf[32];
   size_t n = 0;
@@ -58,7 +74,7 @@ static int cmd_put(const char *hex)
   int fd;
   ssize_t w;
 
-  if (hex == NULL)
+  if (staging == NULL || hex == NULL)
     {
       return -EINVAL;
     }
@@ -83,7 +99,7 @@ static int cmd_put(const char *hex)
     }
 
   (void)mkdir(VG_PROVISION_DIR, 0700);
-  fd = open(VG_STAGING_FILE, O_WRONLY | O_CREAT | O_APPEND, 0600);
+  fd = open(staging, O_WRONLY | O_CREAT | O_APPEND, 0600);
   if (fd < 0)
     {
       return -errno;
@@ -92,6 +108,40 @@ static int cmd_put(const char *hex)
   w = write(fd, buf, n);
   close(fd);
   return (w == (ssize_t)n) ? 0 : -EIO;
+}
+
+static int cmd_put(const char *hex)
+{
+  return cmd_put_to(VG_STAGING_FILE, hex);
+}
+
+/* Report a store that would not survive a restart.  A commit onto RAM-backed
+ * /data prints no other symptom at the time and only shows up later as a
+ * board with no credentials.
+ */
+
+static int store_persistence(void)
+{
+  int ret;
+
+  ret = vg_provision_store_is_persistent(VG_PROVISION_DIR);
+  if (ret == -ENOENT)
+    {
+      ret = vg_provision_store_is_persistent("/data");
+    }
+
+  return ret;
+}
+
+static void warn_if_not_persistent(void)
+{
+  int ret = store_persistence();
+
+  if (ret != 0)
+    {
+      printf("vgprovision: WARNING store is not persistent (%d): "
+             "credentials will be lost on reboot\n", ret);
+    }
 }
 
 static int cmd_commit(void)
@@ -118,17 +168,7 @@ static int cmd_commit(void)
    * commit onto RAM-backed /data prints no other symptom at the time and only
    * shows up later as an agent with no backend. */
 
-  ret = vg_provision_store_is_persistent(VG_PROVISION_DIR);
-  if (ret == -ENOENT)
-    {
-      ret = vg_provision_store_is_persistent("/data");
-    }
-
-  if (ret != 0)
-    {
-      printf("vgprovision: WARNING store is not persistent (%d): "
-             "credentials will be lost on reboot\n", ret);
-    }
+  warn_if_not_persistent();
 
   fd = open(VG_APPLY_FLAG, O_WRONLY | O_CREAT | O_TRUNC, 0600);
   if (fd >= 0)
@@ -138,6 +178,96 @@ static int cmd_commit(void)
 
   printf("vgprovision: reboot required to apply LLM config "
          "(this build has no reboot command; reset the board)\n");
+  return 0;
+}
+
+/* MQTT record.  Unlike the LLM one there is no boot step: the network manager
+ * reads the record every time it opens a session, so a committed record takes
+ * effect at the next connect without a restart. */
+
+static int cmd_mqtt_commit(void)
+{
+  struct stat st;
+  uint8_t blob[VG_PROVISION_BLOB_MAX];
+  ssize_t n;
+  int fd;
+  int ret;
+
+  if (stat(VG_MQTT_STAGING_FILE, &st) != 0 || st.st_size <= 0)
+    {
+      printf("vgprovision: nothing staged for mqtt\n");
+      return -EINVAL;
+    }
+
+  if (st.st_size > (off_t)sizeof(blob))
+    {
+      printf("vgprovision: staged mqtt record too large (%ld bytes)\n",
+             (long)st.st_size);
+      return -E2BIG;
+    }
+
+  fd = open(VG_MQTT_STAGING_FILE, O_RDONLY);
+  if (fd < 0)
+    {
+      return -errno;
+    }
+
+  n = read(fd, blob, sizeof(blob));
+  close(fd);
+  if (n <= 0)
+    {
+      return (n == 0) ? -EINVAL : -EIO;
+    }
+
+  /* The staged bytes are decrypted and parsed before the working record is
+   * touched, so a push that was cut short, or one carrying the LLM blob,
+   * leaves the board with the credentials it already had. */
+
+  ret = vg_mqtt_cred_install(blob, (size_t)n);
+  memset(blob, 0, sizeof(blob));
+
+  /* The staged bytes are spent either way: a refused push must not be left
+   * behind for the next one to append to, which would produce a record that
+   * is neither push.  The normal sequence is put... put, commit, with no
+   * wipe in between, so a refused commit leaves the operator with an empty
+   * staging file to push into again. */
+
+  (void)unlink(VG_MQTT_STAGING_FILE);
+  if (ret < 0)
+    {
+      printf("vgprovision: mqtt commit refused (%d); previous record kept\n",
+             ret);
+      return ret;
+    }
+
+  printf("vgprovision: mqtt credentials committed to %s (%ld bytes)\n",
+         VG_MQTT_CRED_FILE, (long)n);
+  warn_if_not_persistent();
+  return 0;
+}
+
+static int cmd_mqtt_status(void)
+{
+  char line[160];
+  int ret;
+
+  ret = vg_mqtt_cred_status(line, sizeof(line));
+  printf("vgprovision: %s\n", line);
+
+  if (ret == 0)
+    {
+      printf("vgprovision: file=%s persistent=%s\n", VG_MQTT_CRED_FILE,
+             (store_persistence() == 0) ? "yes" : "no");
+    }
+
+  return ret;
+}
+
+static int cmd_mqtt_wipe(void)
+{
+  (void)unlink(VG_MQTT_STAGING_FILE);
+  (void)unlink(VG_MQTT_CRED_FILE);
+  printf("vgprovision: mqtt credentials wiped\n");
   return 0;
 }
 
@@ -262,6 +392,54 @@ int main(int argc, char *argv[])
 
       sleep(2);
       return 0;
+    }
+
+  if (strcmp(argv[1], "mqtt") == 0)
+    {
+      if (argc < 3)
+        {
+          usage();
+          return 1;
+        }
+
+      if (strcmp(argv[2], "put") == 0)
+        {
+          if (argc < 4)
+            {
+              usage();
+              return 1;
+            }
+
+          ret = cmd_put_to(VG_MQTT_STAGING_FILE, argv[3]);
+          if (ret < 0)
+            {
+              printf("vgprovision: mqtt put failed %d\n", ret);
+              return 1;
+            }
+
+          return 0;
+        }
+
+      if (strcmp(argv[2], "commit") == 0)
+        {
+          ret = cmd_mqtt_commit();
+          return (ret < 0) ? 1 : 0;
+        }
+
+      if (strcmp(argv[2], "status") == 0)
+        {
+          ret = cmd_mqtt_status();
+          return (ret < 0) ? 1 : 0;
+        }
+
+      if (strcmp(argv[2], "wipe") == 0)
+        {
+          ret = cmd_mqtt_wipe();
+          return (ret < 0) ? 1 : 0;
+        }
+
+      usage();
+      return 1;
     }
 
   usage();
