@@ -1,6 +1,6 @@
 # 维护分支来源与集成记录
 
-记录时间：2026-10-18 21:10（Asia/Shanghai）
+记录时间：2026-10-18 21:26（Asia/Shanghai）
 
 本文件记录六项维护成果的来源 worktree、来源提交、未提交补丁和
 `codex/maintenance-closeout` 中的对应提交。集成采用 cherry-pick 或等价的最小补丁，
@@ -38,11 +38,12 @@
 | `8c46891` | `8c79a38` | 交付审计初版原样集成 |
 | `504d90c` | `c9d8968` | 审计修订建立在 `8c79a38` 之上，不能只取后一个差异提交 |
 | `6ba46f0` | `005f525` | Agent 审查、复现和主机用例整体集成；随后以 `375b582`、`17a0f3e`、`85e61d5`、`b86a951` 完成必要修复和回归 |
-| `2b6f929` | `9e88868` | MQTT 封存凭证主体、配置和入口改动集成；随后以 `93fedb3`、`b043c61`、`3367192` 完成并发、入口测试和板验边界 |
+| `2b6f929` | `9e88868` | MQTT 封存凭证主体、配置和入口改动集成；随后以 `93fedb3`、`b043c61`、`3367192`、`715cdf4` 完成并发、入口测试、失败路径清理和板验边界 |
 | `9648d78` | `72656fd` | 长测判定、追溯和离线测试整体集成；随后以 `c3a8dca` 补齐跨串口分块故障识别 |
 
 补充的 `a38c4e5` 来自阶段 D 的候选试读有界等待修复，`eff0fc3` 保存串口失联和
 人工恢复现场。两者是本轮 closeout 产生的后续提交，不属于上述来源分支的原始提交。
+`a56ea03`、`827ef24` 只记录 clean 集成状态下的 Agent、soak 和 MQTT 回归证据。
 
 ## 未提交补丁核对
 
@@ -83,8 +84,9 @@ for d in .vg-alarm-wt .vg-delivery-audit-wt .vg-agent-review-wt .vg-d03-wt .vg-s
 done
 ```
 
-2026-10-18 21:10 的结果是告警、交付审计和长测 worktree clean，Agent 和 MQTT
+2026-10-18 21:26 的结果是告警、交付审计和长测 worktree clean，Agent 和 MQTT
 凭证 worktree 仍各有上述未提交补改。集成 worktree 在记录时 clean，分支为
-`codex/maintenance-closeout`。
+`codex/maintenance-closeout`；`715cdf4` 的 MQTT 定向回归、`a56ea03` 的 Agent
+与 soak 回归均在 clean 工作区取得通过记录。
 
 这次记录只证明来源和吸收关系，不代表相关功能、板端验收或 24 小时长测已经完成。
