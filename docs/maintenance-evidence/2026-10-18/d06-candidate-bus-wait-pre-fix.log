@@ -1,0 +1,23 @@
+task=D-06 candidate test bus wait pre-fix
+started_utc=2026-10-18T12:40:32Z
+contest_head=b86a9510cc082873a494f9c41ae1ae8d1f86d56d
+worktree_status:
+ M app/velaguard/host_tests/Makefile
+ M app/velaguard/host_tests/test_vgpoint.c
+?? docs/maintenance-evidence/2026-10-18/d06-candidate-bus-wait-pre-fix.log
+958de1f75898b5f0a66862c5d045cc0e48c6579875ff734ba28dfb105bacc80d  app/velaguard/host_tests/test_vgpoint.c
+d522a2c1a96b527a2ccf0c46c47fda1d9ec0c1f62cbc1b9148663ab26d4e51d3  app/velaguard/host_tests/Makefile
+72dfe0d5d5b9d2c75c3c7c6825fe11144700e45dc072039c33c4d8feac0ce7ef  app/velaguard/vgpoint.c
+command=make -C app/velaguard/host_tests clean test_vgpoint && ./app/velaguard/host_tests/test_vgpoint
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+rm -f test_modbus_port test_point_commit test_mqtt_session
+rm -f test_shell_output test_agent_round test_discover_io test_file_policy test_maintenance test_file_store test_shell_runner test_local_client test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_alarm_boundary test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_mqtt_cred test_mqtt_session_auth test_mqtt_vgmqtt_auth test_agent_query test_agent_tools
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -Istubs '-DCONFIG_VG_DISCOVER_CANDIDATE_PATH="vgpoint_bus_candidate.json"' -o test_vgpoint test_vgpoint.c \
+  ../vg_point_table.c ../vg_file_store.c ../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests'
+FAIL: probe waits for a released bus
+FAIL: probe reaches the bus poll
+test_vgpoint: 2 failure(s)
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+exit_code=1
+finished_utc=2026-10-18T12:40:32Z

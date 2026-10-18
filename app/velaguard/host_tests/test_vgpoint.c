@@ -1,4 +1,6 @@
 #include <errno.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +8,31 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+#define main vgpoint_command_main
+#include "../vgpoint.c"
+#undef main
+
 #include "../vg_discover.h"
+
+static volatile int g_poll_called;
+
+int vg_discover_poll_points(FAR const char *devpath, int baud,
+                            FAR const struct vg_point_entry *pts, int n,
+                            FAR uint16_t *raw, FAR uint8_t *ok_out,
+                            int inter_ms)
+{
+  (void)devpath;
+  (void)baud;
+  (void)pts;
+  (void)inter_ms;
+  g_poll_called++;
+  for (int i = 0; i < n; i++)
+    {
+      raw[i] = 100;
+      ok_out[i] = 1;
+    }
+  return 0;
+}
 
 static void remove_table(const char *path)
 {
@@ -25,6 +51,77 @@ static int expect_true(int cond, const char *msg)
     }
 
   return 0;
+}
+
+struct probe_call
+{
+  sem_t started;
+  int rc;
+};
+
+static void *run_probe(void *arg)
+{
+  struct probe_call *call = arg;
+  char *argv[] = { "vgpoint", "test" };
+
+  sem_post(&call->started);
+  call->rc = cmd_test(2, argv);
+  return NULL;
+}
+
+static int test_probe_waits_for_bus(void)
+{
+  struct vg_discover_summary sum;
+  struct probe_call call;
+  pthread_t worker;
+  int fails = 0;
+
+  memset(&sum, 0, sizeof(sum));
+  sum.baud = 9600;
+  sum.n_points = 1;
+  snprintf(sum.devpath, sizeof(sum.devpath), "/dev/rs485");
+  snprintf(sum.points[0].id, sizeof(sum.points[0].id), "temp");
+  snprintf(sum.points[0].name, sizeof(sum.points[0].name), "温度");
+  sum.points[0].addr = 1;
+  sum.points[0].fc = 3;
+  sum.points[0].reg = 0;
+  sum.points[0].qty = 1;
+  snprintf(sum.points[0].dtype, sizeof(sum.points[0].dtype), "int16");
+  sum.points[0].scale = 0.1f;
+  sum.points[0].fail_n = 3;
+
+  fails += expect_true(vg_point_table_write_candidate(
+                         &sum, CONFIG_VG_DISCOVER_CANDIDATE_PATH) == 0,
+                       "seed probe candidate");
+  fails += expect_true(vg_bus_lock_timeout(1000) == 0,
+                       "hold bus for probe test");
+  if (fails != 0)
+    {
+      remove_table(CONFIG_VG_DISCOVER_CANDIDATE_PATH);
+      return fails;
+    }
+
+  sem_init(&call.started, 0, 0);
+  call.rc = -1;
+  g_poll_called = 0;
+  if (pthread_create(&worker, NULL, run_probe, &call) != 0)
+    {
+      vg_bus_unlock();
+      sem_destroy(&call.started);
+      remove_table(CONFIG_VG_DISCOVER_CANDIDATE_PATH);
+      return fails + 1;
+    }
+
+  sem_wait(&call.started);
+  usleep(100000);
+  vg_bus_unlock();
+  pthread_join(worker, NULL);
+  sem_destroy(&call.started);
+
+  fails += expect_true(call.rc == 0, "probe waits for a released bus");
+  fails += expect_true(g_poll_called == 1, "probe reaches the bus poll");
+  remove_table(CONFIG_VG_DISCOVER_CANDIDATE_PATH);
+  return fails;
 }
 
 int main(void)
@@ -537,6 +634,8 @@ int main(void)
     rmdir("vgpoint_ens");
     rmdir("vgpoint_ens2");
   }
+
+  fails += test_probe_waits_for_bus();
 
   remove_table(path);
   if (fails == 0)

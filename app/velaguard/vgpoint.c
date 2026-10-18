@@ -56,6 +56,7 @@
 #endif
 
 #define VGPOINT_CMDLEN_MAX 120
+#define VGPOINT_TEST_BUS_WAIT_MS 1000
 
 static void reply_ok(FAR const char *cmd, FAR const char *table, int n)
 {
@@ -688,7 +689,13 @@ static int cmd_test(int argc, char *argv[])
         }
     }
 
-  if (vg_bus_try_lock() != 0)
+  /* The HMI collector polls every 200 ms.  A single try-lock made a manual
+   * probe regularly lose the race and report bus_busy even though the bus
+   * would be free shortly.  Wait at the same bounded interval used by the
+   * other bus users, then fail without stealing the lock.
+   */
+
+  if (vg_bus_lock_timeout(VGPOINT_TEST_BUS_WAIT_MS) != 0)
     {
       return reply_err("test", "bus_busy", "rs485_busy");
     }

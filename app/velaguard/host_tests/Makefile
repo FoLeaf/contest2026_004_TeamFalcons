@@ -11,6 +11,7 @@ AI_AGENT_INC  := $(OPENVELA_ROOT)/packages/ai_agent/include
 CJSON_SRC     := $(OPENVELA_ROOT)/apps/netutils/cjson/cJSON/cJSON.c
 TEST_AGENT_TOOLS_CFLAGS := $(CFLAGS) -Istubs -include stubs/vg_host_shim.h \
                            -I$(APPS_INC) -I$(AI_AGENT_INC)
+VGPOINT_TEST_DEFS := '-DCONFIG_VG_DISCOVER_CANDIDATE_PATH="vgpoint_bus_candidate.json"'
 
 .PHONY: test clean
 
@@ -29,8 +30,10 @@ test_runtime: test_runtime.c ../vg_runtime.c ../vg_runtime.h ../vg_frame_stats.c
 test_discover: test_discover.c ../vg_point_table.c ../vg_discover.h ../vg_file_store.c $(CJSON_SRC)
 	$(CC) $(CFLAGS) -o $@ test_discover.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC) -lm
 
-test_vgpoint: test_vgpoint.c ../vg_point_table.c ../vg_discover.h ../vg_file_store.c $(CJSON_SRC)
-	$(CC) $(CFLAGS) -o $@ test_vgpoint.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC) -lm
+test_vgpoint: test_vgpoint.c ../vgpoint.c ../vg_point_table.c ../vg_discover.h \
+              ../vg_file_store.c $(CJSON_SRC)
+	$(CC) $(CFLAGS) -Istubs $(VGPOINT_TEST_DEFS) -o $@ test_vgpoint.c \
+	  ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC) -lm
 
 test_alarm_boundary: test_alarm_boundary.c ../vg_alarm_eval.c ../vg_alarm_eval.h \
                     ../../../scripts/alarm_scenarios/alarm_scenarios_fixture.h

@@ -165,7 +165,7 @@ vgpoint test <id>
 
 对候选做一次保持寄存器读（`fc=3` 用 FC03，`fc=4` 用 FC04）。省略 id 则试读候选里全部点。不落盘，不改已确认表。
 
-试读时必须占用总线忙标志，让周期采集让路（实现时复用 `board_bus_busy()` 一类状态）。总线已被扫描/落盘占用则 `bus_busy`，不要硬抢 `/dev/rs485`。
+试读时复用周期采集、扫描和 `vgdiscover` 共用的总线互斥区。若当前被采集占用，最多等待 1000 ms，让正在进行的单轮操作结束；等待期结束仍不可用才返回 `bus_busy`。不得绕过总线锁、打开第二条 RS485 路径或引入第二个主站。
 
 某个点读失败：该点 `READ ... ok=0`，命令仍可 `OK`（部分失败）。候选为空、缺失或读不出来则 `no_candidate`。全部点都读失败才 `test_fail`。
 
@@ -456,7 +456,7 @@ nsh> vgprovision mqtt wipe
 
 周期采集、总线扫描、`vgpoint test`、`vgdiscover test-read` 共用 `/dev/rs485`。任意时刻只允许一路占用。
 
-`test` 期间采集线程必须跳过本轮（忙则 `usleep` 再试）。`add` / `set` / `list` / `get` / `abort` 不占用总线。
+`test` 使用与采集相同的总线锁，先做最多 1000 ms 的有界等待。获得锁后完成整次试读再释放；期间采集线程跳过本轮（忙则 `usleep` 再试）。`add` / `set` / `list` / `get` / `abort` 不占用总线。
 
 `apply` 写文件期间采集仍读内存里的旧已确认表，apply 成功后再切换指针或重新加载，避免读到半截 JSON。
 

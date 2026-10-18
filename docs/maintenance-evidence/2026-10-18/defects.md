@@ -1,6 +1,6 @@
 # 新固件板端缺陷记录（2026-10-18）
 
-本文件记录本轮在板上发现并跟进的四个缺陷，以及一项凭据问题。D-01、D-02、D-04 都已定位根因、修复并板端复验；D-03 是凭据管理问题，只做记录，待人工决定处理方式。
+本文件记录本轮在板上发现并跟进的缺陷，以及一项凭据问题。D-01、D-02、D-04 已定位根因、修复并板端复验；D-06 已完成主机修复，待最终固件板端复验；D-03 是凭据管理问题，只做记录，待人工决定处理方式。
 
 固件版本：首次复现于 `75cbc8eb7a5`（构建 2026-10-18 14:37:55）。D-01 修复后为同提交的
 16:09:56 构建，回退栈试验后重新构建为 16:58:34，D-02 修复后为 17:43:24，
@@ -388,3 +388,53 @@ powershell -File scripts/maintenance_rtu_slave.ps1 -ComPort COM7 -ReplyDelayMs 0
 - `d04-fix-d02-recheck.log`：同一版固件上 D-02 复测。
 - `build-d04-fix.log`、`flash-d04-fix.log`：修复后的构建与烧录。
 - `.debug/gdb/measure-dir-delay.cmd`、`.debug/gdb/measure-tc-to-dir.cmd`：时序测量脚本。
+
+---
+
+## D-06：`vgpoint test` 与周期采集争用总线（主机已修复，待板端复验）
+
+优先级 P1，影响阶段 D 的人工试读流程。
+
+### 现象
+
+在 14 点 HMI 采集持续运行时，连续执行 `vgpoint test`：
+
+```text
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+vgpoint: ERR cmd=test code=bus_busy msg=rs485_busy
+vgpoint: test bus=/dev/rs485
+...
+vgpoint: OK cmd=test table=candidate n=14
+```
+
+前五次只拿到 `bus_busy`，第六次才成功。试读没有改变候选表或已确认表，但操作员需要反复重试，容易误判为总线故障。
+
+### 根因
+
+`cmd_test()` 使用 `vg_bus_try_lock()`。HMI 采集线程每 200 ms 启动一轮，并在同一总线互斥区内完成多个从站的打开、读取和关闭。采集占用期间，单次 try-lock 立即失败；采集释放后命令又需要人工再次输入，所以观察到连续失败。
+
+这不是第二个主站或绕过锁的问题。所有用户仍使用同一 `g_bus_mtx`，HMI 采集在试读持有锁时也会跳过本轮。
+
+### 修复
+
+`vgpoint.c` 把试读改为复用 `vg_bus_lock_timeout(1000)`：
+
+- 采集占用时可等待当前单轮结束；
+- 最多等待 1000 ms，超时仍返回 `bus_busy`；
+- 获得锁后完成整次试读再释放；
+- 不打开第二个串口，不改变采集线程的锁顺序。
+
+`test_vgpoint.c` 新增确定性并发回归：先由测试主线程持有总线，再启动真实 `cmd_test`，100 ms 后释放。修复前 `cmd_test` 立即返回 `bus_busy`，总线试读桩没有执行；修复后命令等到释放并完成试读。
+
+### 证据
+
+- 修前：`d06-candidate-bus-wait-pre-fix.log`，退出码 1，输出 `probe waits for a released bus`、`probe reaches the bus poll` 两项失败及 `bus_busy`。
+- 修后：`d06-candidate-bus-wait-post-fix.log`，同一个 `test_vgpoint` 退出码 0；`d06-host-tests.log` 记录完整主机回归。
+- 板端：待最终固件统一烧录后，在 HMI 采集持续运行时执行 `vgpoint test`，记录是否无需反复重试即可完成。
+
+### 边界
+
+本修复解决的是人工试读与单轮周期的短时争用。扫描或另一个总线操作持续超过 1000 ms 时，命令仍按协议返回 `bus_busy`，不延长为无限等待。

@@ -429,7 +429,7 @@ nsh> vgmodbus -a 1 -r 0 -c 2 -t 3 -n 1 -i 0
 | `-n <loops>` | 读取轮数；默认 0 表示持续轮询 |
 | `-i <secs>` | 轮询间隔，单位秒，默认 1 |
 
-RS485 上只允许一个主站。`vgpoint test`、`vgdiscover` 与采集共享总线；遇到 `bus_busy` 时等待现有操作结束，不要另开串口工具抢占。日常查看当前值优先用不占总线的 `vgpoint get`。
+RS485 上只允许一个主站。`vgpoint test`、`vgdiscover` 与采集共享总线；`vgpoint test` 会等待当前采集操作最多 1000 ms，仍冲突时才返回 `bus_busy`。不要另开串口工具抢占。日常查看当前值优先用不占总线的 `vgpoint get`。
 
 </details>
 
