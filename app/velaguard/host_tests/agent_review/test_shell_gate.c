@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "tools/tool_shell.h"
+#include "tools/tool_shell.c"
 
 static int g_fail;
 
@@ -129,13 +129,14 @@ static const struct row g_rows[] = {
     { "net_status",                                   0, "net_status" },
     { "router_status",                                0, "router_status" },
     { "date",                                         0, "date" },
+    { "date -u",                                      0, "date UTC" },
     { "date +%s",                                     0, "date with a read-only format" },
+    { "date -u +%s",                                  0, "date UTC with a read-only format" },
 
-    /* The metadata allowlist matches the command name and nothing else, so
-     * options of a metadata command pass straight through.  `date -s <time>`
-     * is deliberately NOT executed here (it would move the test machine's
-     * clock); the consequence is recorded in the review document with the
-     * NSH source that implements the setter. */
+    /* Other metadata commands keep their historical option handling.  date
+     * is different: the product gate must accept exactly one read-only
+     * argument sequence.  The setter forms below are checked through
+     * is_blocked() and are deliberately never executed. */
 };
 
 static void test_gate_table(void)
@@ -152,6 +153,41 @@ static void test_gate_table(void)
                  g_rows[i].must_be_refused ? "must be refused" : "must be allowed");
         expect(got == g_rows[i].must_be_refused, msg);
     }
+}
+
+static void test_date_setter_gate(void)
+{
+    /* Use the gate directly.  A regression must not execute date -s on the
+     * host or the board just to discover that it was allowed. */
+    expect(is_blocked("date -s 'Oct 18 20:00:00 2026'"),
+           "date -s is rejected by the gate");
+    expect(is_blocked("date -sOct 18 20:00:00 2026"),
+           "date -s without a separating space is rejected");
+    expect(is_blocked("date -u -sOct 18 20:00:00 2026"),
+           "date -s after -u is rejected");
+    expect(is_blocked("date +%s -s 'Oct 18 20:00:00 2026'"),
+           "date -s after a format is rejected");
+    expect(is_blocked("date -u +%s -s 'Oct 18 20:00:00 2026'"),
+           "date -s after UTC and a format is rejected");
+    expect(is_blocked("date +%s\t-s 'Oct 18 20:00:00 2026'"),
+           "a tab cannot hide date -s after a format");
+    expect(is_blocked("date +%s extra"),
+           "an operand after a format is rejected");
+    expect(is_blocked("date -u +%s extra"),
+           "an operand after UTC and a format is rejected");
+    expect(is_blocked("date -u -u"), "duplicate date options are rejected");
+    expect(is_blocked("date +"), "a bare format introducer is rejected");
+    expect(!is_blocked("date"), "date without options remains allowed");
+    expect(!is_blocked("date   "),
+           "trailing whitespace after date remains allowed");
+    expect(!is_blocked("date -u"), "date -u remains allowed");
+    expect(!is_blocked("date -u   "),
+           "trailing whitespace after date -u remains allowed");
+    expect(!is_blocked("date +%s"), "date format output remains allowed");
+    expect(!is_blocked("date +%s   "),
+           "trailing whitespace after a date format remains allowed");
+    expect(!is_blocked("date -u +%s"),
+           "date UTC format output remains allowed");
 }
 
 static void test_argument_guards(void)
@@ -187,6 +223,7 @@ static void test_argument_guards(void)
 int main(void)
 {
     test_gate_table();
+    test_date_setter_gate();
     test_argument_guards();
 
     if (g_fail != 0)

@@ -1,0 +1,1 @@
+test_shell_output: ../../../../packages/ai_agent/tests/test_shell_output.c:36: main: Assertion `is_blocked("date +%s -s 'Oct 18 20:00:00 2026'")' failed.

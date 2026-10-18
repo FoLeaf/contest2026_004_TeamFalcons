@@ -42,11 +42,13 @@ FILES      := $(AI_AGENT)/src/tools/tool_files.c
 
 .PHONY: test repro clean
 
-test: test_runner_budget test_round_isolation test_file_policy_extra test_shell_gate
+test: test_runner_budget test_round_isolation test_file_policy_extra \
+      test_shell_gate test_tool_guard_rate
 	./test_runner_budget
 	./test_round_isolation
 	./test_file_policy_extra
 	./test_shell_gate
+	./test_tool_guard_rate
 	@echo "agent_review: regression set OK"
 
 # Expected to fail until the write-path symlink hole is closed.  Kept out of
@@ -69,7 +71,12 @@ test_file_policy_extra: test_file_policy_extra.c $(FILES) $(CJSON)
 
 test_shell_gate: test_shell_gate.c $(TOOL_SHELL) $(RUNNER) $(CJSON)
 	$(CC) $(AI_CFLAGS) -DCONFIG_VG_HMI -o $@ \
-	  test_shell_gate.c $(TOOL_SHELL) $(RUNNER) $(CJSON) -lm
+	  test_shell_gate.c $(RUNNER) $(CJSON) -lm
+
+test_tool_guard_rate: $(AI_AGENT)/tests/test_tool_guard_rate.c \
+                      $(AI_AGENT)/src/tools/tool_guard.c $(CJSON)
+	$(CC) $(AI_CFLAGS) -o $@ $(AI_AGENT)/tests/test_tool_guard_rate.c \
+	  $(CJSON) -Wl,--wrap=time -lm
 
 repro_symlink_write_escape: repro_symlink_write_escape.c $(FILES) $(CJSON)
 	$(CC) $(AI_CFLAGS) \
@@ -79,4 +86,4 @@ repro_symlink_write_escape: repro_symlink_write_escape.c $(FILES) $(CJSON)
 
 clean:
 	rm -f test_runner_budget test_round_isolation test_file_policy_extra \
-	      test_shell_gate repro_symlink_write_escape
+	      test_shell_gate test_tool_guard_rate repro_symlink_write_escape
