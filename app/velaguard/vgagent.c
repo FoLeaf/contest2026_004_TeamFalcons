@@ -135,11 +135,11 @@ static int run_tool_cmd(int argc, char *argv[])
   name = argv[2];
   args = (argc >= 4) ? argv[3] : "{}";
 
-  /* NSH's tokenizer eats the quotes in a JSON argument, so a quoted
-   * {"query":"ups_load"} arrives as {query:ups_load} and fails to parse.  A
-   * bare word is therefore accepted for the single-string-parameter case and
-   * wrapped here.  Point ids and names cannot contain a quote or a backslash
-   * (vg_point_validate_name rejects both), so this cannot break the JSON. */
+  /* A bare word is accepted for the single-string-parameter case and wrapped
+   * here.  Callers that need a structured JSON object can pass it in single
+   * quotes so NSH preserves the inner double quotes.  Point ids and names
+   * cannot contain a quote or a backslash (vg_point_validate_name rejects
+   * both), so the wrapped form cannot break the JSON. */
   if (args[0] != '{')
     {
       if (strlen(args) > 64)
