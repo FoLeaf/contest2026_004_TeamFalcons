@@ -194,8 +194,11 @@ docs/alarm-acceptance/evidence/<日期>-board/
 
 ## 8. 本轮离线验证结果
 
-全部在独立 worktree（`.vg-alarm-wt`，分支 `codex/alarm-test-scenarios`）内执行，
-没有打开串口、没有连接开发板、没有连接 broker。
+原始离线验证在独立 worktree（`.vg-alarm-wt`，分支
+`codex/alarm-test-scenarios`）内执行，没有打开串口、没有连接开发板、没有连接
+broker。集成完成后又在 `codex/maintenance-closeout` 的 clean 提交 `d7f2510`
+统一复跑，结果保持一致；原始输出见
+[alarm-offline-integrated-current.log](../maintenance-evidence/2026-10-18/alarm-offline-integrated-current.log)。
 
 | 项目 | 命令 | 结果 | 证据 |
 |---|---|---|---|
@@ -208,6 +211,7 @@ docs/alarm-acceptance/evidence/<日期>-board/
 | 从站脚本自检 | `powershell -File scripts/maintenance_rtu_slave.ps1 -SelfTest` | SELF-TEST: ok，185 条 PASS 行；其中工况原始值 131 项、应答帧 3 项 | `evidence/2026-10-18-current-rtu-selftest.log` |
 | 全量主机测试 | `make -C app/velaguard/host_tests test` | 全部通过 | 同上 host-tests 日志 |
 | 负向对照 | 手工改坏工况数据里两条预期后重跑 | 单元测试报 2 条失败，集成检查报 3 条失败 | 见本轮报告 |
+| 集成后统一复跑 | 生成器、`--check`、边界测试、完整 headless 构建与 CTest、从站自检 | 全部通过；CTest 6/6，从站自检 185 条 PASS | [集成日志](../maintenance-evidence/2026-10-18/alarm-offline-integrated-current.log) |
 
 离线测试覆盖了什么：原始值编码（int16 有符号、uint16）、`scale` 换算、`ge`/`le`/`eq`
 的方向与优先级、等于阈值的精确命中、离线滑窗的触发位置与恢复、告警期开始与结束、
