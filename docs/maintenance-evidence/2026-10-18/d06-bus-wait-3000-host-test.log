@@ -1,0 +1,4 @@
+vgpoint: test bus=/dev/rs485
+vgpoint: READ id=temp raw=100 value=10 ok=1
+vgpoint: OK cmd=test table=candidate n=1
+test_vgpoint: OK

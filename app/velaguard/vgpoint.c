@@ -56,7 +56,7 @@
 #endif
 
 #define VGPOINT_CMDLEN_MAX 120
-#define VGPOINT_TEST_BUS_WAIT_MS 1000
+#define VGPOINT_TEST_BUS_WAIT_MS 3000
 
 static void reply_ok(FAR const char *cmd, FAR const char *table, int n)
 {
@@ -689,10 +689,9 @@ static int cmd_test(int argc, char *argv[])
         }
     }
 
-  /* The HMI collector polls every 200 ms.  A single try-lock made a manual
-   * probe regularly lose the race and report bus_busy even though the bus
-   * would be free shortly.  Wait at the same bounded interval used by the
-   * other bus users, then fail without stealing the lock.
+  /* The HMI collector polls every 200 ms, but a 14-point round at a 0 ms
+   * slave can hold the bus for more than one second.  A bounded wait must
+   * cover one complete round while still failing without stealing the lock.
    */
 
   if (vg_bus_lock_timeout(VGPOINT_TEST_BUS_WAIT_MS) != 0)

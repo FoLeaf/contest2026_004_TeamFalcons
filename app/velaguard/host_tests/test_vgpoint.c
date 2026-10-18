@@ -113,12 +113,17 @@ static int test_probe_waits_for_bus(void)
     }
 
   sem_wait(&call.started);
-  usleep(100000);
+  /* A 14-point collection round at a 0 ms slave exceeds the old 1000 ms
+   * wait.  Hold the bus past that old bound so this regression verifies the
+   * command waits for a complete round instead of failing early.
+   */
+
+  usleep(1200000);
   vg_bus_unlock();
   pthread_join(worker, NULL);
   sem_destroy(&call.started);
 
-  fails += expect_true(call.rc == 0, "probe waits for a released bus");
+  fails += expect_true(call.rc == 0, "probe waits past old one-second bound");
   fails += expect_true(g_poll_called == 1, "probe reaches the bus poll");
   remove_table(CONFIG_VG_DISCOVER_CANDIDATE_PATH);
   return fails;
