@@ -46,19 +46,30 @@ CSRCS    += vg_net_policy.c vg_eth.c vg_esp_bearer.c vg_tcp_transport.c \
 endif
 
 ifeq ($(CONFIG_EXAMPLES_AI_AGENT_VELA),y)
-CSRCS += vg_agent_seed.c vg_agent_round.c vg_provision.c vg_provision_crypto.c
+CSRCS += vg_agent_seed.c vg_agent_round.c
 # Read-only data tools the agent calls directly.  vg_agent_query.c is pure
 # logic (host-tested); vg_agent_tools.c registers them and is compiled only
 # when a data source exists, so build targets that enable ai_agent without
 # the frame-stat or discover modules (velaguard-ai-probe) do not link them.
 CSRCS += vg_agent_query.c vg_agent_tools.c
-PROGNAME += vgprovision vgagent
-MAINSRC += vgprovision.c vgagent.c
+PROGNAME += vgagent
+MAINSRC += vgagent.c
 # Local agent IPC (velaclaw/client.h). packages/ sits next to apps/ in the
 # openvela workspace; derive it from APPDIR rather than $(CURDIR), which may
 # be reached through the packages/demos symlink.
 VG_AI_AGENT_INC := $(abspath $(APPDIR)/../packages/ai_agent/include)
 CFLAGS += ${INCDIR_PREFIX}$(VG_AI_AGENT_INC)
+endif
+
+# The provision store and its NSH tool.  The LLM record is applied by the agent
+# at boot and the MQTT record is read by the network manager on every session
+# open, so either consumer can need the store on its own; a build with neither
+# must not link it, because it needs the SHA-256 backend the bring-up presets
+# leave out.
+ifneq ($(filter y,$(CONFIG_EXAMPLES_AI_AGENT_VELA) $(CONFIG_VG_MQTT_CREDENTIALS)),)
+CSRCS += vg_provision.c vg_provision_crypto.c
+PROGNAME += vgprovision
+MAINSRC += vgprovision.c
 endif
 
 ifeq ($(CONFIG_VG_AGENT_OPS),y)

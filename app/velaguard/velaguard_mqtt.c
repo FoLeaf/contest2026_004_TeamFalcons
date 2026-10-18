@@ -10,8 +10,10 @@
  *   vgmqtt [-h <broker>] [-p <port>] [-u <user>] [-P <pass>]
  *          [-t <topic>] [-m <json>] [-q <0|1|2>] [-r] [-w <secs>]
  *
- * 缺省：Kconfig Broker/用户，topic=vg/{uid}/status，QoS0 retained。
+ * 缺省：Kconfig Broker，topic=vg/{uid}/status，QoS0 retained。
  * client_id 来自芯片 UID（CONFIG_VG_MQTT_DEVICE_ID 可覆盖）。
+ * 用户名和口令缺省取自板端封存记录（vgprovision mqtt）；-u / -P 只在
+ * 调试其它 broker 时显式覆盖，命令行会留在 NSH 历史里。
  * -w：保持连接以便拔线触发 LWT；正常退出不触发 LWT。
  * 不要在日志里打印密码。
  ****************************************************************************/
@@ -32,6 +34,7 @@
 
 #include "vg_device_id.h"
 #include "vg_mqtt_payload.h"
+#include "vg_provision.h"
 
 #ifndef CONFIG_VG_MQTT_BROKER_HOST
 #  define CONFIG_VG_MQTT_BROKER_HOST "8.148.67.174"
@@ -100,18 +103,6 @@ static int parse_args(int argc, FAR char *argv[],
 #else
   cfg->host   = NULL;
 #endif
-#ifdef CONFIG_VG_MQTT_USERNAME
-  if (CONFIG_VG_MQTT_USERNAME[0] != '\0')
-    {
-      cfg->user = CONFIG_VG_MQTT_USERNAME;
-    }
-#endif
-#ifdef CONFIG_VG_MQTT_PASSWORD
-  if (CONFIG_VG_MQTT_PASSWORD[0] != '\0')
-    {
-      cfg->pass = CONFIG_VG_MQTT_PASSWORD;
-    }
-#endif
   cfg->port   = VGMQTT_DEFAULT_PORT;
   cfg->qos    = 0;
   cfg->retain = true;
@@ -178,6 +169,70 @@ static int parse_args(int argc, FAR char *argv[],
 
   return OK;
 }
+
+/* 默认凭据来自板端封存记录，没有编译期回退：读不到记录就退出，而不是拿
+ * 镜像里的口令去连。-u 和 -P 只在调试其它 broker 时显式覆盖。 */
+
+#ifdef CONFIG_VG_MQTT_CREDENTIALS
+static struct vg_mqtt_credentials g_cred;
+
+static int resolve_credentials(FAR struct vgmqtt_cfg_s *cfg)
+{
+  int ret;
+
+  if (cfg->user != NULL && cfg->pass != NULL)
+    {
+      return OK;
+    }
+
+  ret = vg_mqtt_cred_load(&g_cred);
+  if (ret < 0)
+    {
+      fprintf(stderr,
+              "ERROR: no MQTT credentials in the provision store (err %d); "
+              "run 'vgprovision mqtt' on the board, or pass -u/-P\n", ret);
+      return ERROR;
+    }
+
+  if (cfg->user == NULL)
+    {
+      cfg->user = g_cred.username;
+    }
+
+  if (cfg->pass == NULL)
+    {
+      cfg->pass = g_cred.password;
+    }
+
+  return OK;
+}
+
+/* mqtt_connect() 已经把 CONNECT 打包进发送缓冲，之后不再需要明文副本。 */
+
+static void drop_credentials(void)
+{
+  memset(&g_cred, 0, sizeof(g_cred));
+}
+
+#else
+
+static int resolve_credentials(FAR struct vgmqtt_cfg_s *cfg)
+{
+  if (cfg->user != NULL && cfg->pass != NULL)
+    {
+      return OK;
+    }
+
+  fprintf(stderr, "ERROR: this build has no MQTT credential store "
+          "(CONFIG_VG_MQTT_CREDENTIALS); pass -u/-P\n");
+  return ERROR;
+}
+
+static void drop_credentials(void)
+{
+}
+
+#endif
 
 /* 建立 TCP 连接（getaddrinfo 支持 IP 字面量；域名需启用 DNS 客户端） */
 
@@ -277,6 +332,11 @@ int main(int argc, FAR char *argv[])
       return ERROR;
     }
 
+  if (resolve_credentials(&cfg) != OK)
+    {
+      return ERROR;
+    }
+
   devid = vg_device_id();
   if (cfg.topic == NULL)
     {
@@ -328,6 +388,7 @@ int main(int argc, FAR char *argv[])
                      will, strlen(will),
                      cfg.user, cfg.pass, connflags,
                      (uint16_t)CONFIG_VG_MQTT_KEEPALIVE);
+  drop_credentials();
   if (ret != MQTT_OK)
     {
       fprintf(stderr, "ERROR: mqtt_connect failed: %s\n",

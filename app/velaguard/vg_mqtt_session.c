@@ -8,6 +8,7 @@
 
 #include <nuttx/config.h>
 
+#include <errno.h>
 #include <mqtt.h>
 #include <pthread.h>
 #include <stdbool.h>
@@ -20,6 +21,7 @@
 #include "vg_discover.h"
 #include "vg_mqtt_payload.h"
 #include "vg_mqtt_session.h"
+#include "vg_provision.h"
 #include "vg_tcp_transport.h"
 
 #ifndef CONFIG_VG_MQTT_BROKER_HOST
@@ -116,26 +118,36 @@ static void port_str(char *buf, size_t n)
   snprintf(buf, n, "%d", CONFIG_VG_MQTT_BROKER_PORT);
 }
 
-static const char *mqtt_user(void)
+/* The broker credentials come from the sealed record and from nowhere else.
+ * There is deliberately no compiled-in fallback: a build that cannot read the
+ * record refuses to connect, which is the only way the image can be free of a
+ * password while the board still fails loudly when provisioning was skipped.
+ *
+ * Loaded on every open, so a session that reconnects after an exit change or
+ * a network error picks up a record that was replaced in the meantime.  Only
+ * the network manager thread opens and closes sessions, and the record is
+ * dropped as soon as mqtt_connect() has packed it, so the clear text is not
+ * kept for the life of the session.
+ */
+
+static struct vg_mqtt_credentials g_cred;
+
+static int load_credentials(void)
 {
-#ifdef CONFIG_VG_MQTT_USERNAME
-  if (CONFIG_VG_MQTT_USERNAME[0] != '\0')
-    {
-      return CONFIG_VG_MQTT_USERNAME;
-    }
+#ifdef CONFIG_VG_MQTT_CREDENTIALS
+  return vg_mqtt_cred_load(&g_cred);
+#else
+  /* Sealing and opening need the SHA-256 backend, so a bring-up preset built
+   * without it has no credential store at all.  Report that instead of
+   * connecting unauthenticated. */
+
+  return -ENOSYS;
 #endif
-  return NULL;
 }
 
-static const char *mqtt_pass(void)
+static void drop_credentials(void)
 {
-#ifdef CONFIG_VG_MQTT_PASSWORD
-  if (CONFIG_VG_MQTT_PASSWORD[0] != '\0')
-    {
-      return CONFIG_VG_MQTT_PASSWORD;
-    }
-#endif
-  return NULL;
+  memset(&g_cred, 0, sizeof(g_cred));
 }
 
 static void ensure_boot_id(void)
@@ -470,6 +482,7 @@ void vg_mqtt_session_close(void)
   g_fd = -1;
   g_online = false;
   g_pt_sent = 0;
+  drop_credentials();
 }
 
 int vg_mqtt_session_open(vg_tcp_backend_t backend, const char *net_name)
@@ -481,6 +494,19 @@ int vg_mqtt_session_open(vg_tcp_backend_t backend, const char *net_name)
   int i;
 
   vg_mqtt_session_close();
+
+  /* Refuse before opening a socket: a TCP connection that cannot authenticate
+   * would only produce a CONNACK refusal and a reconnect loop, and the local
+   * collection, alarm and HMI paths keep running either way. */
+
+  ret = load_credentials();
+  if (ret < 0)
+    {
+      printf("vgnet: no MQTT credentials in the provision store (err %d); "
+             "provision with 'vgprovision mqtt' and retry\n", ret);
+      return -1;
+    }
+
   strlcpy(g_net, net_name ? net_name : "none", sizeof(g_net));
   port_str(port, sizeof(port));
   id = vg_device_id();
@@ -488,6 +514,7 @@ int vg_mqtt_session_open(vg_tcp_backend_t backend, const char *net_name)
 
   if (vg_mqtt_format_lwt(g_will, sizeof(g_will), id) != 0)
     {
+      drop_credentials();
       return -1;
     }
 
@@ -497,6 +524,7 @@ int vg_mqtt_session_open(vg_tcp_backend_t backend, const char *net_name)
       printf("vgnet: tcp connect %s:%s via %s failed\n",
              CONFIG_VG_MQTT_BROKER_HOST, port,
              vg_tcp_backend_str(backend));
+      drop_credentials();
       return -1;
     }
 
@@ -512,8 +540,16 @@ int vg_mqtt_session_open(vg_tcp_backend_t backend, const char *net_name)
     }
 
   ret = mqtt_connect(&g_client, id, g_topic, g_will, strlen(g_will),
-                     mqtt_user(), mqtt_pass(), connflags,
+                     g_cred.username, g_cred.password, connflags,
                      (uint16_t)CONFIG_VG_MQTT_KEEPALIVE);
+
+  /* mqtt_connect() packs the CONNECT packet into the transmit buffer before
+   * it returns, so the clear-text copy is not needed past this point.  The
+   * packed packet does keep a copy in g_tx until the queue reclaims that
+   * space, which is a property of MQTT-C and not something this module can
+   * avoid while still using its mqtt_connect(). */
+
+  drop_credentials();
   if (ret != MQTT_OK)
     {
       vg_mqtt_session_close();

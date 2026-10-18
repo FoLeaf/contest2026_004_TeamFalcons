@@ -45,6 +45,26 @@ config VG_NSH_STACKSIZE
 		pointer, took a precise bus fault and the board stopped responding
 		until an SWD reset.
 
+config VG_MQTT_CREDENTIALS
+	bool "MQTT broker credentials from the encrypted provision store"
+	default y
+	depends on VG_BRINGUP_TOOLS && CRYPTO_MBEDTLS
+	---help---
+		Take the broker user name and password from the sealed record that
+		"vgprovision mqtt" writes to
+		/data/velaguard/provision/mqtt_secrets.v1, instead of from a
+		password compiled into the image.
+
+		The record is sealed with the chip UID through the same
+		vg_provision_crypto code the LLM record uses, which is why the
+		SHA-256 backend is required.  A bring-up preset built without it
+		leaves this option off, and vgnet/vgmqtt then refuse to connect
+		rather than falling back to a built-in password.
+
+		Default y on purpose: a build that can hold the store should use
+		it, so no board authenticates with a value that shipped in the
+		firmware image.
+
 config VG_CONFIG_STORE
 	bool "VelaGuard dual-slot config store (eMMC FAT)"
 	default n
@@ -111,20 +131,6 @@ config VG_MQTT_BROKER_PORT
 	default 1883
 	---help---
 		Broker TCP port (no TLS in this stage).
-
-config VG_MQTT_USERNAME
-	string "MQTT username (TEST)"
-	default "velaguard"
-	---help---
-		Plaintext TEST credentials for the dashboard broker.
-		Rotate after the contest. Do not print this in logs.
-
-config VG_MQTT_PASSWORD
-	string "MQTT password (TEST)"
-	default "2f4505862d80e2ccb8fd5ff0739e172f"
-	---help---
-		Plaintext TEST password. Goes into the contest git tree.
-		Rotate after the contest. Do not print this in logs.
 
 config VG_MQTT_KEEPALIVE
 	int "MQTT keepalive seconds"

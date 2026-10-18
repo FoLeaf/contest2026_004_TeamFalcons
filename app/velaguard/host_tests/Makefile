@@ -63,6 +63,14 @@ test_advice_policy: test_advice_policy.c ../vg_advice_policy.c \
 test_provision_creds: test_provision_creds.c ../vg_provision.c ../vg_provision.h ../vg_file_store.c
 	$(CC) $(CFLAGS) -o $@ test_provision_creds.c ../vg_provision.c ../vg_file_store.c
 
+# vg_provision.c is included by the test rather than linked, so the record
+# paths can be redirected; only the file store is linked.  rename is wrapped
+# so a publication can be made to fail the way a dying eMMC write would.
+test_mqtt_cred: test_mqtt_cred.c ../vg_provision.c ../vg_provision.h \
+                ../vg_file_store.c ../vg_file_store.h
+	$(CC) $(CFLAGS) -o $@ test_mqtt_cred.c ../vg_file_store.c \
+	  -Wl,--wrap=rename
+
 test_agent_query: test_agent_query.c ../vg_agent_query.c ../vg_agent_query.h
 	$(CC) $(CFLAGS) -o $@ test_agent_query.c ../vg_agent_query.c
 
@@ -72,7 +80,7 @@ test_agent_tools: test_agent_tools.c ../vg_agent_tools.c ../vg_agent_tools.h \
 	$(CC) $(TEST_AGENT_TOOLS_CFLAGS) -o $@ test_agent_tools.c \
 	  ../vg_agent_tools.c ../vg_agent_query.c $(CJSON_SRC) -lm
 
-test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output test_modbus_port test_point_commit test_mqtt_session
+test: test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_mqtt_cred test_agent_query test_agent_tools test_maintenance test_file_store test_shell_runner test_local_client test_file_policy test_discover_io test_agent_round test_shell_output test_modbus_port test_point_commit test_mqtt_session
 	./test_net_policy
 	./test_config_store
 	./test_frame_stats
@@ -88,6 +96,7 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 	./test_ai_contract
 	./test_advice_policy
 	./test_provision_creds
+	./test_mqtt_cred
 	./test_agent_query
 	./test_agent_tools
 	./test_maintenance
@@ -106,7 +115,7 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 
 clean:
 	rm -f test_modbus_port test_point_commit test_mqtt_session
-	rm -f test_shell_output test_agent_round test_discover_io test_file_policy test_maintenance test_file_store test_shell_runner test_local_client test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_agent_query test_agent_tools
+	rm -f test_shell_output test_agent_round test_discover_io test_file_policy test_maintenance test_file_store test_shell_runner test_local_client test_net_policy test_config_store test_frame_stats test_runtime test_discover test_vgpoint test_alarm_eval test_time_sync test_hmi_perf test_runtime_render test_hmi_sched test_mqtt_payload test_ai_contract test_advice_policy test_provision_creds test_mqtt_cred test_agent_query test_agent_tools
 
 test_maintenance: test_maintenance.c ../vg_point_table.c ../vg_file_store.c $(CJSON_SRC)
 	$(CC) $(CFLAGS) -o $@ $^ -lm

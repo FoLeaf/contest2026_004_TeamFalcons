@@ -8,6 +8,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +22,12 @@
 #  include <sys/vfs.h>
 #endif
 
-#define VG_PROVISION_DIR "/data/velaguard/provision"
+/* Overridable for the same reason as the record paths: the host tests run
+ * against their own directory rather than /data. */
+
+#ifndef VG_PROVISION_DIR
+#  define VG_PROVISION_DIR "/data/velaguard/provision"
+#endif
 
 /* NuttX declares these in <sys/statfs.h>; the desktop libc used by the host
  * tests does not, and the values are the same on both.
@@ -138,7 +144,11 @@ static int json_get_string(const char *json, const char *key,
     {
       if (start[i] == '"' && (i == 0 || start[i - 1] != '\\'))
         {
-          if (i + 1 >= outsz)
+          /* i characters plus the terminator.  The bound used to be i + 1,
+           * which refused a value that exactly filled the buffer and left
+           * every caller with an effective limit one byte below its array. */
+
+          if (i >= outsz)
             {
               return -ENOSPC;
             }
@@ -601,4 +611,258 @@ bool vg_llm_credentials_ready(void)
 
   buf[n] = '\0';
   return vg_provision_creds_ready_in(buf);
+}
+
+/* --- MQTT broker credentials ---------------------------------------------
+ *
+ * The record layout and the reasoning behind a separate file and a kind tag
+ * are in vg_provision.h.  What matters here is that this module never reads a
+ * password from anywhere but the sealed record, and that a record it cannot
+ * decrypt or parse leaves the caller with no credentials at all rather than
+ * with a partial or stale one.
+ */
+
+int vg_mqtt_cred_parse(const char *plain, struct vg_mqtt_credentials *out)
+{
+  char kind[16];
+  int ret;
+
+  if (plain == NULL || out == NULL)
+    {
+      return -EINVAL;
+    }
+
+  memset(out, 0, sizeof(*out));
+
+  /* The kind tag is the whole isolation mechanism.  A record without it is
+   * not an MQTT record, whatever else it contains, so the LLM blob dropped at
+   * this path is refused here instead of being read as a user name. */
+
+  ret = json_get_string(plain, "kind", kind, sizeof(kind));
+  if (ret < 0)
+    {
+      return -EINVAL;
+    }
+
+  if (strcmp(kind, VG_MQTT_CRED_KIND) != 0)
+    {
+      return -EINVAL;
+    }
+
+  ret = json_get_string(plain, "username", out->username,
+                        sizeof(out->username));
+  if (ret < 0)
+    {
+      goto fail;
+    }
+
+  ret = json_get_string(plain, "password", out->password,
+                        sizeof(out->password));
+  if (ret < 0)
+    {
+      goto fail;
+    }
+
+  if (out->username[0] == '\0' || out->password[0] == '\0')
+    {
+      ret = -EINVAL;
+      goto fail;
+    }
+
+  return 0;
+
+fail:
+  memset(out, 0, sizeof(*out));
+  return ret;
+}
+
+int vg_mqtt_cred_install(const void *blob, size_t blob_len)
+{
+  uint8_t uid[VG_PROVISION_UID_LEN];
+  char plain[640];
+  struct vg_mqtt_credentials cred;
+  size_t plain_len;
+  int ret;
+
+  if (blob == NULL || blob_len == 0 || blob_len > VG_PROVISION_BLOB_MAX)
+    {
+      return -EINVAL;
+    }
+
+  ret = vg_provision_read_uid(uid);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  ret = vg_provision_crypto_open(uid, blob, blob_len,
+                                 (uint8_t *)plain, sizeof(plain), &plain_len);
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  plain[plain_len] = '\0';
+  ret = vg_mqtt_cred_parse(plain, &cred);
+  memset(plain, 0, sizeof(plain));
+  memset(&cred, 0, sizeof(cred));
+  if (ret < 0)
+    {
+      return ret;
+    }
+
+  ret = mkdir(VG_PROVISION_DIR, 0700);
+  if (ret < 0 && errno != EEXIST)
+    {
+      return -errno;
+    }
+
+  /* vg_file_replace keeps the previous bytes and restores them if the
+   * publication step fails, so a board whose eMMC write dies part way through
+   * still has the credentials it booted with. */
+
+  return vg_file_replace(VG_MQTT_CRED_FILE, blob, blob_len, 0600);
+}
+
+int vg_mqtt_cred_load(struct vg_mqtt_credentials *out)
+{
+  static uint8_t uid[VG_PROVISION_UID_LEN];
+  static uint8_t blob[VG_PROVISION_BLOB_MAX];
+  static char plain[640];
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  size_t plain_len;
+  ssize_t n;
+  int fd;
+  int ret;
+
+  if (out == NULL)
+    {
+      return -EINVAL;
+    }
+
+  memset(out, 0, sizeof(*out));
+
+  fd = open(VG_MQTT_CRED_FILE, O_RDONLY);
+  if (fd < 0)
+    {
+      return -errno;
+    }
+
+  n = read(fd, blob, sizeof(blob));
+  close(fd);
+  if (n <= 0)
+    {
+      return (n == 0) ? -EINVAL : -EIO;
+    }
+
+  /* The working buffers are static, so two threads loading at once would
+   * decrypt into the same plaintext.  The lock covers the whole decrypt and
+   * parse, and the plaintext is wiped before it is released. */
+
+  pthread_mutex_lock(&lock);
+
+  ret = vg_provision_read_uid(uid);
+  if (ret == 0)
+    {
+      ret = vg_provision_crypto_open(uid, blob, (size_t)n,
+                                     (uint8_t *)plain, sizeof(plain),
+                                     &plain_len);
+    }
+
+  if (ret == 0)
+    {
+      plain[plain_len] = '\0';
+      ret = vg_mqtt_cred_parse(plain, out);
+    }
+
+  memset(plain, 0, sizeof(plain));
+  pthread_mutex_unlock(&lock);
+
+  if (ret < 0)
+    {
+      memset(out, 0, sizeof(*out));
+    }
+
+  return ret;
+}
+
+bool vg_mqtt_cred_present(void)
+{
+  struct stat st;
+
+  return stat(VG_MQTT_CRED_FILE, &st) == 0 && st.st_size > 0;
+}
+
+void vg_mqtt_cred_mask_user(const char *user, char *out, size_t outsz)
+{
+  size_t n;
+
+  if (out == NULL || outsz == 0)
+    {
+      return;
+    }
+
+  if (user == NULL)
+    {
+      user = "";
+    }
+
+  /* Short names are masked whole: keeping two characters of a five character
+   * name would leave most of it on the console. */
+
+  n = strlen(user);
+  if (n <= 4)
+    {
+      snprintf(out, outsz, "****");
+      return;
+    }
+
+  snprintf(out, outsz, "%.2s****%.2s", user, user + n - 2);
+}
+
+int vg_mqtt_cred_status(char *out, size_t outsz)
+{
+  struct vg_mqtt_credentials cred;
+  char masked[VG_MQTT_CRED_USER_MAX + 8];
+  const char *label;
+  int ret;
+
+  if (out == NULL || outsz == 0)
+    {
+      return -EINVAL;
+    }
+
+  ret = vg_mqtt_cred_load(&cred);
+  if (ret < 0)
+    {
+      switch (ret)
+        {
+          case -ENOENT:
+            label = "MISSING";
+            break;
+
+          case -EACCES:
+            label = "UNREADABLE";
+            break;
+
+          case -EINVAL:
+            label = "INVALID";
+            break;
+
+          default:
+            label = "UNAVAILABLE";
+            break;
+        }
+
+      snprintf(out, outsz, "mqtt credentials: %s (err %d)", label, ret);
+      return ret;
+    }
+
+  vg_mqtt_cred_mask_user(cred.username, masked, sizeof(masked));
+  snprintf(out, outsz, "mqtt credentials: OK user=%s password=set(%u)",
+           masked, (unsigned)strlen(cred.password));
+
+  memset(&cred, 0, sizeof(cred));
+  memset(masked, 0, sizeof(masked));
+  return 0;
 }
