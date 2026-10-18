@@ -130,3 +130,26 @@ TODO 的 QA-02 记录过旧板测 14:28 与 15:20 附近出现重启，当时只
 
 - `nsh-rename-hardfault.log`：完整故障转储。
 - `boot-after-fault.log`：复位后的启动日志。
+
+## D-03：MQTT 口令明文存在于仓库与固件镜像
+
+优先级 P1。属于凭据管理问题，不是运行缺陷。
+
+`scripts/configs/velaguard-lvgl.defconfig` 受版本控制，其中含一个字面量键 `CONFIG_VG_MQTT_PASSWORD`，值为明文口令。同一份 defconfig 会被复制成 NuttX 板级配置并参与编译，因此该字符串也会进入固件镜像。
+
+这与 AGENTS.md 的 V4（密钥经 `vgprovision` 加密存于 eMMC，不得写进固件镜像）以及"完整 API key、MQTT token、产品密钥不得出现在 UI、日志、串口输出或 MQTT payload"的要求冲突。
+
+本轮只做记录：没有修改该值，没有在证据文件中复制口令正文，也没有把镜像与 defconfig 做逐字节比对（该比对会读取口令值，已被权限策略拒绝，未尝试绕过）。
+
+`docs/backend-api.md` 里 `MQTT_PASSWORD` 被描述为"可选密码"，没有说明板端 defconfig 为何需要内置一个具体口令。需要人工决定处理方式：改走 `vgprovision` 加密下发，或至少把该值移出仓库改为构建期注入。
+
+## 附：一次瞬时 MQTT 报错
+
+在 2026-10-18 的一次 `vgmqtt` 无参调用（一次性连到 `8.148.67.174:1883` 发布 status）之后，串口出现：
+
+```text
+vgnet: mqtt error MQTT_ERROR_SOCKET_ERROR
+ERROR: publish failed: MQTT_ERROR_SOCKET_ERROR
+```
+
+随后重新执行 `vgnet` 显示 `mqtt=up`，会话自行恢复。未能确认是我这次额外连接造成的干扰，还是一次网络抖动。记为观察，不作为缺陷。同一时段还观察到板端 IP 由 `192.168.137.172` 变为 `192.168.137.123`（DHCP 续租），不影响结论。

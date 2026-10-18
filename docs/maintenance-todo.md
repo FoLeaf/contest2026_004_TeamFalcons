@@ -28,6 +28,7 @@
 | DEP-01 | P0 / 本地依赖已提交，待公共仓PR | 仅参赛仓PR无法交付LCD及Agent修复；主机测试依赖公共仓新增源文件。 | NuttX本地提交 `75cbc8eb7a5`，ai_agent本地提交 `131642d`；构建前检查runner、回调关联与progress过滤等必要能力。按C2分别提PR并集成复验后关闭；本次未推送或发布公共仓PR。 |
 | QA-02 | P0 / 重启原因待定位 | 旧板测14:28与15:20附近出现重启，仅时间上接近接线操作。 | 尚无复位原因寄存器或供电波形证据，不能认定为供电抖动或排除固件。保留日志，后续采集复位原因并结合24小时运行定位。2026-10-18 新固件发现一条**可复现的软件崩溃路径**（见 FS-01），但两者是否相关无证据，不据此关闭本项。 |
 | FS-01 | P0 / 新发现，待定位 | `mv` 覆盖已存在文件触发 HardFault 并导致整机失联。`apps/nshlib/nsh_fscmds.c`、NuttX FAT `rename()` | 新固件（`75cbc8eb7a5`）上在 `/data` 复现：`echo AAA > r1.txt; echo BBB > r2.txt; mv r1.txt r2.txt` → `CFSR=0x00008200`（PRECISERR+BFARVALID）、`BFAR=0x3b`、`HFSR=0x40000000`，`task: velaguard_app_main`。故障后 COM3 无回显、ping 无响应，须 SWD 复位。`rename` 本身已完成（目标内容变为源内容），崩溃在其后。复位后配置与点表完好（`seq=6`、`committed n=14`）。目标不存在时 `mv` 正常。需 GDB 取调用栈定位 0x3b 解引用来源。详见 [defects.md](maintenance-evidence/2026-10-18/defects.md) 的 D-02。 |
+| SEC-01 | P1 / 新发现，待处理 | MQTT broker 口令以明文写在受版本控制的 `scripts/configs/velaguard-lvgl.defconfig`（键名 `CONFIG_VG_MQTT_PASSWORD`），并随 Kconfig 字符串进入固件镜像。 | 与 V4"密钥不得写进固件镜像"以及 AGENTS.md"完整密钥不得出现在日志、串口输出或 MQTT payload"的要求冲突；仓库与镜像同时持有该口令。本轮只做记录，未改动该值，也未在证据文件中复制口令正文。需要人工决定：改走 `vgprovision` 加密下发、还是至少把该值移出仓库并改为构建期注入。关闭条件：仓库与固件镜像中都不再含明文口令，且板端仍能连上 broker。 |
 | QA-03 | P1 / 漏提交已修正 | Makefile调用的两个Python回归脚本被通配ignore忽略，提交缺文件。`.gitignore`、`host_tests/Makefile` | 放行并提交 `test_boot_stack.py`、`test_board_pins.py`；28个C目标与2个Python检查重新构建执行通过。关闭条件：参赛仓提交实际包含二者；公共源码依赖仍见DEP-01。 |
 | ARCH-01 | P1 / 部分完成 | 采集、文件和Agent调度仍集中在板端后端 | 已抽出可恢复文件替换、告警滑窗和shell执行器，删除重复JSON扫描及界面判定。其余文件工作与调度职责在稳定性板验后继续拆分，以行为回归约束改动。 |
 
