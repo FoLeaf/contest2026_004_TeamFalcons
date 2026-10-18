@@ -118,9 +118,11 @@ vgnet: mqtt online network=... backend=... device=vg-...
 - [ ] 缺失恢复：把 `mqtt_secrets.v1` 移到 `mqtt_secrets.v1.acceptance-hold`，
       触发一次会话重开或复位，确认第 2 节的 MISSING 行为，随后把 `acceptance-hold`
       移回原名并确认 `vgprovision mqtt status` 恢复为 `OK`；
-- [ ] 把 LLM 的 blob（`llm_secrets.v1` 的十六进制）`put` 进去再 `commit`：
-      应打印 `mqtt commit refused`，且 `status` 仍显示上一条好记录；这里的 blob
-      只作为“外来记录”输入，不修改 LLM 文件；
+- [ ] 用途隔离：在主机用虚构的 `host`、`model`、`api_key` 和本板 `vgprovision uid`
+      返回的 UID 生成一条专用测试 LLM 格式封存记录，只把这条测试 blob 分段
+      `vgprovision mqtt put <hex>` 后再 `vgprovision mqtt commit`，应打印
+      `mqtt commit refused`，且 `status` 仍显示上一条专用测试 MQTT 记录。全程不得
+      读取、复制、打印或改写板上的 `llm_secrets.v1`；
 - [ ] 损坏恢复：把 `mqtt_secrets.v1` 移到 `mqtt_secrets.v1.acceptance-hold`，在原名
       路径写入 `not-a-sealed-record` 这几个字节，触发会话重开或复位，确认状态为
       `UNREADABLE`、MQTT 不连且本地功能正常；随后移走坏文件并把

@@ -42,8 +42,11 @@ HMAC-SHA256 标签），与 LLM 记录同一套实现，没有更换加密方案
 
 MQTT 明文里带 `"kind":"mqtt"` 标签，LLM 记录没有这个字段。两个方向的误用都会被拒绝：
 
-- 把 LLM blob 放到 `mqtt_secrets.v1`：解析器找不到 `kind` 标签，回 `-EINVAL`。
-- 把 MQTT blob 放到 `llm_secrets.v1`：LLM 解析器找不到 `host`，回 `-ENOENT`。
+- 把主机生成的测试 LLM 格式 blob 放到 MQTT 暂存入口：解析器找不到 `kind`
+  标签，回 `-EINVAL`。板上验收只允许使用虚构字段和设备 UID 生成的测试记录，
+  不得读取或复制真实 `llm_secrets.v1`。
+- 隔离测试把 MQTT blob 放到 LLM 路径：LLM 解析器找不到 `host`，回 `-ENOENT`。
+  板端验收不得用这条测试操作真实 `llm_secrets.v1`。
 
 标签加在 MQTT 记录上而不是 LLM 记录上，是为了让已经 provision 过的板子继续可读；
 `llm_secrets.v1` 的格式一个字节都没动。
