@@ -1,0 +1,79 @@
+task=F-05 VelaGuard builtin tool scope post-fix
+started_utc=2026-10-18T12:37:02Z
+contest_head=85e61d5c165ea53f64a3b1c8e81366f097723729
+public_head=7dc0a8816292cd58675863e9a1cde8b1cd96a535
+worktree_status:
+ M app/velaguard/host_tests/agent_review/Makefile
+?? docs/maintenance-evidence/2026-10-18/f05-host-tests.log
+?? docs/maintenance-evidence/2026-10-18/f05-vg-tool-scope-post-fix.log
+?? docs/maintenance-evidence/2026-10-18/f05-vg-tool-scope-pre-fix.log
+public_worktree_status:
+b361b68f38cb34d3045fef7f673201609ee219d44e45393123af99486315e372  app/velaguard/host_tests/agent_review/Makefile
+805ef339d93cede069914b10328549a7f9726a6efe419c5b7cc4c1c57a630c9d  /home/hello19y/openvela/packages/ai_agent/src/tools/tool_guard.c
+696d99e168e95e3d59048ee7423f456a845c34083b344b87fd8be2e3ce671d4e  /home/hello19y/openvela/packages/ai_agent/src/tools/tool_registry.c
+38f8edaf96d351179525c1eafa4d10c19abf31cb4d07fb2293dc7d70e1d92d3a  /home/hello19y/openvela/packages/ai_agent/tests/test_tool_guard_vg_scope.c
+af903fb3bc3e11993dc65fd498cd49c3eba6c62f49d9cd456d3e780467d2c577  /home/hello19y/openvela/packages/ai_agent/tests/test_tool_registry_vg_scope.c
+command=make -C app/velaguard/host_tests/agent_review clean test
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+rm -f test_runner_budget test_round_isolation test_file_policy_extra \
+      test_shell_gate test_tool_guard_rate test_tool_guard_vg_scope \
+      test_tool_registry_vg_scope repro_symlink_write_escape
+cc -Wall -Werror -pthread -I../../../../../packages/ai_agent/src -o test_runner_budget test_runner_budget.c ../../../../../packages/ai_agent/src/tools/tool_shell_runner.c
+cc -Wall -Werror -pthread -I../stubs -I../.. -I../../../../../packages/ai_agent/include -o test_round_isolation \
+  test_round_isolation.c ../../vg_agent_round.c -Wl,--wrap=clock_gettime
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON \
+  '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' \
+  '-DVG_DATA_ROOT="data/velaguard"' \
+  -o test_file_policy_extra test_file_policy_extra.c ../../../../../packages/ai_agent/src/tools/tool_files.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -DCONFIG_VG_HMI -o test_shell_gate \
+  test_shell_gate.c ../../../../../packages/ai_agent/src/tools/tool_shell_runner.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -o test_tool_guard_rate ../../../../../packages/ai_agent/tests/test_tool_guard_rate.c \
+  ../../../../../apps/netutils/cjson/cJSON/cJSON.c -Wl,--wrap=time -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -DCONFIG_VG_HMI -o test_tool_guard_vg_scope \
+  ../../../../../packages/ai_agent/tests/test_tool_guard_vg_scope.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON -DCONFIG_VG_HMI -ffunction-sections \
+  -fdata-sections -o test_tool_registry_vg_scope \
+  ../../../../../packages/ai_agent/tests/test_tool_registry_vg_scope.c \
+  ../../../../../packages/ai_agent/src/tools/tool_guard.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c \
+  -Wl,--gc-sections -lm
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON \
+  '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' \
+  '-DVG_DATA_ROOT="data/velaguard"' \
+  -o repro_symlink_write_escape repro_symlink_write_escape.c ../../../../../packages/ai_agent/src/tools/tool_files.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+./test_runner_budget
+test_runner_budget: OK (endless output, deadline accuracy, descendant reclaim, fd/zombie leaks, signalled child, cap canaries)
+./test_round_isolation
+test_round_isolation: OK (queue watchdog, stale/duplicate replies, early reply, submit failure isolation, reclaim)
+./test_file_policy_extra
+test_file_policy_extra: OK (credential/config read guard, edit_file parity, symlink targets, .. refusal, small-buffer canaries)
+./test_shell_gate
+sh: 1: vgstats: not found
+sh: 1: vgstats: not found
+sh: 1: vgcfg: not found
+sh: 1: vgruntime: not found
+sh: 1: vgnet: not found
+sh: 1: heap_info: not found
+sh: 1: net_status: not found
+sh: 1: router_status: not found
+test_shell_gate: OK (vgpoint/vgdiscover/vgmodbus refused, per-command subcommand gate, metadata-only allowlist, positive rows)
+./test_tool_guard_rate
+test_tool_guard_rate: OK (failed calls count, check/reserve is atomic)
+./test_tool_guard_vg_scope
+test_tool_guard_vg_scope: OK (hard allowlist, config can only narrow)
+./test_tool_registry_vg_scope
+test_tool_registry_vg_scope: OK (unrelated builtins are not registered)
+./repro_symlink_write_escape
+control: an existing symlink to an existing protected file
+  write through an existing link is refused                  PASS
+  and the protected file still exists                        PASS
+case A: dangling link, target outside the sandbox
+  write through the dangling link is refused                 PASS
+  no file was created outside the sandbox                    PASS
+case B: dangling link, target at a protected path
+  write through the dangling link is refused                 PASS
+  no file was created at the protected path                  PASS
+repro_symlink_write_escape: all checks passed - defect fixed
+agent_review: regression set OK
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+exit_code=0
+finished_utc=2026-10-18T12:37:05Z

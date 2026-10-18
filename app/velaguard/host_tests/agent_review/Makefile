@@ -43,12 +43,15 @@ FILES      := $(AI_AGENT)/src/tools/tool_files.c
 .PHONY: test repro clean
 
 test: test_runner_budget test_round_isolation test_file_policy_extra \
-      test_shell_gate test_tool_guard_rate repro_symlink_write_escape
+      test_shell_gate test_tool_guard_rate test_tool_guard_vg_scope \
+      test_tool_registry_vg_scope repro_symlink_write_escape
 	./test_runner_budget
 	./test_round_isolation
 	./test_file_policy_extra
 	./test_shell_gate
 	./test_tool_guard_rate
+	./test_tool_guard_vg_scope
+	./test_tool_registry_vg_scope
 	./repro_symlink_write_escape
 	@echo "agent_review: regression set OK"
 
@@ -77,6 +80,19 @@ test_tool_guard_rate: $(AI_AGENT)/tests/test_tool_guard_rate.c \
 	$(CC) $(AI_CFLAGS) -o $@ $(AI_AGENT)/tests/test_tool_guard_rate.c \
 	  $(CJSON) -Wl,--wrap=time -lm
 
+test_tool_guard_vg_scope: $(AI_AGENT)/tests/test_tool_guard_vg_scope.c \
+                          $(AI_AGENT)/src/tools/tool_guard.c $(CJSON)
+	$(CC) $(AI_CFLAGS) -DCONFIG_VG_HMI -o $@ \
+	  $(AI_AGENT)/tests/test_tool_guard_vg_scope.c $(CJSON) -lm
+
+test_tool_registry_vg_scope: $(AI_AGENT)/tests/test_tool_registry_vg_scope.c \
+                             $(AI_AGENT)/src/tools/tool_guard.c $(CJSON)
+	$(CC) $(AI_CFLAGS) -DCONFIG_VG_HMI -ffunction-sections \
+	  -fdata-sections -o $@ \
+	  $(AI_AGENT)/tests/test_tool_registry_vg_scope.c \
+	  $(AI_AGENT)/src/tools/tool_guard.c $(CJSON) \
+	  -Wl,--gc-sections -lm
+
 repro_symlink_write_escape: repro_symlink_write_escape.c $(FILES) $(CJSON)
 	$(CC) $(AI_CFLAGS) \
 	  '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' \
@@ -85,4 +101,5 @@ repro_symlink_write_escape: repro_symlink_write_escape.c $(FILES) $(CJSON)
 
 clean:
 	rm -f test_runner_budget test_round_isolation test_file_policy_extra \
-	      test_shell_gate test_tool_guard_rate repro_symlink_write_escape
+	      test_shell_gate test_tool_guard_rate test_tool_guard_vg_scope \
+	      test_tool_registry_vg_scope repro_symlink_write_escape

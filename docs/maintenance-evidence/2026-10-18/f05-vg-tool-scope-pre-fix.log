@@ -1,0 +1,12 @@
+task=F-05 VelaGuard builtin tool scope pre-fix
+started_utc=2026-10-18T12:35:17Z
+public_prefix=c2ed3379b8fb922189875032a200caae6c3657fa
+snapshot_dir=/tmp/vg-ai-agent-f05-prefix-Knu8zX
+test_guard_sha256=38f8edaf96d351179525c1eafa4d10c19abf31cb4d07fb2293dc7d70e1d92d3a
+test_registry_sha256=af903fb3bc3e11993dc65fd498cd49c3eba6c62f49d9cd456d3e780467d2c577
+command=compile F-05 tests against c2ed337 snapshot
+test_tool_guard_vg_scope: tests/test_tool_guard_vg_scope.c:66: main: Assertion `!tool_guard_is_enabled(denied[i])' failed.
+guard_exit_code=134
+test_tool_registry_vg_scope: tests/test_tool_registry_vg_scope.c:56: expect_registered: Assertion `(s_tool_count == before + 1) == registered' failed.
+registry_exit_code=134
+finished_utc=2026-10-18T12:35:18Z

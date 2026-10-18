@@ -5,7 +5,7 @@
 基线提交：`ff140dd`（fix(velaguard): RS485 DIR 释放挪进 TX 完成中断，D-04 关闭）。
 初版工作区：独立 worktree，分支 `codex/agent-fault-review`，从上述提交创建，未带入其他会话的未提交改动。
 
-初版为测试与审查任务，未修改产品实现，未修改公共依赖实现，未访问串口、开发板、真实 LLM 或 MQTT 服务，未运行共享固件构建。后续维护补修已在公共 `packages/ai_agent` 功能分支提交，并集成到 `codex/maintenance-closeout`，具体提交见 4.F-02、4.F-03 与 9.5。
+初版为测试与审查任务，未修改产品实现，未修改公共依赖实现，未访问串口、开发板、真实 LLM 或 MQTT 服务，未运行共享固件构建。后续维护补修已在公共 `packages/ai_agent` 功能分支提交，并集成到 `codex/maintenance-closeout`，具体提交见 4.F-02、4.F-03、4.F-05 与 9.5。
 
 ---
 
@@ -17,9 +17,9 @@
 | F-02 | 低 | 已修复，公共提交 `8d16058` | 产品命令闸门的元数据白名单只匹配命令名，初版确认 `date -s` 经 `run_shell` 可达。`2a20a58` 的首次收紧仍接受 format 后的尾随参数；`bcec30a` 加入纯参数红测，`8d16058` 改为完整匹配只读参数序列并通过，不执行改时命令。 |
 | F-03 | 低 | 已修复，公共提交 `2a20a58` | `tool_registry_execute` 原先只在工具返回 OK 时记一次调用，被拒绝或失败的工具调用不计入限流。现在 `tool_guard_check` 在放行敏感工具时原子预留额度，失败调用也计数，并发突发放行测试通过。 |
 | F-04 | 低 | 已修复，集成分支 | 最后回复的读取改为在锁内复制到调用方缓冲区，不再暴露共享缓冲区指针；诊断读取获得一致的 NUL 结尾快照。 |
-| F-05 | 低 | 未修复，代码层确认 | 代理实际获得的工具集合是 ai_agent 的默认内建集合，注册表中除相机与 `run_shell` 变体外没有按 VelaGuard 需求收窄；产品 defconfig 没有 `tool_enabled_<name>` 覆盖，`tool_guard_is_enabled` 在配置项缺失时返回启用。运行时配置是否覆盖无法在不读取真实凭证的前提下核对，仍为未验证项。 |
+| F-05 | 低 | 已修复，公共提交 `7dc0a88` | 原先代理获得 ai_agent 的默认内建工具集合。现在 `CONFIG_VG_HMI` 下只允许 `read_file`、`write_file`、`get_current_time`、`run_shell`、`vg_point_read`、`vg_run_report`。白名单外工具不进入注册 JSON，执行入口也拒绝；运行时配置只能进一步禁用，不能扩大白名单。 |
 
-AI-01、AI-02、AI-03 三项的核心目标经复核成立：执行预算与回收、轮次关联与迟到回复隔离、文件与凭证路径保护在主机上都已由新增用例证明。F-01 由公共提交 `c2ed337` 修复，F-02 由 `2a20a58`、`bcec30a`、`8d16058` 完成修复与回归，F-03 由 `2a20a58` 修复，F-04 已在集成分支修复并加入回归；F-05 仍属于代码层已确认、运行时覆盖未验证的工具面风险。
+AI-01、AI-02、AI-03 三项的核心目标经复核成立：执行预算与回收、轮次关联与迟到回复隔离、文件与凭证路径保护在主机上都已由新增用例证明。F-01 由公共提交 `c2ed337` 修复，F-02 由 `2a20a58`、`bcec30a`、`8d16058` 完成修复与回归，F-03 由 `2a20a58` 修复，F-04 已在集成分支修复并加入回归；F-05 由公共提交 `7dc0a88` 收窄为产品硬白名单。
 
 新增测试全部通过，未发现已有测试的回归；集成分支的主机测试数量与最终结果以 G-05 的实际输出为准，不沿用初版 worktree 的旧数量。
 
@@ -164,7 +164,7 @@ symlink targets, .. refusal, small-buffer canaries)
 | 6 代理能否触及点表、配置生效、寄存器写入、清告警、输出控制 | 命令侧已由新增闸门表覆盖：`vgpoint` 全部子命令、`vgdiscover apply`、`vgmodbus`、`vgcfg commit` 均被拒绝，路径前缀（`/bin/vgpoint`）与词前缀（`dumpsters`、`dum`）变体也被拒绝。文件侧由写保护覆盖。代理没有可写寄存器、清告警或控制数字量输出的工具。`date -s` 的残余入口已由 F-02 的公共修复关闭。 |
 | 7 文件保护对软链接、路径别名、不存在目标与父目录的处理 | 已存在软链接、逃逸的父目录、含 `..` 的路径、不存在目标的父目录均处理正确；末段悬空软链接已由 F-01 的 `O_NOFOLLOW` 修复覆盖。 |
 | 8 合法报告产物写入是否仍可用 | 可用。日报、嵌套报告目录、代理自身记忆文件均写入成功，且内容确实落盘。 |
-| 9 凭证与配置保护是否在 C 实现与工具注册层生效 | C 实现层已生效并有测试证据。工具注册层方面，`tool_guard.c` 提供输入长度上限、限流与脱敏；F-03 的限流记账缺口已修复并由并发预留测试覆盖。内建工具面的 F-05 仍是独立风险。 |
+| 9 凭证与配置保护是否在 C 实现与工具注册层生效 | C 实现层已生效并有测试证据。工具注册层方面，`tool_guard.c` 提供输入长度上限、限流与脱敏；F-03 的限流记账缺口已修复并由并发预留测试覆盖。F-05 的产品硬白名单同时约束注册和执行，配置只能收窄。 |
 
 ---
 
@@ -268,19 +268,34 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 
 **证据边界**：以上是主机并发契约与参数边界测试，不证明板端出现过该竞态，也不把接口修改当作 G 阶段真机验收。板端版本仍需随最终固件统一构建、烧录和验收。
 
-### F-05 内建工具集合未按产品需求收窄
+### F-05 内建工具集合未按产品需求收窄（已修复）
 
-**位置**：`packages/ai_agent/src/tools/tool_registry.c` 的 `tool_registry_init`（:225 起）。
+**原位置与缺陷**：`packages/ai_agent/src/tools/tool_registry.c` 的 `tool_registry_init()` 原先几乎无条件注册 ai_agent 的全部内建工具。代理可获得 `edit_file`、`list_dir`、`cron_add`、`fetch_url`、`web_search`、`news_search`、`get_weather`、`analyze_image`、`feishu_*`、`music_*`、`vibrate` 等与 VelaGuard Skills 无关的工具。`tool_guard_is_enabled()` 在 `tool_enabled_<name>` 缺失时默认启用，不能形成产品级工具上限。
 
-**已核实**：内建工具表的注册大部分无条件执行，只有相机一组受 `CONFIG_AI_AGENT_CAMERA` 约束（:354 至 :367），`run_shell` 的变体受 shell 安全模式约束（:370 至 :393）。表中包含 `read_file`、`write_file`、`edit_file`、`list_dir`、`run_shell`、`cron_add`、`fetch_url`、`web_search`、`news_search`、`get_weather`、`get_current_time`、`analyze_image`、`feishu_*`、`music_*`、`get_battery`、`get_wear_state`、`get_screen_state`、`get_heartrate`、`vibrate` 等。`tool_guard_is_enabled` 在配置项不存在时返回启用（`tool_guard.c`，未配置即启用）。
+**修复**：公共提交 `7dc0a88` 在 `CONFIG_VG_HMI` 下建立硬白名单，只允许：
 
-**未核实**：这些工具在本板上是否真的可用（多数面向其他硬件），以及运行时配置是否通过 `tool_enabled_<name>` 逐项禁用。产品 defconfig 和仓库内其它配置均没有这类覆盖；`tool_enabled_*` 若在运行时配置中缺失，按 `tool_guard_is_enabled()` 的默认值仍为启用。读取真实代理配置会同时触及凭证字段，因此本次不把读取该文件作为验收步骤，运行时覆盖保持未验证。
+```
+read_file
+write_file
+get_current_time
+run_shell
+vg_point_read
+vg_run_report
+```
 
-**若成立的影响**：代理可达的工具面比产品设计描述的更宽。`fetch_url` 与 `web_search` 会带来设计文档未提及的外发网络路径；`cron_add` 允许代理安排延后执行的工具调用（`action` 为工具名，`action_args` 为其参数）。延后调用经同一注册表入口执行，因此仍受同一命令闸门与文件策略约束（此点未在板端验证）。
+约束在两层同时生效：
 
-**对安全边界的影响**：以上工具都不能写 Modbus 寄存器、修改点表、清除告警或控制数字量输出，V5 与 V8 的安全边界不受该观察影响。
+- `tool_guard_is_enabled()` 先检查硬白名单，再读取 `tool_enabled_<name>`。运行时配置可把白名单内工具设为 `0`，但不能把白名单外工具设为 `1`。
+- `register_tool()` 跳过白名单外的内建工具，因此这些工具不会出现在提供给模型的 tools JSON 中。
+- `tool_registry_execute()` 在任何内建或 provider 执行之前调用 `tool_guard_check()`，白名单外名称返回 `GUARD_DENY_DISABLED`。因此即使名称来自模型、旧配置或自定义 provider，也不会执行。
 
-**证据边界**：`vgagent tools` 只打印注册 JSON 中以 `vg_` 开头的产品自建工具，无法列出内建集合，因此不能作为 F-05 的板端确认方式。F-05 暂以代码层证据记录，若要收窄工具面，应另立任务在产品初始化处显式禁用不需要的内建工具。
+`write_file` 仍受文件路径策略约束，只能写入代理数据目录和报告子树；`run_shell` 仍受 `tool_shell.c` 的产品只读命令闸门约束。两者保留是因为现有 Skills、报告和只读诊断需要，不能据此绕过 V5 的点表、寄存器、告警和数字量输出限制。
+
+**验证**：公共用例 `tests/test_tool_guard_vg_scope.c` 检查六个允许项、多个白名单外拒绝项、配置只能收窄，以及配置尝试重新开放 `web_search` 时仍被拒绝。`tests/test_tool_registry_vg_scope.c` 检查注册集合恰好为这六项，`edit_file`、`list_dir`、`cron_add`、`fetch_url`、`vibrate` 等不会注册。
+
+在修复前快照 `c2ed337` 上，两组用例都以 `SIGABRT` 退出，退出码为 134，输出保存在 `docs/maintenance-evidence/2026-10-18/f05-vg-tool-scope-pre-fix.log`。公共提交 `7dc0a88` 后，`make -C app/velaguard/host_tests/agent_review clean test` 通过，输出保存在 `f05-vg-tool-scope-post-fix.log`；集成后的完整 `make -C app/velaguard/host_tests clean test` 退出码为 0，输出保存在 `f05-host-tests.log`。
+
+**证据边界**：`vgagent tools` 只打印以 `vg_` 开头的产品自建工具，没有列出完整内建集合的板端只读接口。F-05 的确定性证据是 C 注册与执行路径加隔离主机回归；最终固件必须确认编译时启用 `CONFIG_VG_HMI`，但不新增只为展示工具清单的诊断接口。
 
 ---
 
@@ -307,12 +322,14 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 
 | 文件 | 覆盖 |
 |---|---|
-| `Makefile` | 自带构建规则，不并入 `host_tests/Makefile`；`test` 目标包含 F-01 回归，`repro` 目标可单独运行该回归 |
+| `Makefile` | 自带构建规则，不并入 `host_tests/Makefile`；`test` 目标包含 F-01、F-05 回归，`repro` 目标可单独运行 F-01 回归 |
 | `test_runner_budget.c` | 持续输出下的截止判定、截止误差、后台后代回收、描述符与僵尸泄漏、被信号杀死记为失败、小缓冲区 canary、参数守卫 |
 | `test_round_isolation.c` | 队列看门狗、跨轮迟到回复、重复回复、同步早到回复、提交失败隔离、`reclaim` 语义、代次计数、回复快照的参数与截断边界、参数守卫 |
 | `test_file_policy_extra.c` | 凭证与配置的读取保护（含软链接路径）、`edit_file` 策略一致、软链接目标、`..` 拒绝、嵌套报告写入、小缓冲区 canary、非法参数 |
 | `test_shell_gate.c` | 产品命令闸门的完整双向表：拒绝项、允许项、子命令边界、shell 元字符、参数守卫 |
 | `test_tool_guard_rate.c` | 公共树用例：敏感工具的失败调用计入额度、窗口恢复、24 线程并发只放行 10 次 |
+| `test_tool_guard_vg_scope.c` | 公共树用例：VelaGuard 硬白名单、白名单外执行拒绝、运行时配置只能收窄 |
+| `test_tool_registry_vg_scope.c` | 公共树用例：白名单外内建工具不进入注册集合 |
 | `repro_symlink_write_escape.c` | F-01 的最小回归：末段悬空软链接指向沙箱外和受保护路径均不得写入 |
 
 测试设计约束：全部使用虚构数据与临时目录；不使用固定 sleep 作为同步手段，等待均有明确上限（最长单次约 1.2 秒）；不发起真实无限挂起任务。
@@ -334,7 +351,7 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 | 7.7 | 代理实际尝试 `date -s` 的发生率。F-02 已在 C 闸门修复，无需通过观察发生率证明可达性或修复效果。 | 不需要观察，也不得实际执行改时间的命令。 |
 | 7.8 | `/data` 是否无法承载软链接。 | 可从挂载表读取文件系统类型作为环境记录，见 G-03 第 4 步。F-01 已由主机回归关闭，不再要求板端构造软链接。 |
 | 7.9 | FAT 大小写不敏感下的路径判定（第 5 节的推论）。 | 可，用只读路径请求观察拒绝结果，见 G-03 第 5 步。 |
-| 7.10 | 内建工具集合在板端是否被逐项禁用（F-05）。 | 不可：`vgagent tools` 只打印 `"vg_` 开头的子集（`vgagent.c` 的 `print_tools`），没有打印完整工具清单的只读接口。F-05 因此保留代码层证据，运行时覆盖记为未验证。 |
+| 7.10 | 完整内建工具集合在板端是否与硬白名单一致（F-05）。 | 不可完整核对：`vgagent tools` 只打印 `"vg_` 开头的子集（`vgagent.c` 的 `print_tools`），没有打印完整工具清单的只读接口。确定性的注册和执行约束由 `7dc0a88` 的代码与主机用例证明；板端只记录现有自定义工具输出，不虚构完整清单。 |
 
 ---
 
@@ -423,7 +440,7 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 ### G-04 工具注册与权限（对应复核清单第 5、6、9 项）
 
 1. 在 NSH 中执行 `vgagent tools`（只读，`vgagent.c:273`）。注意该命令只打印 `"vg_` 开头的工具，即 VelaGuard 自己注册的那部分（`vgagent.c` 的 `print_tools`），它不能列出内建工具集合。逐字记录该输出，确认其中只有只读工具，没有点表编辑、配置生效、寄存器写入、清告警或输出控制类工具。
-2. 内建工具集合无法用只读接口在板端列出（见第 7 节 7.10）。F-05 因此保留代码层证据：`tool_registry.c` 的内建表、`vg_agent_tools.c` 注册的两个只读工具，以及命令闸门 `tool_shell.c` 的 `s_vg_readonly` 表。第 6 节新增的 `test_shell_gate` 用例已把闸门的允许与拒绝两侧固定在主机上；本步骤不能证明运行时已逐项禁用其它内建工具。
+2. 完整内建工具集合无法用只读接口在板端列出（见第 7 节 7.10）。F-05 的硬白名单在 `tool_guard.c` 和 `tool_registry.c` 的 C 路径实施，由 `test_tool_guard_vg_scope` 与 `test_tool_registry_vg_scope` 固定；命令闸门的允许与拒绝两侧由 `test_shell_gate` 固定。本步骤不读取真实代理配置，也不把 `vgagent tools` 的输出扩写成不存在的能力。
 3. 为产生一条被拒绝的审计记录，通过正常交互渠道要求代理执行一条只读的被禁命令（`vgpoint get`）。随后检查 `/data/velaguard/logs/agent_tools.log`。注意 `rc` 列的含义（`tool_registry.c:70` 至 `:74`）：`0` 为成功，`-2` 为工具守卫层拒绝（例如限流），`-3` 为未知工具，其余为工具自身的返回值。命令闸门拒绝发生在 `tool_run_shell_execute` 内部，因此该条记录应为工具自身的返回值 `-1`，而不是 `-2`。确认该条记录存在，且记录中没有完整密钥或口令。这一步只使用只读被禁命令，理由见 8.0 第 4 条。
 4. 在短时间内连续要求代理读取点位，超过 `VG_TOOL_RATE_MAX_CALLS`（`vg_agent_tools.c:397`，20 次 / 60 秒）后确认出现限流提示，且提示以正常结果返回而不是被当作未知工具。
 5. 针对 F-03：`run_shell` 一类的敏感工具上限是 `AGENT_TOOL_RATE_LIMIT_MAX_CALLS`（`agent_config.h:415`，10 次 / 60 秒）。确定性证据由主机用例 `test_tool_guard_rate` 提供。板端只在真实模型确实选择 `run_shell` 时记录调用次数与限流结果；不能用提示词诱导代替确定性验证，也不能为了测试向代理开放工具。
@@ -432,7 +449,7 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 通过条件：
 
 - `vgagent tools` 的输出被逐字记录，其中的 VelaGuard 工具只有只读工具。
-- F-05 按第 7 节 7.10 记录为无板端只读接口，保留代码层证据。
+- F-05 按第 7 节 7.10 记录：完整工具清单没有板端只读接口，以硬白名单代码和主机回归为确定性证据。
 - 审计日志含被拒绝记录，`rc` 为工具自身返回值，且记录中没有密钥正文。
 - 读点工具在超过 20 次 / 60 秒后返回限流提示。
 - F-03 以主机并发测试为确定性证据；若板端真实调用路径产生观察，只作为补充记录。
@@ -458,11 +475,12 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 - 公共提交 `c2ed337` 用 `O_NOFOLLOW` 修复 F-01，并在公共 `test_file_policy.c` 与 VelaGuard 专项回归中覆盖两种悬空软链接写入。
 - 公共提交 `2a20a58` 修复 F-03 的原子限流记账；F-02 经 `bcec30a` 红测和 `8d16058` 完整参数修复，并把对应回归接入集成后的专项测试。
 - F-04 在集成分支把最后回复接口改为锁内复制，并加入空指针、零长度和截断回归。
+- 公共提交 `7dc0a88` 在 `CONFIG_VG_HMI` 下加入 F-05 硬白名单，注册层隐藏白名单外工具，执行层再次拒绝，并用两组公共回归证明配置只能收窄。
 - 给出阶段 G 真机验收步骤、通过条件与未验证项目清单。
 
 ### 9.2 不属于本次复核、需要独立任务的事项
 
-- **F-05 的后续处置**。该项仍保留为独立任务，本次没有实施修复。
+- **完整工具清单的板端只读接口**。当前没有安全接口列出全部注册工具；若后续需要直接目视核对，可作为独立诊断能力设计，不把新增接口作为 F-05 修复的前置条件。
 - **板端验收本身**。本次未执行任何板端步骤，第 8 节是待执行的计划。
 
 ### 9.3 未做事项
@@ -489,14 +507,16 @@ repro_symlink_write_escape: 4 check(s) FAILED - defect present
 | 6 公共补修完成后同步结论 | F-03 标记为 `2a20a58` 已修复；F-02 补记首次收紧的尾随参数缺口，并以 `bcec30a` 红测和 `8d16058` 完整匹配收口；F-05 改为代码层风险加运行时未验证；G-03、G-04、G-05 与测试清单按当前证据边界更新 |
 | 7 F-04 快照接口补修 | 标记 F-04 已修复，记录锁内复制、公共容量常量、单次快照打印和专项测试边界，并补入原始证据路径 |
 | 8 F-01 写入路径补修 | 标记 F-01 已修复，记录 `O_NOFOLLOW`、公共与专项回归、修前失败和修后通过证据，并更新 G-05 的预期结果 |
+| 9 F-05 工具面补修 | 标记 F-05 已由 `7dc0a88` 修复，记录 VelaGuard 硬白名单、注册层与执行层双重约束、配置只能收窄、修前失败和修后通过证据，并更新 G-04、7.10 与测试清单 |
 
 ### 9.5 后续修复
 
-公共 checkout `/home/hello19y/openvela/packages/ai_agent` 的 VelaGuard 功能分支 `velaguard/llm-tls-send-retry` 包含 F-01、F-02、F-03 的相关提交：
+公共 checkout `/home/hello19y/openvela/packages/ai_agent` 的 VelaGuard 功能分支 `velaguard/llm-tls-send-retry` 包含 F-01、F-02、F-03、F-05 的相关提交：
 
 - `c2ed337`：`tool_write_file_execute()` 使用 `O_NOFOLLOW` 打开写入目标，公共 `test_file_policy.c` 增加末段悬空软链接指向沙箱外和受保护路径的回归。
 - `2a20a58`：`src/tools/tool_shell.c` 首次增加只读参数闸门；`src/tools/tool_guard.c` 改为检查时原子预留额度，`src/tools/tool_registry.c` 删除成功后的重复记账；增加 F-03 的窗口上限、恢复和 24 线程并发回归。
 - `bcec30a`：只增加 `date` 尾随 setter、尾随操作数、重复选项和空 format 的纯参数负向断言，保留修复前失败证据。
 - `8d16058`：按完整参数序列收紧 `date_args_read_only()`，保留正常只读形式，拒绝 format 后附加的选项或操作数，并补齐制表符、尾随空白等正负用例。
+- `7dc0a88`：在 `CONFIG_VG_HMI` 下把工具集合收窄为六个产品工具；白名单外工具不注册且执行层拒绝，运行时配置只能进一步禁用；增加 guard 与 registry 两组回归。
 
 F-04 的锁内快照修复提交在集成分支 `codex/maintenance-closeout`，不修改公共 checkout。本集成 worktree 的 `agent_review/Makefile` 调用公共树中的 `test_tool_guard_rate.c`，VelaGuard 的 `test_shell_gate.c` 继续覆盖产品命令表。两类测试都只验证 C 逻辑，不执行改时命令，也不访问真实凭证或开发板。
