@@ -99,7 +99,8 @@ afdfd57679379771ddaa4de43157e758a8f555041f334c51a253134b82676551  .debug/nuttx.b
 # 构建日志：final-clean-build-20261018-212832.log
 # 凭证扫描：final-security-scan.log；MQTT 明文键名和历史口令值均 0 命中，
 #           CONFIG_VG_WIFI_PASSWORD 静态值仍命中，保留为独立问题
-# 本构建尚未烧录，不得把产物哈希当作板端固件身份或板验通过证据
+# 本次构建已烧录；板端 uname 为 NuttX 0.0.0 2373ab4a45d Oct 18 2026 21:29:20
+# 烧录与 D-02/D-04 复验见 final-d02-d04-board-acceptance.md
 72089db0dd3ea6da88cdf9a6d2f3bcf9a76ecb6f377fae0166b9fe8a7e1e2119  .debug/nuttx.hex
 3bd1100d43e241141e314f15d5b73c6292f425fe088507f699bc019f3e3e63f8  .debug/nuttx.bin
 ad62c10da3dfe84ec8f87233e569cfe2b9733f2edf3b6641f9b757be66d27765  .debug/nuttx.elf

@@ -1,0 +1,56 @@
+########## boot settle len=1197 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: join 19y failed
+vgnet: esp reset
+
+
+########## vgruntime dump ########## len=5175
+vgruntime dump
+vgruntime: uptime_s=405 wall=2026-10-18T21:42:13
+vgruntime: slave=1 boot_total=244 boot_ok=224 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=55 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=122 boot_ok=112 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=53 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=122 boot_ok=113 boot_crc=0 boot_timeout=9 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=54 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=366 boot_ok=339 boot_crc=0 boot_timeout=27 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=210 boot_lat_avg=53 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=366 boot_ok=340 boot_crc=0 boot_timeout=26 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=190 boot_lat_avg=53 win_total=64 win_ok=63 win_crc=0 win_timeout=1 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=364 boot_ok=336 boot_crc=0 boot_timeout=28 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=53 win_total=64 win_ok=62 win_crc=0 win_timeout=2 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=121 boot_ok=112 boot_crc=0 boot_timeout=9 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=54 win_total=64 win_ok=63 win_crc=0 win_timeout=1 win_echo=0 win_other=0
+vgruntime: bus boot_total=1705 boot_ok=1576 boot_crc=0 boot_timeout=129 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=265360 offline_s=0 last_ok_ago_s=3 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=265370 offline_s=0 last_ok_ago_s=3 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=265380 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=265390 offline_s=0 last_ok_ago_s=3 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=265400 offline_s=0 last_ok_ago_s=3 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=265410 offline_s=0 last_ok_ago_s=3 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=265420 offline_s=0 last_ok_ago_s=3 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=265430 offline_s=0 last_ok_ago_s=3 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=267740 offline_s=0 last_ok_ago_s=3 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=267750 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=267760 offline_s=0 last_ok_ago_s=3 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=267770 offline_s=0 last_ok_ago_s=3 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=267780 offline_s=0 last_ok_ago_s=3 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=267790 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=137 wall=2026-10-18T21:37:45 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=139 wall=2026-10-18T21:37:48 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+nsh> [K

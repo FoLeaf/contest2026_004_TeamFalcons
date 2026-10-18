@@ -1,0 +1,116 @@
+########## boot settle len=420 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgruntime dump ########## len=3135
+vgruntime dump
+vgruntime: uptime_s=67 wall=2026-10-18T21:36:35
+vgruntime: slave=1 boot_total=10 boot_ok=0 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=10 win_ok=0 win_crc=0 win_timeout=10 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=5 boot_ok=0 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=5 win_ok=0 win_crc=0 win_timeout=5 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=5 boot_ok=0 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=5 win_ok=0 win_crc=0 win_timeout=5 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=15 boot_ok=0 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=15 win_ok=0 win_crc=0 win_timeout=15 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=15 boot_ok=0 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=15 win_ok=0 win_crc=0 win_timeout=15 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=13 boot_ok=0 boot_crc=0 boot_timeout=13 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=13 win_ok=0 win_crc=0 win_timeout=13 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=4 boot_ok=0 boot_crc=0 boot_timeout=4 boot_echo=0 boot_other=0 boot_lat_min=0 boot_lat_max=0 boot_lat_avg=0 win_total=4 win_ok=0 win_crc=0 win_timeout=4 win_echo=0 win_other=0
+vgruntime: bus boot_total=67 boot_ok=0 boot_crc=0 boot_timeout=67 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=humid slave=1 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=flood slave=2 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=smoke slave=3 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=acu_ret slave=4 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=acu_set slave=4 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=acu_run slave=4 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=ups_load slave=5 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=ups_soc slave=5 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=ups_bypass slave=5 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=volt_a slave=6 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=pwr_kw slave=6 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=energy_kwh slave=6 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+vgruntime: point id=door slave=7 online=0 online_ms=0 offline_s=67 last_ok_ago_s=0 value=0 kind=offline
+nsh> [K
+
+########## echo CMD-A > /data/velaguard/discover_bad/stack_a.txt ########## len=541
+echo CMD-A > /data/velaguard/discover_bad/stack_a.txt
+nsh> [K[vgadvice] asked for 8 alarms req=1
+[tap] registered tap for channel 'local_client'
+[velaclaw_client] client opened: velaguard
+[vgagent] local agent client ready
+[vgagent] round submitted: 1295 bytes
+[agent] Agent loop started (HMI fixed buffers)
+[agent] Buffers: ctx=4096 hist=4096 tool=4096
+[agent] Tool output pool: 2 x 8192 bytes
+[agent] Tools JSON loaded: 1769 bytes
+[agent] Processing message from local_client:velaguard:1
+[agent] agent_loop started (lazy ask)
+
+
+########## echo CMD-B > /data/velaguard/discover_bad/stack_b.txt ########## len=143
+echo CMD-B > /data/velaguard/discover_bad/stack_b.txt
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+
+
+########## mv /data/velaguard/discover_bad/stack_a.txt /data/velaguard/discover_bad/stack_b.txt ########## len=586
+mv /data/velaguard/discover_bad/stack_a.txt /data/velaguard/discover_bad/stack_b.txt
+nsh> [K[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad53bf200000000] BEGIN chat=velaguard:1 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 6989 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792359410
+[agent] Dispatching response → local_client:velaguard:1
+vgnet: join 19y failed
+vgnet: esp reset
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+
+
+########## cat /data/velaguard/discover_bad/stack_b.txt ########## len=661
+cat /data/velaguard/discover_bad/stack_b.txt
+CMD-A
+nsh> [K[llm] Response: 0 bytes text, 2 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=2
+[agent] Tool iter 1: 2 calls
+[trace:6ad53bf200000000] iter=0 tool=read_file latency=4080ms llm=ok backend=0
+[tools] Executing tool: read_file
+[tools] Executed vg tool: vg_run_report
+[agent] Tool vg_run_report result: 564 bytes
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+[agent] Tool read_file result: 1874 bytes
+[llm] OpenAI API with tools (model: mimo-v2.5, 9956 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+
+
+########## ls /data/velaguard/discover_bad ########## len=172
+ls /data/velaguard/discover_bad
+/data/velaguard/discover_bad:
+ z2.txt
+ x2.txt
+ discover_state.bin
+ point_table_candidate.json
+ y2.txt
+ r2.txt
+ stack_b.txt
+nsh> [K
+
+########## ps ########## len=2031
+ps
+  PID GROUP PRI POLICY   TYPE    NPX STATE    EVENT     SIGMASK            STACK    CPU COMMAND
+    0     0   0 FIFO     Kthread   - Ready              0000000000000000 0001000 22.0% CPU0 IDLE
+    1     0 224 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976 33.7% hpwork 0x24000300 0x24000348
+    2     0 100 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976  0.5% lpwork 0x24000280 0x240002c8
+    3     3 100 RR       Task      - Waiting  Signal    0000000000000000 0008136  0.5% velaguard_app_main
+    4     3 100 RR       pthread   - Running            0000000000000000 0008168  1.6% velaguard_app_main 0x9000cabd 0
+    5     3 100 RR       pthread   - Waiting  Semaphore 0000000000000000 0012264  0.0% velaguard_app_main 0x90010349 0
+    6     3 100 RR       pthread   - Waiting  Signal    0000000000000000 0004072  0.0% velaguard_app_main 0x90013c2d 0
+    7     3 200 RR       pthread   - Waiting  Semaphore 0000000000000000 0002024  0.5% ESP8266 0x9005e639 0
+    8     3  80 RR       pthread   - Waiting  Signal    0000000000000000 0002024  0.5% netinit 0x9005f405 0
+    9     9 100 RR       Task      - Waiting  Signal    0000000000000000 0049104 36.1% vghmi vghmi
+   10     9 100 RR       pthread   - Waiting  Semaphore 0000000000000000 0008168  1.5% vghmi 0x9001446d 0
+   11    11 100 RR       Task      - Waiting  Signal    0000000000000000 0032696  0.0% ai_agent ai_agent --daemon
+   12    11  50 FIFO     pthread   - Waiting  Semaphore 0000000000000000 0012264  0.0% ai_agent 0x9002ae45 0x2001a018
+   13    11   3 FIFO     pthread   - Waiting  Signal    0000000000000000 0004072  0.5% ai_agent 0x900305ed 0x2001a118
+   14    11  50 FIFO     pthread   - Waiting  Signal    0000000000000000 0028648  0.0% ai_agent 0x9002ae45 0x2001f660
+   63     9 100 RR       pthread   - Waiting  Signal    0000000000000000 0008168  3.0% vghmi 0x90014bd1 0
+   79    11  60 FIFO     pthread   - Waiting  Semaphore 0000000000000000 0032744  0.0% ai_agent 0x9002ca79 0x2001f660
+nsh> [K
