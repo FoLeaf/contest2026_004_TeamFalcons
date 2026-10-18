@@ -235,3 +235,85 @@ ERROR: publish failed: MQTT_ERROR_SOCKET_ERROR
 ```
 
 随后重新执行 `vgnet` 显示 `mqtt=up`，会话自行恢复。未能确认是这次额外连接造成的干扰还是一次网络抖动。记为观察，不作为缺陷。同一时段还观察到板端 IP 由 `192.168.137.172` 变为 `192.168.137.123`（DHCP 续租），不影响结论。
+
+---
+
+## D-04：从站回复过快时板子丢帧（2026-10-18 傍晚，RS485 换新收发器后发现）
+
+优先级 P1。这条正是 BUS-03 关闭条件里点名的"剩余驱动窗口"，本轮第一次用快速从站实测到。
+
+### 环境
+
+用户更换了 USB-RS485 收发器。新设备实际枚举为 **COM7**（`USB-SERIAL CH340`，
+`VID_1A86&PID_7523`），不是 COM6。COM3 仍是 ST-LINK 虚拟串口（NSH 控制台）。
+从站模拟器 `scripts/maintenance_rtu_slave.ps1` 用 `-ComPort COM7` 启动。
+
+链路本身是通的：从站在 20 s 内收到 69 个请求并全部应答，
+`crc_scan=0`、`suppressed=0`，请求帧格式正确（例如 `06-03-00-00-00-01-85-BD`）。
+
+### 现象
+
+同一份固件（`75cbc8eb7a5`，构建 2026-10-18 17:43:24），只改从站的回复延迟：
+
+| 从站回复延迟 | 总线请求 | 成功 | 超时 | other | CRC 错 | 在线点位 | 请求间隔 |
+|---|---|---|---|---|---|---|---|
+| 0 ms（第 1 次） | 274 | 38 | 223 | 13 | 0 | 4 / 14 | 76-88 ms 与 644 ms 交替 |
+| 0 ms（第 2 次） | 131 | 88 | 29 | 14 | 0 | 12 / 14 | - |
+| 5 ms | 1183 | 1183 | 0 | 0 | 0 | 14 / 14 | 稳定 93 ms |
+| 20 ms | 805 | 795 | 10 | 0 | 0 | 14 / 14 | - |
+| 150 ms | 265 | 265 | 0 | 0 | 0 | 14 / 14 | 230-310 ms |
+
+0 ms 两次相差较大（14% 与 67% 成功），说明这是一个**余量很薄的边界**，不是硬阈值：
+PC 侧从站进程的回复时刻本身有抖动，落在窗口内就丢帧，落在窗口外就正常。
+5 ms 及以上两次都是 100%。
+
+`boot_crc=0`、`boot_echo=0` 说明板子不是收到坏帧，而是整帧没收到：
+超时请求对应的回复在总线上被完全丢掉。从站日志里能看到板子对同一个寄存器反复重发
+（例如 `06-03-00-02` 在 18:01:56.432 和 18:01:57.076 各发一次）。
+
+延迟 150 ms 时请求间隔约 240 ms（按回复驱动，符合预期）；延迟 5 ms 时约 93 ms；
+延迟 0 ms 时正常周期 76-88 ms、失败后约 644 ms 重试。
+
+### 定位到的大致范围
+
+板子侧 RS485 方向控制在这一版 NuttX 里已经改过
+（`../nuttx/arch/arm/src/stm32h7/stm32_serial.c`）：
+
+- `up_send()` / `up_txint(enable)` 把 DIR 置为发送；
+- 接收方向的切换只在 `up_txempty()` 里做，`up_txempty()` 由 `tcdrain()` 调用；
+- `up_txempty()` 等到 TXE|TC 之后再 `up_udelay(400)`，才把 DIR 切回接收；
+- TX 完成的 ISR 里**故意不**切 DIR，注释写明 "Do NOT drop DIR to RX here"，
+  原因是"ISR-only DIR drops were implicated in mid-frame bus floats"。
+
+所以从最后一个停止位到接收使能之间，有一个固定的保持窗口。0 ms 从站的回复落在这个
+窗口里，整帧丢失；5 ms 及以上就落在窗口外。窗口宽度按实测落在 0 到 5 ms 之间。
+
+这一段代码里 400 µs 的保持是有来历的：注释记录了上一支 USB 转串口在 DIR 立刻释放时
+会把 `0x7F/0xFF` 附到正常 CRC 后面（`Communication_log_4: D5 CA 7F`）。
+所以不能直接删掉，需要按新收发器实测 TC 到接收使能的时间重新定。
+
+### 未证实
+
+- 到底是板子 DIR 释放太晚，还是新收发器自身的发送/接收切换慢，本轮没有分开测。
+  需要同时看 DI 与 DIR 的时序才能定。
+- `up_udelay(400)` 在板上的实际时长没有直接测过。如果
+  `CONFIG_BOARD_LOOPSPERMSEC=43103` 与实际主频不符，实际保持时间可能明显大于 400 µs。
+- 20 ms 那组的 10 次超时（805 中）原因不明，可能是从站进程自身的抖动。
+
+### 复现步骤
+
+```powershell
+# 从站：COM7，9600 8N1，回复延迟 0 ms
+powershell -File scripts/maintenance_rtu_slave.ps1 -ComPort COM7 -ReplyDelayMs 0
+# 板子复位后等 60 秒
+# COM3: vgruntime dump
+```
+
+期望：`bus boot_timeout` 接近 `bus boot_total`，只有 3-4 个点位 `online=1`。
+把 `-ReplyDelayMs` 改成 5 或更大，同样步骤得到 `boot_timeout=0`、14 个点位全部在线。
+
+### 原始日志
+
+- `slave-com7.log`、`slave-com7-0ms2.log`：0 ms 两次从站日志。
+- `slave-com7-5ms.log`、`slave-com7-20ms.log`、`slave-com7-150ms.log`、`slave-com7-150ms2.log`：其余对照。
+- `vgruntime-0ms.log`、`vgruntime-5ms.log`、`vgruntime-150ms.log`：板端 `vgruntime dump`。
