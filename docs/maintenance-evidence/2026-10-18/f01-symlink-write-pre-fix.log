@@ -1,0 +1,28 @@
+task=F-01 dangling symlink write pre-fix reproduction
+started_utc=2026-10-18T12:30:16Z
+contest_head=17a0f3e1468d37dca95efeb8c04054705a2d5407
+public_head=8d16058e5939bcf08481ade45f4809bc92955f58
+7de94fde04e5f4ee21e0911149078c037681614cec29e6955555741950e98aa9  app/velaguard/host_tests/agent_review/Makefile
+9d81c5505a7dc56711d5c188ed14760aaa399ca2494cec408f8836a3029d9eb3  app/velaguard/host_tests/agent_review/repro_symlink_write_escape.c
+14716b5431e8406793b1e75850ecff491bbc5fe38f71f3d2e623773168c3f31f  /home/hello19y/openvela/packages/ai_agent/src/tools/tool_files.c
+command=make -C app/velaguard/host_tests/agent_review repro
+make: Entering directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+cc -Wall -Werror -pthread -DOK=0 -DERROR=-1 -I../../../../../packages/ai_agent/tests/stub -I../../../../../packages/ai_agent/include -I../../../../../packages/ai_agent/src -I../../../../../apps/netutils/cjson/cJSON \
+  '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' \
+  '-DVG_DATA_ROOT="data/velaguard"' \
+  -o repro_symlink_write_escape repro_symlink_write_escape.c ../../../../../packages/ai_agent/src/tools/tool_files.c ../../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+./repro_symlink_write_escape
+control: an existing symlink to an existing protected file
+  write through an existing link is refused                  PASS
+  and the protected file still exists                        PASS
+case A: dangling link, target outside the sandbox
+  write through the dangling link is refused                 FAIL
+  no file was created outside the sandbox                    FAIL
+case B: dangling link, target at a protected path
+  write through the dangling link is refused                 FAIL
+  no file was created at the protected path                  FAIL
+repro_symlink_write_escape: 4 check(s) FAILED - defect present
+make: *** [Makefile:57: repro] Error 1
+make: Leaving directory '/home/hello19y/openvela/.vg-maintenance-closeout/app/velaguard/host_tests/agent_review'
+exit_code=2
+finished_utc=2026-10-18T12:30:17Z

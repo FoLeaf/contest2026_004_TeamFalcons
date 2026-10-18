@@ -1,9 +1,8 @@
 /****************************************************************************
  * host_tests/agent_review/repro_symlink_write_escape.c
  *
- * Minimal reproduction of an OPEN defect in tool_files.c.  This program is
- * expected to FAIL until the defect is fixed; it is kept out of the `test`
- * target so the regression set stays a usable signal.
+ * Regression for F-01 in tool_files.c.  This program failed before the
+ * write path used O_NOFOLLOW and must keep passing now that it does.
  *
  *   make -C app/velaguard/host_tests/agent_review repro
  *
@@ -47,10 +46,9 @@
  *     reachable on the current board.  It becomes live if /data ever moves
  *     to a symlink-capable filesystem, or if a future tool can create one.
  *
- * Suggested fix (not applied here; the product source is under review, not
- * being changed by this task): have resolve_target() resolve the final
- * component too, or refuse the write when lstat() reports the target is a
- * symlink.
+ * Fix: tool_write_file_execute() opens the logical path with O_NOFOLLOW.
+ * That closes the last-path-component gap while the existing realpath()
+ * checks continue to protect parent-directory symlinks.
  ****************************************************************************/
 
 #include <stdio.h>

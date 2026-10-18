@@ -6,14 +6,14 @@
 #   test_round_isolation    vg_agent_round.c     request correlation, reclaim
 #   test_file_policy_extra  tool_files.c         path policy corners
 #   test_shell_gate         tool_shell.c         product command gate
-#   repro_symlink_write_escape                   open defect demonstration
+#   repro_symlink_write_escape                   F-01 write-path regression
 #
 # This directory is self-contained on purpose.  host_tests/Makefile is being
 # edited by other workstreams, so nothing here is wired into it and no file
 # outside this directory is written.
 #
 #   make -C app/velaguard/host_tests/agent_review test    # green regression set
-#   make -C app/velaguard/host_tests/agent_review repro   # the open defect
+#   make -C app/velaguard/host_tests/agent_review repro   # F-01 alone
 #
 # The openvela checkouts (nuttx, apps, packages) are read-only inputs here.
 #############################################################################
@@ -43,16 +43,15 @@ FILES      := $(AI_AGENT)/src/tools/tool_files.c
 .PHONY: test repro clean
 
 test: test_runner_budget test_round_isolation test_file_policy_extra \
-      test_shell_gate test_tool_guard_rate
+      test_shell_gate test_tool_guard_rate repro_symlink_write_escape
 	./test_runner_budget
 	./test_round_isolation
 	./test_file_policy_extra
 	./test_shell_gate
 	./test_tool_guard_rate
+	./repro_symlink_write_escape
 	@echo "agent_review: regression set OK"
 
-# Expected to fail until the write-path symlink hole is closed.  Kept out of
-# `test` so the regression set stays a usable signal.
 repro: repro_symlink_write_escape
 	./repro_symlink_write_escape
 
