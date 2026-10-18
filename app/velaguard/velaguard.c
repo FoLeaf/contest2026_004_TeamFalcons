@@ -35,6 +35,24 @@
 #  error "VelaGuard boot storage path requires CONFIG_INIT_STACKSIZE >= 8192"
 #endif
 
+/* The console thread runs the whole shell, so every filesystem command runs
+ * on this stack: vgpoint, vgstoretest, cp/mv, and the vfat plus SDMMC read
+ * path underneath them.  The pthread default (CONFIG_PTHREAD_STACK_DEFAULT,
+ * 2 KiB here) is not enough.  Measured on the board: during a vfat rename the
+ * stack reached the very bottom of its allocation, and NuttX keeps
+ * struct tls_info_s there, so the overflow overwrote tls_info_s->tl_task.
+ * The next getpid() dereferenced the wrecked pointer and the board took a
+ * HardFault and stopped responding.  Keep this in step with the matching
+ * CONFIG_VG_NSH_STACKSIZE range in Kconfig. */
+
+#ifndef CONFIG_VG_NSH_STACKSIZE
+#  define CONFIG_VG_NSH_STACKSIZE 8192
+#endif
+
+#if CONFIG_VG_NSH_STACKSIZE < 8192
+#  error "VelaGuard console shell requires CONFIG_VG_NSH_STACKSIZE >= 8192"
+#endif
+
 #if defined(CONFIG_VG_AGENT_AUTOSTART) || defined(CONFIG_VG_HMI_AUTOSTART)
 #include <nuttx/sched.h>
 #endif
@@ -117,10 +135,28 @@ int main(int argc, char *argv[])
 
     g_app_running = 1;
 
-    /* Spawn console shell on a side thread */
+    /* Spawn console shell on a side thread.  It gets an explicit stack rather
+     * than the pthread default: the shell owns the deep vfat/SDMMC call paths
+     * described above. */
 
     pthread_t tid;
-    pthread_create(&tid, NULL, nsh_thread, NULL);
+    pthread_attr_t attr;
+
+    if (pthread_attr_init(&attr) == 0)
+      {
+        pthread_attr_setstacksize(&attr, CONFIG_VG_NSH_STACKSIZE);
+        if (pthread_create(&tid, &attr, nsh_thread, NULL) != 0)
+          {
+            printf("vg: console thread not started\n");
+          }
+
+        pthread_attr_destroy(&attr);
+      }
+    else
+      {
+        printf("vg: console attr init failed, using default stack\n");
+        pthread_create(&tid, NULL, nsh_thread, NULL);
+      }
 
 #ifdef CONFIG_VG_NET_FAILOVER
     /* Start RJ45/ESP TCP failover manager (independent of NSH) */

@@ -85,7 +85,7 @@ vgpoint: OK cmd=list table=committed n=14
 
 ---
 
-## D-02：`discover` 目录的元数据改写导致整机崩溃（已定位到目录并现场修复）
+## D-02：`discover` 目录的元数据改写导致整机崩溃（**根因已定位并修复**）
 
 优先级 P0。表现是整机失联，必须 SWD 复位。
 
@@ -131,45 +131,69 @@ dump_assert_info: Assertion failed panic: at file: :0 task: velaguard_app_main p
 
 所以既不是 `cmd_mv` 或 `rename` 的通用缺陷，也不是文件名、文件大小或文件内容的问题，而是**这个目录自身的磁盘状态**。
 
-### 已验证但不成立的假设：NSH 线程栈过小
+### 根因：NSH 控制台线程栈耗尽，溢出打坏栈底的 `tls_info_s`
 
-`ps` 显示控制台线程（PID 4，pthread `velaguard_app_main`）的栈只有 **2024 字节**，而 `velaguard.c` 用 `pthread_create(&tid, NULL, nsh_thread, NULL)`，拿到的是 `CONFIG_PTHREAD_STACK_DEFAULT=2048`。其余任务的栈分别是 8136（主任务）、49104（vghmi）、32696（ai_agent）、12264 等。
-
-同一份仓库里 SYS-01 已经修过同类问题：注释明确写着系统入口任务原来的 2 KiB 栈"overflows inside open()/getumask()"，且在 FAT 写路径上。
-
-疑似机理：控制台栈溢出会冲掉位于栈底的 TCB，而 `getpid()` 正好读 TCB 的 `group` 字段，和观测到的故障点吻合。于是做了实验：新增 `CONFIG_VG_NSH_STACKSIZE=8192` 并显式设置线程栈，重新构建烧录后，在保留的受损目录里重跑同一复现步骤。
-
-**结果：仍然崩溃**，签名完全一致（`CFSR=0x00008200`、`BFAR=0x3b`、`getpid` 内同一指令）。假设不成立，该改动已回退，未留在仓库里。
-
-控制台线程 2 KiB 这个事实本身仍记为观察项（见下），但没有证据说明它在本问题里起作用；在受损目录之外，2 KiB 的线程跑 `vgpoint`、`cp`、`rm` 都正常。
-
-### 现场修复与复验
-
-把受损目录整体改名保留为 `discover_bad/`，新建 `/data/velaguard/discover/`，把两个文件复制回去。修复后同一操作不再崩溃：
+用 OpenOCD（`ST-LINK_gdbserver` 在这台机器上始终报 `Target no device found`）复位下连上核心后，
+在 `arm_hardfault` 入口下硬件断点、在 `tls_info_s->tl_task` 那个字下硬件监视点，
+抓到了写入者：
 
 ```text
-nsh> echo AAA > /data/velaguard/discover/w1.txt
-nsh> echo BBB > /data/velaguard/discover/w2.txt
-nsh> mv /data/velaguard/discover/w1.txt /data/velaguard/discover/w2.txt
-nsh> cat /data/velaguard/discover/w2.txt
-AAA
+Old value = 939525504 (0x38000580)   New value = 11 (0x0b)
+0x90001684 in arm_svcall ()          sp = 0x38002be0
+bt: arm_svcall <- arm_doirq <- exception_common <- nxsched_switch
+    <- nxsem_wait_slow <- stm32_eventwait <- mmcsd_eventwait <- mmcsd_read
+    <- fat_hwread <- fat_fscacheread <- fat_findsfnentry <- fat_putlfname
+    <- fat_dirnamewrite <- fat_rename <- rename <- cmd_mv <- nsh_command
 ```
 
-在该目录里 `vgpoint add` / `del` 也正常（见 D-01 复验）。
+`sp` 正好落在栈分配的最低地址，也就是 `tls_info_s` 所在处。NuttX 把 `tls_info_s`
+放在栈分配底部（`arm_stackframe.c` 的 `up_stack_frame`），所以栈一溢出就先打坏
+`tl_task`；随后 `getpid()` 解引用 `0x0b`，产生 `BFAR=0x3b` 的精确数据访问错误，
+升级成 HardFault。
 
-受损目录保留在 `/data/velaguard/discover_bad/`（`point_table_candidate.json` 2167 字节、`discover_state.bin` 4552 字节），作为现场证据，未删除。
+板端实测：这条 `mv` 路径需要 **2048 字节**栈，而修复前可用 **2024 字节**
+（pthread 默认 2048 减去 24 字节 `tls_info_s`），差 24 字节。对照实验：同样的 `mv`
+在 `diagnostics/` 里执行时监视点不触发，命令正常完成，所以溢出深度与具体路径相关。
+
+完整定位过程、反汇编、栈布局和量化数据见 [d02-root-cause.md](d02-root-cause.md)。
+
+### 修复与复验
+
+| 文件 | 改动 |
+|---|---|
+| `app/velaguard/Kconfig` | 新增 `CONFIG_VG_NSH_STACKSIZE`，默认 8192 |
+| `app/velaguard/velaguard.c` | 控制台线程改用 `pthread_attr_setstacksize`，加下限 `#error` |
+| `scripts/configs/velaguard-lvgl.defconfig` | 增加 `CONFIG_VG_NSH_STACKSIZE=8192` |
+
+板端确认 `ps` 里 PID 4 的 STACK 从 `0002024` 变为 `0008168`。修复后同一串命令通过：
+
+```text
+nsh> mv /data/velaguard/discover_bad/r1.txt /data/velaguard/discover_bad/r2.txt
+nsh> cat /data/velaguard/discover_bad/r2.txt
+AAA
+nsh> uname -a
+NuttX  0.0.0 75cbc8eb7a5-dirty Oct 18 2026 17:43:24 arm stm32h750b-dk
+```
+
+填充法量出的高水位是 2048 字节 / 可用 8168 字节，余量 6120 字节；
+`tls_info_s->tl_task` 在整条命令前后都是 `0x38000580`，未被破坏。
+
+受损目录保留在 `/data/velaguard/discover_bad/` 作为现场证据，未删除。
+它现在只是一组普通文件，不再具有"触发崩溃"的特殊性。
+
+### 与上一轮否定结论的关系
+
+上一轮把线程栈提到 8192 后记录为"签名不变，假设不成立"，本轮按同样思路重新实现后
+板端复验通过。上一轮的否定结果本轮无法重现。可能原因是那次增量构建没有真正把栈改上去
+（本仓库存在复用旧 `nuttx/.config` 的陷阱，本轮构建前就因此触发过一次 `#error`），
+但本轮没有留下那次构建的 `.config` 或 `ps` 输出可以核对，不把它当作已证实的结论。
 
 ### 仍未证实
 
-- 目录磁盘状态里具体损坏的是什么。需要导出该目录的原始扇区或对 FAT 结构做离线检查，本轮没有做。
-- 损坏来源。与 ST-02 记录的历史 eMMC 目录损坏在时间线上吻合，但本次没有证据把两者认定为同一原因，不据此关闭 ST-02。
-- 是否会在别的目录复现。本轮只发现 `discover/` 一处；`config/`、`reports/`、`diagnostics/`、`live/` 的替换操作都正常。
-
-### 修复方向
-
-1. 排查 vfat 目录条目处理：本次现象是"数据操作成功、收尾崩溃"，适合从释放目录缓冲或目录流的地方查起。
-2. 用 GDB 复现取调用栈。ST-LINK GDB server 本次无法连接（`Target no device found`），而 `STM32_Programmer_CLI` 用 `mode=UR`（复位下连接）可以，说明需要复位下连接方式，尚未配好。
-3. 对 `/data/velaguard` 下的目录做一次完整性检查，确认是否还有别的目录带同类损伤。
+- 与 ST-02 记录的历史 eMMC 目录损坏是否同源。时间线上吻合，但本次没有证据把两者
+  认定为同一原因，不据此关闭 ST-02。
+- 其他线程的栈没有跟着调整。PID 7（ESP8266）、PID 8（netinit）仍是 2024 字节，
+  本轮没有证据说明它们会走到同样深的 vfat/SDMMC 路径。
 
 ### 原始日志
 
@@ -177,7 +201,13 @@ AAA
 - `nsh-mv-repro2.log`、`nsh-mv-discover3.log`、`nsh-mv-discover4.log`：三次复现。
 - `nsh-mv-freshdir.log`、`nsh-mv-mimic.log`、`nsh-mv-copyfiles.log`：三个不崩溃的对照。
 - `nsh-rebuild-dir.log`、`nsh-newdiscover.log`：目录改名崩溃与重建后复验。
-- `reset-log.txt`：四次复位的时间与原因。
+- `gdb-catch-hardfault.log`：GDB 在 `arm_hardfault` 入口抓到的完整故障现场与调用栈。
+- `gdb-watch-tl_task.log`：监视点抓到写入 `tl_task` 的指令，`sp` 落在栈底。
+- `gdb-watch-diagnostics.log`：对照组，`diagnostics/` 目录同操作下监视点未触发。
+- `gdb-measure-stack.log`：填充法量出的栈高水位 2048 / 可用 8168 字节。
+- `d02-root-cause.md`：根因定位的完整推导与量化数据。
+- `build-d02-fix.log`、`flash-d02-fix.log`：修复后的构建与烧录。
+- `reset-log.txt`：复位的时间与原因。
 
 ---
 
