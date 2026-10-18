@@ -1,0 +1,44 @@
+[
+  {
+    "file": "d06-resumed-baseline.log",
+    "source": ".debug/resume-baseline-20261018-2335.log",
+    "host_capture_finished": "2026-10-18T23:35:28.816386+08:00",
+    "sha256": "effb73bda9197f22fcf42ffc7551b42d27ce7086d7e882d37778184d09f34a29"
+  },
+  {
+    "file": "d06-resumed-test.log",
+    "source": ".debug/resume-candidate-test-20261018-2337.log",
+    "host_capture_finished": "2026-10-18T23:35:57.464388+08:00",
+    "sha256": "84935f6a4968ab3a75266d2e46bfe341440ff8cbc54f0051f327fb2b082f5ca4"
+  },
+  {
+    "file": "d06-human-confirmed-apply.log",
+    "source": ".debug/resume-candidate-apply-20261018-2340.log",
+    "host_capture_finished": "2026-10-18T23:37:18.536393+08:00",
+    "sha256": "745fce5475c070847e0549f7955b75dd118309baff8b1e34baa11c2d99cf9948"
+  },
+  {
+    "file": "d06-after-human-apply.log",
+    "source": ".debug/resume-after-apply-20261018-2341.log",
+    "host_capture_finished": "2026-10-18T23:37:52.356395+08:00",
+    "sha256": "d2621ebf04a5fa751833867838fd4284e7c3d59c8e4795cb2fcb1f1a1f0e6d61"
+  },
+  {
+    "file": "d06-nsh-reboot-unavailable.log",
+    "source": ".debug/resume-d06-reboot-20261018-2343.log",
+    "host_capture_finished": "2026-10-18T23:38:42.112398+08:00",
+    "sha256": "f403559b10041b28b5345655837bd31394f17f97072063f46f9e14a8cc243170"
+  },
+  {
+    "file": "d06-persistence-reset.log",
+    "source": ".debug/resume-d06-hardware-reset-20261018-2345.log",
+    "host_capture_finished": "2026-10-18T23:39:24.980400+08:00",
+    "sha256": "26a47c38e379b707fc4407d2378a92b1ac2d83c39f6c207ba2f1cb5c23803645"
+  },
+  {
+    "file": "d06-persistence-after-confirm.log",
+    "source": ".debug/resume-d06-persistence-20261018-2345.log",
+    "host_capture_finished": "2026-10-18T23:40:04.352403+08:00",
+    "sha256": "d50a5cb62fb467d2339380eb24e824511ff11b91da49c51a2e97a0cd418f8c47"
+  }
+]

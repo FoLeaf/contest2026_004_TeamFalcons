@@ -31,3 +31,4 @@ NOTE  2026-10-18 傍晚 各工况 60-300 秒窗口内 bus boot_timeout=0、boot_
 RESET 2026-10-18T22:24:35+08:00 reason=G-I8 板端 tick 停止、NSH 零响应、USART3 RX 中断风暴；人工 OpenOCD reset run 恢复（先保存 PC/USART/NVIC 现场）
 RESET 2026-10-18T23:03:23+08:00 reason=QA-04 第三次复现；异常入口单步后出现 HardFault，先保存 PC/CFSR/HFSR/MSP，再人工 OpenOCD reset run 恢复。该 HardFault 不作为自然故障根因证据。
 NOTE  2026-10-18T23:03:27+08:00 OpenOCD 会话已关闭；23:04:18 起完成 COM3 重启和只读复验。
+RESET 2026-10-18T23:39:24+08:00 reason=D-06 用户确认 apply 后验证 eMMC 持久化；STM32_Programmer_CLI -c port=SWD mode=UR -rst，未重烧。此前 NSH reboot 不存在，未造成复位。详见 d06-persistence-reset.log。

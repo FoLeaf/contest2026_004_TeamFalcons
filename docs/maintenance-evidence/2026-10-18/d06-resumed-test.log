@@ -1,0 +1,35 @@
+########## boot settle len=864 ##########
+vgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint test ########## len=1170
+vgpoint test
+vgpoint: test bus=/dev/rs485
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgpoint: READ id=temp raw=240 value=24 ok=1
+vgpoint: READ id=humid raw=500 value=50 ok=1
+vgpoint: READ id=flood raw=0 value=0 ok=1
+vgpoint: READ id=smoke raw=10 value=1 ok=1
+vgpoint: READ id=acu_ret raw=250 value=25 ok=1
+vgpoint: READ id=acu_set raw=240 value=24 ok=1
+vgpoint: READ id=acu_run raw=1 value=1 ok=1
+vgpoint: READ id=ups_load raw=400 value=40 ok=1
+vgpoint: READ id=ups_soc raw=80 value=80 ok=1
+vgpoint: READ id=ups_bypass raw=0 value=0 ok=1
+vgpoint: READ id=volt_a raw=2300 value=230 ok=1
+vgpoint: READ id=pwr_kw raw=300 value=3 ok=1
+vgpoint: READ id=energy_kwh raw=1234 value=123.4 ok=1
+vgpoint: READ id=door raw=0 value=0 ok=1
+vgpoint: OK cmd=test table=candidate n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+

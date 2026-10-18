@@ -1,0 +1,69 @@
+########## boot settle len=735 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint list ########## len=1858
+vgpoint list
+vgpoint: POINT id=temp name=温度验收 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=committed n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## cat /data/velaguard/config/points.json ########## len=2244
+cat /data/velaguard/config/points.json
+{"schema_version":1,"bus":{"device":"/dev/rs485","baud":9600},"hits":[],"points":[{"id":"temp","name":"温度验收","addr":1,"fc":3,"reg":0,"qty":1,"dtype":"int16","scale":0.100000001490116,"unit":"C","cmp":"ge","warn":28,"crit":35,"fail_n":3},{"id":"humid","name":"湿度","addr":1,"fc":3,"reg":1,"qty":1,"dtype":"uint16","scale":0.100000001490116,"unit":"%RH","cmp":"ge","warn":70,"crit":85,"fail_n":3},{"id":"flood","name":"水浸","addr":2,"fc":3,"reg":2,"qty":1,"dtype":"uint16","scale":1,"unit":"","cmp":"eq","crit":1,"fail_n":3},{"id":"smoke","name":"烟雾","addr":3,"fc":3,"reg":0,"qty":1,"dtype":"uint16","scale":0.100000001490116,"unit":"%","cmp":"ge","warn":5,"crit":10,"fail_n":3},{"id":"acu_ret","name":"回风温度","addr":4,"fc":3,"reg":0,"qty":1,"dtype":"int16","scale":0.100000001490116,"unit":"C","cmp":"ge","warn":28,"crit":32,"fail_n":3},{"id":"acu_set","name":"设定温度","addr":4,"fc":3,"reg":1,"qty":1,"dtype":"int16","scale":0.100000001490116,"unit":"C","fail_n":3},{"id":"acu_run","name":"空调运行","addr":4,"fc":3,"reg":2,"qty":1,"dtype":"uint16","scale":1,"unit":"","fail_n":3},{"id":"ups_load","name":"UPS负载","addr":5,"fc":3,"reg":0,"qty":1,"dtype":"uint16","scale":0.100000001490116,"unit":"%","cmp":"ge","warn":70,"crit":90,"fail_n":3},{"id":"ups_soc","name":"UPS电池","addr":5,"fc":3,"reg":1,"qty":1,"dtype":"uint16","scale":1,"unit":"%","cmp":"le","warn":40,"crit":20,"fail_n":3},{"id":"ups_bypass","name":"UPS旁路","addr":5,"fc":3,"reg":2,"qty":1,"dtype":"uint16","scale":1,"unit":"","cmp":"eq","crit":1,"fail_n":3},{"id":"volt_a","name":"A相电压","addr":6,"fc":3,"reg":0,"qty":1,"dtype":"uint16","scale":0.100000001490116,"unit":"V","cmp":"le","warn":200,"crit":180,"fail_n":3},{"id":"pwr_kw","name":"有功功率","addr":6,"fc":3,"reg":1,"qty":1,"dtype":"uint16","scale":0.00999999977648258,"unit":"kW","cmp":"ge","warn":8,"crit":10,"fail_n":3},{"id":"energy_kwh","name":"正向电能","addr":6,"fc":3,"reg":2,"qty":1,"dtype":"uint16","scale":0.100000001490116,"unit":"kWh","fail_n":3},{"id":"door","name":"门磁","addr":7,"fc":3,"reg":0,"qty":1,"dtype":"uint16","scale":1,"unit":"","cmp":"eq","crit":1,"fail_n":3}]}nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgpoint get ########## len=1004
+vgpoint get
+vgpoint: VALUE id=temp value=24 ok=1 unit=C age_ms=1900
+vgpoint: VALUE id=humid value=50 ok=1 unit=%RH age_ms=1900
+vgpoint: VALUE id=flood value=0 ok=1 unit=- age_ms=1900
+vgpoint: VALUE id=smoke value=1 ok=1 unit=% age_ms=1900
+vgpoint: VALUE id=acu_ret value=25 ok=1 unit=C age_ms=1900
+vgpoint: VALUE id=acu_set value=24 ok=1 unit=C age_ms=1900
+vgpoint: VALUE id=acu_run value=1 ok=1 unit=- age_ms=1900
+vgpoint: VALUE id=ups_load value=40 ok=1 unit=% age_ms=1900
+vgpoint: VALUE id=ups_soc value=80 ok=1 unit=% age_ms=1900
+vgpoint: VALUE id=ups_bypass value=0 ok=1 unit=- age_ms=1900
+vgpoint: VALUE id=volt_a value=230 ok=1 unit=V age_ms=1900
+vgpoint: VALUE id=pwr_kw value=3 ok=1 unit=kW age_ms=1900
+vgpoint: VALUE id=energy_kwh value=123.4 ok=1 unit=kWh age_ms=1900
+vgpoint: VALUE id=door value=0 ok=1 unit=- age_ms=1900
+vgpoint: OK cmd=get table=committed n=14
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgcfg dump ########## len=281
+vgcfg dump
+vgcfg: OK seq=6 schema=1 committed=1 name=vgpoint
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgnet status ########## len=297
+vgnet status
+state=connecting egress=rj45 tcp=posix mqtt=down reason=egress=rj45
+rj45 link=1 ip=192.168.137.173 gw=192.168.137.1 ping_ok=1 fail_streak=0
+wifi ssid=19y assoc=0 ip=-
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
