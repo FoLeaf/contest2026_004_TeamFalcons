@@ -98,6 +98,34 @@ int main(void)
   fault = 0;
   assert(access("store-test", F_OK) != 0); /* do not resurrect an aborted file */
   unlink("store-test.bak");
-  puts("test_file_store: OK (ENOSPC, short write, primary/backup verification, sync, rename, concurrent)");
+
+  /* Name budget.  The board's vfat rejects a file name component longer than
+   * VG_STORE_NAME_MAX, and the backup temporary used to push the product's
+   * candidate name to 34 characters, which made every candidate edit fail.
+   * Cover both sides: a name this store can serve completes, and one it cannot
+   * is refused before any file appears. */
+
+  const char *cand = "point_table_candidate.json";
+  char cand_bak[64];
+  assert(strlen(cand) + 5 <= VG_STORE_NAME_MAX);
+  snprintf(cand_bak, sizeof(cand_bak), "%s.bak", cand);
+  assert(!vg_file_replace(cand, old, strlen(old), 0600));
+  expect_file(cand, old);
+  assert(!vg_file_replace(cand, next, strlen(next), 0600));
+  expect_file(cand, next);
+  expect_file(cand_bak, old);
+  unlink(cand);
+  unlink(cand_bak);
+
+  char toolong[VG_STORE_NAME_MAX + 1];
+  char toolong_tmp[VG_STORE_NAME_MAX + 8];
+  memset(toolong, 'a', VG_STORE_NAME_MAX);
+  toolong[VG_STORE_NAME_MAX] = '\0';
+  snprintf(toolong_tmp, sizeof(toolong_tmp), "%s.tmp", toolong);
+  assert(vg_file_replace(toolong, next, strlen(next), 0600) == -ENAMETOOLONG);
+  assert(access(toolong, F_OK) != 0);
+  assert(access(toolong_tmp, F_OK) != 0);
+
+  puts("test_file_store: OK (ENOSPC, short write, primary/backup verification, sync, rename, concurrent, name budget)");
   return 0;
 }

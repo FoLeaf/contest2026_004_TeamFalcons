@@ -35,3 +35,14 @@ nuttx    75cbc8eb7a5 fix(stm32h750b-dk): preserve SDRAM pins and retain child st
 ai_agent 131642d fix(agent): bound shell execution and correlate final replies
 MQTT-C   4dbb7f3 mqtt_pal: add weak hooks for tagged LESP send/recv
 apps     0ea954b79 netutils: carrier poll DHCP renew and ESP8266 LESP compat
+
+# --- 第二次构建：D-01 修复后（2026-10-18 16:09:56）---
+# 变更：vg_file_store.{c,h} 缩短备份临时后缀并加派生名预算校验；
+#       host_tests/test_file_store.c 增加名字预算回归。
+# 命令：bash scripts/build.sh   (TARGET=velaguard-lvgl)
+# 固件内嵌构建时间: Oct 18 2026 16:09:56
+90350897cae9cbf954b65049f864d231f156ea0065cbf363c51efb88404a4d8d  .debug/nuttx.hex
+f38a5356ab61147b83eabd581345d3ecc9266ed9c83637f182bfdfa173bfd1bd  .debug/nuttx.bin
+877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e  .debug/qspi_bootstub.hex
+# 静态内存：flash 1,262,744 B / sram 292,252 B（与修复前一致）
+# 构建日志：build-d01-fix.log；烧录日志：flash-d01-fix.log（两段均 verified）

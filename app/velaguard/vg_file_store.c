@@ -9,7 +9,23 @@
 #include <unistd.h>
 
 #define VG_STORE_PATH_MAX 256
+#define VG_STORE_SUFFIX_TMP     ".tmp"
+#define VG_STORE_SUFFIX_BAK     ".bak"
+#define VG_STORE_SUFFIX_BAK_TMP ".btmp"
+
 static pthread_mutex_t g_store_lock = PTHREAD_MUTEX_INITIALIZER;
+
+/* Does "<path><suffix>" fit the name budget of the target filesystem? */
+
+static int store_name_fits(const char *path, const char *suffix)
+{
+  const char *base = strrchr(path, '/');
+  size_t baselen;
+
+  base = (base == NULL) ? path : base + 1;
+  baselen = strlen(base);
+  return (baselen + strlen(suffix) <= VG_STORE_NAME_MAX) ? 0 : -ENAMETOOLONG;
+}
 
 static int write_all(int fd, const unsigned char *data, size_t len)
 {
@@ -115,10 +131,22 @@ static int store_file(const char *path, const void *data, size_t len, mode_t mod
 
   if (path == NULL || path[0] == '\0' || (data == NULL && len != 0))
     return -EINVAL;
-  if (snprintf(bak_tmp, sizeof(bak_tmp), "%s.bak.tmp", path) >=
+
+  /* Reject an over-long name before touching the filesystem, so a path this
+   * store cannot serve fails immediately instead of after a half-finished
+   * replace. */
+
+  if (store_name_fits(path, VG_STORE_SUFFIX_TMP) != 0 ||
+      store_name_fits(path, VG_STORE_SUFFIX_BAK) != 0 ||
+      store_name_fits(path, VG_STORE_SUFFIX_BAK_TMP) != 0)
+    return -ENAMETOOLONG;
+
+  if (snprintf(bak_tmp, sizeof(bak_tmp), "%s" VG_STORE_SUFFIX_BAK_TMP, path) >=
       (int)sizeof(bak_tmp)) return -ENAMETOOLONG;
-  snprintf(tmp, sizeof(tmp), "%s.tmp", path);
-  snprintf(bak, sizeof(bak), "%s.bak", path);
+  if (snprintf(tmp, sizeof(tmp), "%s" VG_STORE_SUFFIX_TMP, path) >=
+      (int)sizeof(tmp)) return -ENAMETOOLONG;
+  if (snprintf(bak, sizeof(bak), "%s" VG_STORE_SUFFIX_BAK, path) >=
+      (int)sizeof(bak)) return -ENAMETOOLONG;
 
   pthread_mutex_lock(&g_store_lock);
   if (create_only && access(path, F_OK) == 0)
