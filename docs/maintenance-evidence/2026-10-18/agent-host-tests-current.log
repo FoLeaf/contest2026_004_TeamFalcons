@@ -1,0 +1,29 @@
+evidence=agent-host-tests-current
+worktree=/home/hello19y/openvela/.vg-maintenance-closeout
+head=715cdf4
+command=make -B test_agent_query test_agent_tools test_agent_round test_shell_runner test_local_client test_file_policy test_shell_output; run each test
+--- build and test output ---
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -o test_agent_query test_agent_query.c ../vg_agent_query.c
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -Istubs -include stubs/vg_host_shim.h -I../../../../apps/include -I../../../../packages/ai_agent/include -o test_agent_tools test_agent_tools.c \
+  ../vg_agent_tools.c ../vg_agent_query.c ../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -Istubs -I../../../../packages/ai_agent/include -o test_agent_round test_agent_round.c ../vg_agent_round.c -Wl,--wrap=clock_gettime
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -o test_shell_runner ../../../../packages/ai_agent/tests/test_shell_runner.c ../../../../packages/ai_agent/src/tools/tool_shell_runner.c
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -DOK=0 -DERROR=-1 -I../../../../packages/ai_agent/include -I../../../../packages/ai_agent/src -o test_local_client ../../../../packages/ai_agent/tests/test_local_client.c ../../../../packages/ai_agent/src/sdk/velaclaw_client_local.c
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -DOK=0 -DERROR=-1 '-DCONFIG_EXAMPLES_AI_AGENT_VELA_DATA_DIR="data/agent"' '-DVG_DATA_ROOT="data/velaguard"' -I../../../../packages/ai_agent/tests/stub -I../../../../packages/ai_agent/include -I../../../../packages/ai_agent/src -I../../../../apps/include/../netutils/cjson/cJSON -o test_file_policy ../../../../packages/ai_agent/tests/test_file_policy.c ../../../../packages/ai_agent/src/tools/tool_files.c ../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+cc -Wall -Werror -I.. -pthread -I../../../../apps/include -DOK=0 -DERROR=-1 -DCONFIG_VG_HMI -I../../../../packages/ai_agent/tests/stub -I../../../../packages/ai_agent/include -I../../../../packages/ai_agent/src -I../../../../apps/include/../netutils/cjson/cJSON -o test_shell_output ../../../../packages/ai_agent/tests/test_shell_output.c ../../../../packages/ai_agent/src/tools/tool_shell_runner.c ../../../../apps/netutils/cjson/cJSON/cJSON.c -lm
+BUILD_EXIT_STATUS=0
+test_agent_query: OK
+TEST_AGENT_QUERY_EXIT_STATUS=0
+test_agent_tools: OK
+TEST_AGENT_TOOLS_EXIT_STATUS=0
+test_agent_round: OK (timeout, late callback, result ownership, recovery)
+TEST_AGENT_ROUND_EXIT_STATUS=0
+test_shell_runner: OK (timeout, closed pipe, overflow, recovery, reap)
+TEST_SHELL_RUNNER_EXIT_STATUS=0
+test_local_client: OK (busy, stale, duplicate, failed submit, recovery)
+TEST_LOCAL_CLIENT_EXIT_STATUS=0
+test_file_policy: OK (symlink, dangling target, config, firmware facts, allowed report)
+TEST_FILE_POLICY_EXIT_STATUS=0
+test_shell_output: OK (exact canaries, metadata bounds, product allowlist)
+TEST_SHELL_OUTPUT_EXIT_STATUS=0
+OVERALL_EXIT_STATUS=0
