@@ -1,0 +1,175 @@
+########## boot settle len=654 ##########
+vgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2790 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1860 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1320 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1010 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2970 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1970 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1290 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2940 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2160 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1280 warn=ge70 crit=ge90
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent tool vg_point_read ups_load ########## len=202
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=870 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2540 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1520 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=202
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=870 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=307
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=810 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2440 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1970 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1110 warn=ge70 crit=ge90
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1100 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=308
+vgagent tool vg_point_read ups_load
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2750 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=263
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: reason=rate_limited msg=调用过于频繁，请稍后再试
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent tool vg_point_read ups_load ########## len=158
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: reason=rate_limited msg=调用过于频繁，请稍后再试
+nsh> [K

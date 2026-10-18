@@ -1,0 +1,41 @@
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+########## vgagent status ##########
+vgagent status
+round: state=idle gen=5 owner=none
+llm: credentials=ready provision_file=present
+reply: **UPS 负载** 当前值 **40 %**
+
+- 状态：正常（ok=1）
+- 数据新鲜度：约 1.2 秒前采样
+- 告警阈值：≥70% 预警，≥90% 严重
+- 当前 40%，远低于预警线，负�
+nsh> [K[vgadvice] asked for 1 alarms req=4
+[vgagent] round submitted: 739 bytes
+[agent] Processing message from local_client:velaguard:6
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+########## vgagent status ##########
+vgagent status
+round: state=running gen=5 owner=advice
+llm: credentials=ready provision_file=present
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+########## vgagent ask read ups_load current value ##########
+vgagent ask read ups_load current value
+vgagent: queue failed: -16
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+########## vgagent status ##########
+vgagent status
+round: state=running gen=5 owner=advice
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+llm: credentials=ready provision_file=present
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+BUSY-PROBE: matched running advice round

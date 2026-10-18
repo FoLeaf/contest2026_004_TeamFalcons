@@ -1,0 +1,282 @@
+########## boot settle len=630 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## ls -l /data/velaguard/logs/agent_tools.log ########## len=118
+ls -l /data/velaguard/logs/agent_tools.log
+ -rw-rw-rw-   0       17302 /data/velaguard/logs/agent_tools.log
+nsh> [K
+
+########## cat /data/velaguard/logs/agent_tools.log ########## len=17580
+cat /data/velaguard/logs/agent_tools.log
+788.350 tool=vg_point_read rc=0 args={"query":"ups_load"}
+790.400 tool=vg_point_read rc=0 args={"query":"UPS负载"}
+792.240 tool=vg_point_read rc=0 args={"query":"UPS"}
+794.080 tool=vg_point_read rc=0 args={"query":"不存在的点位"}
+795.440 tool=vg_run_report rc=0 args={}
+797.290 tool=run_shell rc=-1 args={command:vgpoint}
+1535.000 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1549.810 tool=vg_point_read rc=0 args={"query":"UPS负载"}
+1565.630 tool=vg_point_read rc=0 args={"query":"UPS"}
+1581.080 tool=vg_point_read rc=0 args={"query":"负载"}
+1596.400 tool=vg_point_read rc=0 args={"query":"不存在的点位"}
+1611.420 tool=vg_run_report rc=0 args={}
+1627.160 tool=no_such_tool_xyz rc=-3 args={}
+111.520 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+112.050 tool=vg_point_read rc=0 args={}
+121.260 tool=run_shell rc=0 args={"command":"vgstats dump"}
+121.820 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+220.840 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30b979bd\nreq=1\nn=8
+421.110 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+426.070 tool=run_shell rc=0 args={"command":"vgstats dump"}
+426.800 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+532.190 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30b979bd\nreq=2\nn=8
+546.640 tool=vg_point_read rc=0 args={"query":"ups_load"}
+29.560 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+136.400 tool=vg_point_read rc=0 args={"query":"ups_load"}
+140.590 tool=vg_point_read rc=0 args={"query":"ups_load"}
+270.000 tool=read_file rc=0 args={"path":"/data/agent/skills/operations_report.md"}
+277.490 tool=run_shell rc=0 args={"command":"vgruntime dump"}
+281.970 tool=run_shell rc=0 args={"command":"vgstats dump"}
+385.170 tool=write_file rc=0 args={"path":"/data/velaguard/reports/daily-2026-09-20.md","content":"AI-DAILY v1\ndate=2026-09-20\n
+402.170 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+490.980 tool=run_shell rc=0 args={"command":"vgstats dump"}
+491.670 tool=run_shell rc=0 args={"command":"vgmodbus -a 1 -r 0 -c 4 -n 1 -i 0"}
+500.330 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+501.290 tool=vg_point_read rc=0 args={"query":"flood"}
+507.300 tool=vg_point_read rc=0 args={"query":"acu_ret"}
+512.630 tool=vg_point_read rc=0 args={"query":"ups_load"}
+613.850 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30b82ee1\nreq=2\nn=4
+700.230 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+707.440 tool=run_shell rc=0 args={"command":"vgmodbus -a 0 -r 0 -c 4 -n 1 -i 0"}
+715.220 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+715.830 tool=vg_point_read rc=0 args={"query":"flood"}
+721.800 tool=vg_point_read rc=0 args={"query":"acu_ret"}
+731.380 tool=vg_point_read rc=0 args={"query":"ups_load"}
+833.280 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30b82ee1\nreq=3\nn=4
+854.090 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+938.460 tool=run_shell rc=0 args={"command":"vgstats dump"}
+939.250 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+111.130 tool=vg_point_read rc=0 args={"query":"temp"}
+97.610 tool=vg_point_read rc=0 args={"query":"temp"}
+98.240 tool=vg_run_report rc=0 args={}
+30.280 tool=run_shell rc=0 args={"command":"vgruntime dump"}
+30.490 tool=run_shell rc=-1 args={"command":"vgpoint list"}
+70.280 tool=run_shell rc=0 args={"command":"vgcfg dump"}
+70.450 tool=run_shell rc=-1 args={"command":"vgpoint list"}
+70.850 tool=vg_point_read rc=0 args={"query":"temp"}
+1162.920 tool=read_file rc=0 args={"path":"/data/agent/skills/operations_report.md"}
+1170.910 tool=vg_run_report rc=0 args={}
+3059.950 tool=vg_run_report rc=0 args={}
+3060.900 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+104.390 tool=read_file rc=0 args={"path":"/data/agent/skills/operations_report.md"}
+199.250 tool=vg_run_report rc=0 args={}
+301.240 tool=write_file rc=0 args={"path":"/data/velaguard/reports/daily-2026-10-17.md","content":"AI-DAILY v1\ndate=2026-10-17\n
+313.410 tool=vg_run_report rc=0 args={}
+316.370 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+418.240 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c0cf02\nreq=1\nn=8
+512.340 tool=vg_run_report rc=0 args={}
+513.840 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+624.000 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c0cf02\nreq=2\nn=8
+718.240 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+812.610 tool=vg_run_report rc=0 args={}
+206.690 tool=vg_point_read rc=0 args={"query":"temp"}
+208.080 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+308.960 tool=vg_run_report rc=0 args={}
+396.320 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c68d3b\nreq=1\nn=1
+626.040 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+633.440 tool=vg_run_report rc=0 args={}
+748.770 tool=vg_run_report rc=0 args={}
+750.020 tool=read_file rc=0 args={"path":"/data/agent/skills/operations_report.md"}
+106.230 tool=vg_run_report rc=0 args={}
+107.350 tool=read_file rc=0 args={"path":"/data/agent/skills/operations_report.md"}
+118.370 tool=write_file rc=0 args={"path":"/data/velaguard/reports/daily-2026-10-18.md","content":"AI-DAILY v1\ndate=2026-10-18\n
+107.460 tool=vg_run_report rc=0 args={}
+108.630 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+204.550 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c26833\nreq=1\nn=8
+612.670 tool=vg_run_report rc=0 args={}
+613.580 tool=vg_point_read rc=0 args={"query":"温度"}
+105.770 tool=vg_run_report rc=0 args={}
+107.740 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+214.410 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c274de\nreq=1\nn=8
+526.200 tool=vg_run_report rc=0 args={}
+586.150 tool=vg_point_read rc=0 args={"query":"temp"}
+606.350 tool=vgpoint rc=-3 args={}
+626.780 tool=vg_cfg_commit rc=-3 args={}
+628.880 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c274de\nreq=2\nn=8
+942.490 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+1029.740 tool=vg_run_report rc=0 args={}
+1036.140 tool=vg_point_read rc=0 args={}
+1151.000 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c274de\nreq=3\nn=8
+1465.320 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+1468.880 tool=vg_run_report rc=0 args={}
+1566.960 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c274de\nreq=4\nn=8
+1879.930 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+1882.440 tool=vg_run_report rc=0 args={}
+1982.220 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c274de\nreq=5\nn=8
+104.690 tool=vg_run_report rc=0 args={}
+105.990 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+203.390 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c24dc1\nreq=1\nn=8
+521.790 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+614.710 tool=vg_run_report rc=0 args={}
+724.320 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c24dc1\nreq=2\nn=8
+1121.200 tool=vg_run_report rc=0 args={}
+1122.720 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+105.720 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+110.280 tool=vg_run_report rc=0 args={}
+224.360 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c24b94\nreq=1\nn=8
+541.160 tool=vg_run_report rc=0 args={}
+542.460 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+185.740 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+193.640 tool=vg_run_report rc=0 args={}
+293.390 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c255b6\nreq=1\nn=8
+612.120 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+104.340 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+109.910 tool=vg_run_report rc=0 args={}
+208.190 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c25565\nreq=1\nn=8
+101.940 tool=vg_run_report rc=0 args={}
+102.950 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+204.260 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c2505c\nreq=1\nn=8
+104.770 tool=vg_run_report rc=0 args={}
+106.100 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+214.160 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c25311\nreq=1\nn=8
+528.280 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+532.420 tool=vg_run_report rc=0 args={}
+114.880 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+121.040 tool=vg_run_report rc=0 args={}
+216.030 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c25d4a\nreq=1\nn=8
+527.480 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+530.380 tool=vg_run_report rc=0 args={}
+624.170 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c25d4vgnet: join 19y failed
+a\nreq=2\nn=8
+942.040 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+945.800 tool=vg_run_report rc=0 args={}
+1009.460 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c25d4a\nreq=3\nn=8
+103.610 tool=vg_run_report rc=0 args={}
+104.960 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+203.360 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c3a622\nreq=1\nn=8
+103.200 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+107.630 tool=vg_run_report rc=0 args={}
+202.370 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c3a716\nreq=1\nn=8
+105.790 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+111.320 tool=vg_run_report rc=0 args={}
+107.430 tool=vg_run_report rc=0 args={}
+108.670 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+101.160 tool=vg_run_report rc=0 args={}
+102.130 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+103.300 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+104.680 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+106.440 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+203.600 tool=vg_run_report rc=0 args={}
+322.700 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c3aea6\nreq=1\nn=8
+334.220 tool=vg_run_report rc=0 args={}
+335.280 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+72.100 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+80.360 tool=vg_run_report rc=0 args={}
+81.150 tool=vg_point_read rc=0 args={"query":"ups_bypass"}
+225.040 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+233.430 tool=vg_run_report rc=0 args={}
+325.030 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c1f2ca\nreq=1\nn=5
+338.210 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+345.960 tool=vg_run_report rc=0 args={}
+464.170 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c1f2ca\nreq=2\nn=8
+777.210 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+782.230 tool=vg_run_report rc=0 args={}
+884.130 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c1f2ca\nreq=3\nn=8
+1197.110 tool=vg_run_report rc=0 args={}
+1198.370 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+1304.390 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c1f2ca\nreq=4\nn=8
+651.470 tool=vg_point_read rc=0 args={"query":""}
+652.450 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.vgnet: esp reset
+md"}
+660.410 tool=vg_run_report rc=0 args={}
+775.910 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c57710\nreq=2\nn=8
+1091.790 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+1095.750 tool=vg_run_report rc=0 args={}
+1212.690 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c57710\nreq=3\nn=8
+106.340 tool=vg_run_report rc=0 args={}
+107.690 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+208.180 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c39d20\nreq=1\nn=8
+531.020 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+537.390 tool=vg_run_report rc=0 args={}
+636.010 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c39d20\nreq=2\nn=8
+956.940 tool=vg_point_read rc=0 args={"query":"door"}
+957.550 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+960.420 tool=vg_run_report rc=0 args={}
+535.760 tool=vg_run_report rc=0 args={}
+536.970 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+631.040 tool=vg_point_read rc=0 args={"query":"pwr_kw"}
+638.910 tool=vg_point_read rc=0 args={"query":"door"}
+735.030 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c5638c\nreq=1\nn=4
+749.510 tool=vg_run_report rc=0 args={}
+751.580 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+757.700 tool=vg_point_read rc=0 args={"query":"UPS负载"}
+863.300 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c5638c\nreq=2\nn=8
+890.590 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+895.810 tool=vg_run_report rc=0 args={}
+897.340 tool=vg_point_read rc=0 args={"query":"温度"}
+908.350 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c5638c\nreq=3\nn=1
+109.870 tool=vg_run_report rc=0 args={}
+111.090 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+224.280 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c3e3fb\nreq=1\nn=8
+848.600 tool=vg_point_read rc=0 args={"query":"ups_load"}
+850.930 tool=read_file rc=0 args={"path":"/data/agent/skills/alarm_interpretation.md"}
+854.280 tool=vg_run_report rc=0 args={}
+947.480 tool=write_file rc=0 args={"path":"/data/velaguard/reports/alarm_advice.txt","content":"VGADV1\nboot=30c3e3fb\nreq=2\nn=1
+991.670 tool=vg_point_read rc=0 args={"query":"ups_load"}
+992.800 tool=vg_point_read rc=0 args={"query":"ups_load"}
+994.290 tool=vg_point_read rc=0 args={"query":"ups_load"}
+995.970 tool=vg_point_read rc=0 args={"query":"ups_load"}
+997.930 tool=vg_point_read rc=0 args={"query":"ups_load"}
+998.980 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1000.660 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1002.300 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1003.660 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1004.990 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1006.520 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1008.180 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1009.090 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1010.750 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1012.480 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1014.100 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1015.550 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1016.750 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1018.650 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1020.300 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1021.190 tool=vg_point_read rc=0 args={"query":"ups_load"}
+1022.570 tool=vg_point_read rc=0 args={"query":"ups_load"}
+nsh> [K
+
+########## vgagent status ########## len=179
+vgagent status
+round: state=idle gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: OK: wrote 299 bytes to /data/velaguard/reports/alarm_advice.txt
+nsh> [K
+
+########## ps ########## len=2031
+ps
+  PID GROUP PRI POLICY   TYPE    NPX STATE    EVENT     SIGMASK            STACK    CPU COMMAND
+    0     0   0 FIFO     Kthread   - Ready              0000000000000000 0001000 19.6% CPU0 IDLE
+    1     0 224 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976 40.6% hpwork 0x24000300 0x24000348
+    2     0 100 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976  0.8% lpwork 0x24000280 0x240002c8
+    3     3 100 RR       Task      - Waiting  Signal    0000000000000000 0008136  0.8% velaguard_app_main
+    4     3 100 RR       pthread   - Running            0000000000000000 0008168  1.6% velaguard_app_main 0x9000cabd 0
+    5     3 100 RR       pthread   - Waiting  Semaphore 0000000000000000 0012264  0.0% velaguard_app_main 0x90010349 0
+    6     3 100 RR       pthread   - Waiting  Signal    0000000000000000 0004072  0.0% velaguard_app_main 0x90013c2d 0
+    7     3 200 RR       pthread   - Waiting  Semaphore 0000000000000000 0002024  0.0% ESP8266 0x9006d159 0
+    8     3  80 RR       pthread   - Waiting  Signal    0000000000000000 0002024  0.0% netinit 0x9006df25 0
+    9     9 100 RR       Task      - Waiting  Signal    0000000000000000 0049104 27.4% vghmi vghmi
+   10     9 100 RR       pthread   - Waiting  Signal    0000000000000000 0008168  7.2% vghmi 0x9001446d 0
+   11    11 100 RR       Task      - Waiting  Signal    0000000000000000 0032696  0.0% ai_agent ai_agent --daemon
+   12    11  50 FIFO     pthread   - Waiting  Semaphore 0000000000000000 0012264  0.0% ai_agent 0x90015241 0x2001a270
+   13    11   3 FIFO     pthread   - Waiting  Signal    0000000000000000 0004072  0.0% ai_agent 0x9001a9e9 0x2001a370
+   14    11  50 FIFO     pthread   - Waiting  Signal    0000000000000000 0028648  0.0% ai_agent 0x90015241 0x2001f8b8
+   47     9 100 RR       pthread   - Ready              0000000000000000 0008168  3.0% vghmi 0x90014bd1 0
+   48    11  60 FIFO     pthread   - Waiting  Semaphore 0000000000000000 0032744  0.0% ai_agent 0x90016e75 0x20011918
+nsh> [K

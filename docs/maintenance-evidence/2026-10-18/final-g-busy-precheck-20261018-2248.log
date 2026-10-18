@@ -1,0 +1,81 @@
+########## boot settle len=472 ##########
+vgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[vgadvice] asked for 1 alarms req=3
+[vgagent] round submitted: 739 bytes
+[agent] Processing message from local_client:velaguard:3
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgagent status ########## len=217
+vgagent status
+round: state=running gen=2 owner=advice
+llm: credentials=ready provision_file=present
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## ls /data/velaguard/pending_alarm.txt ########## len=187
+ls /data/velaguard/pending_alarm.txt
+ /data/velaguard/pending_alarm.txt
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## cat /data/velaguard/pending_alarm.txt ########## len=335
+cat /data/velaguard/pending_alarm.txt
+type=threshold
+tag=temp
+slave=1
+reg=0
+value=36
+threshold=35
+hint=use alarm_interpretation skill
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## vgruntime dump ########## len=5711
+vgruntime dump
+vgruntime: uptime_s=1139 wall=2026-10-18T22:43:57
+vgruntime: slave=1 boot_total=1004 boot_ok=984 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=180 boot_lat_avg=21 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=502 boot_ok=492 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=50 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=502 boot_ok=492 boot_crc=0 boot_timeout=10 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=40 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=1506 boot_ok=1476 boot_crc=0 boot_timeout=30 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=110 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=1506 boot_ok=1466 boot_crc=0 boot_timeout=40 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=30 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=1506 boot_ok=1477 boot_crc=0 boot_timeout=29 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=190 boot_lat_avg=20 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=502 boot_ok=493 boot_crc=0 boot_timeout=9 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=660 boot_lat_avg=21 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=7028 boot_ok=6880 boot_crc=0 boot_timeout=148 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=974500 offline_s=0 last_ok_ago_s=2 value=36 kind=threshold
+vgruntime: point id=humid slave=1 online=1 online_ms=974510 offline_s=0 last_ok_ago_s=2 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=974510 offline_s=0 last_ok_ago_s=2 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=974520 offline_s=0 last_ok_ago_s=2 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=974680 offline_s=0 last_ok_ago_s=0 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=974680 offline_s=0 last_ok_ago_s=0 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=974680 offline_s=0 last_ok_ago_s=0 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=954590 offline_s=0 last_ok_ago_s=0 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=974730 offline_s=0 last_ok_ago_s=0 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=974730 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=974750 offline_s=0 last_ok_ago_s=0 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=974890 offline_s=0 last_ok_ago_s=0 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=977320 offline_s=0 last_ok_ago_s=0 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=977320 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: event t_boot_s=162 wall=2026-10-18T22:27:40 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=162 wall=2026-10-18T22:27:40 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=165 wall=2026-10-18T22:27:42 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=810 wall=2026-10-18T22:38:27 id=ups_load action=raise kind=offline value=40 thr=0 cmp=ge reason=modbus_fail_offline
+vgruntime: event t_boot_s=830 wall=2026-10-18T22:38:47 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=1128 wall=2026-10-18T22:43:46 id=temp action=raise kind=threshold value=36 thr=35 cmp=ge reason=threshold_ge
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
