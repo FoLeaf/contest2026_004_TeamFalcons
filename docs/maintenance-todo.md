@@ -1,6 +1,6 @@
 # VelaGuard 维护 TODO
 
-本文件是本轮审查与修复的唯一进度清单，不使用 Trellis 约束工作流。历史任务和用户提供的 2026-09-20 技术报告只作证据来源。更新日期：2026-10-17。
+本文件是本轮审查与修复的唯一进度清单，不使用 Trellis 约束工作流。历史任务和用户提供的 2026-09-20 技术报告只作证据来源。更新日期：2026-10-18。
 
 修复前基线为 17 个主机目标、5 个 HMI 用例通过。当前改动覆盖参赛仓及 `../nuttx`、`../packages/ai_agent` 实际 checkout；公共仓修复已分别本地提交，PR 仍待提交。原有日志、提交材料和其他任务的改动予以保留。
 
@@ -14,19 +14,20 @@
 | AI-02 | P0 / 代码完成，主机通过，待板验 | 第二次请求覆盖回调、迟到回复误记到新轮次；轮次状态分步更新。SDK local client 与 `app/velaguard/vg_agent_round.c` | 改前 busy/迟到回调测试失败。SDK忙时返回EBUSY，独立请求标识过滤过期和重复回复；板端另以请求序号检查回调，在锁内完成状态转换。`test_local_client`、`test_agent_round` 已覆盖；新增progress标志，避免中间状态被当作最终回复。旧固件实测只读工具/LLM恢复，新错误注入仍待板验；NSH命令不变。 |
 | AI-03 | P0 / 代码完成，主机通过，待板验 | 文件保护将 realpath 后路径与逻辑路径比较，软链接下可失效；不存在目标的父目录未核对。公共仓 `tool_files.c`、`tool_shell.c` | 配置和凭证禁止经文件工具读取；板端确定性数据禁止写入，报告产物保留受限写入。保护解析到父目录，覆盖软链接和别名；产品shell仅暴露元数据和只读子命令。回归同时验证合法日报/记忆仍可写，以及0/1/小缓冲精确canary。 |
 | PT-01 | P1 / 代码完成，主机通过，待板验 | JSON字符串未转义、倍率精度丢失、损坏记录静默丢弃、空发现结果可覆盖表。`vg_point_table.c` | 复用现有cJSON完整解析/序列化，拒绝非有限数、非法字段、重复id、截断及超限；支持32个长名称点位往返。发现apply拒绝空结果，人工编辑删空仍沿用旧NSH协议。非法旧tag-only记录改为整表错误，已同步协议。 |
-| PT-02 | P1 / 代码完成，待板验 | 点表提交重置设备名，dump或扫描覆盖候选编辑；HMI在显示试读结果之前就能生效。`vgpoint.c`、`vgdiscover.c`、`vg_ui_backend_board.c` | 点表提交不再提交默认配置元数据；已有候选拒绝覆盖。扫描页仅生成候选，通过NSH试读后由人单独apply。落盘成功后才更换内存表、通知MQTT。需实测候选编辑、人工确认、首页和上报的一致性。 |
+| PT-02 | P1 / **板验失败**（D-01），待定位 | 点表提交重置设备名，dump或扫描覆盖候选编辑；HMI在显示试读结果之前就能生效。`vgpoint.c`、`vgdiscover.c`、`vg_ui_backend_board.c` | 点表提交不再提交默认配置元数据；已有候选拒绝覆盖。扫描页仅生成候选，通过NSH试读后由人单独apply。落盘成功后才更换内存表、通知MQTT。**新固件板验发现：候选编辑恒失败**，`vgpoint add/set/del` 均返回 `ERR cmd=... code=io msg=write_fail`（5/5 次），已确认表未被破坏（仍 `committed n=14`）。创建候选文件可成功，替换已存在候选文件失败。详见 [defects.md](maintenance-evidence/2026-10-18/defects.md) 的 D-01。仍待实测人工确认、首页和上报一致性。 |
 | DATA-01 | P1 / 代码完成，主机通过，待板验 | 内存点表及generation复制无互斥，读失败清空正在运行的点表；坏快照被当作空数据。`vg_point_table.c` | 加互斥保证表/代次成组复制，失败重载保留内存副本；快照校验声明数量、完整行、重复id和有限值。已覆盖10000轮并发替换/读取及坏快照；完整提交另见DATA-02。 |
 | BUS-01 | P1 / 代码完成，待板验 | 发现CLI缺总线锁，HMI等锁无上限，vgmodbus在锁外打开/清空串口。`vgdiscover.c`、`vgscan.c`、`modbus_collector.c` | 获取锁最多等待1秒，串口打开/清空、读取与关闭均在锁内；CLI不再共用HMI可变发现结构。非法参数拒绝发送；真实并发帧与锁释放仍需板验。 |
 | BUS-02 | P1 / 代码完成，主机通过，待板验 | qty让窄寄存器点误读失败、errno丢失、容量/部分失败不提示。`vg_discover_modbus.c` | 标量按实际1个寄存器读取，越界在I/O前拒绝，保存负错误码；限制与部分失败有标志，CLI/HMI显示提示。`test_discover_io` 使用真实nanoMODBUS和模拟RTU响应覆盖。保持固定9600、原默认扫描范围。 |
 | BUS-03 | P1 / 补修复完成，主机通过，待新固件板验 | `modbus_port_openvela.c` 在 `tcdrain` 后延迟并清空RX，会删除已经到达的有效回复。旧模拟器默认150ms回复绕过该缺陷。 | `test_modbus_port` 在drain期间注入回复，修前失败、修后10次均保留；移除发送后settle/flush，保留发送前清理。模拟器默认改0ms并记录实际延迟。当前长测仍用旧固件+150ms，不能关闭此项；需新固件、快速从站和实测DIR/TC时序确认剩余驱动窗口。 |
 | AL-01 | P1 / 代码完成，主机通过，待板验 | 界面离线判断叠加连续失败与滑窗；测试规则与运行路径不同。`vg_alarm_eval.c`、`gui/main/ui/model/vg_model.c` | 共用纯C滑窗：最近8次真实采样、阈值min(max(fail_n,5),8)、成功采样恢复。改前2个边界测试失败，改后覆盖离散失败、连续失败、阈值与恢复；仍需实际拔线/阈值注入。 |
 | NET-01 | P1 / 代码完成，主机通过，待新固件板验 | 长点表读取截断、发送失败误记成功；旧版本曾成功后，新版本发布失败不重试。`vg_mqtt_session.c` | 点表16KiB/发送18KiB，拒绝截断，仅入队成功才记已发。复核增加 `test_mqtt_session`，真实poll路径注入新版本发送失败，修前不重试、修后下个周期重试成功。清空此前成功标志，原有空表上报约定暂不改变；新固件需核对MQTT与采集表一致。 |
-| QA-01 | P0 / 旧固件长测运行中，新修复待板验 | 当前缺完整24小时及全部故障恢复证据。`scripts/maintenance_soak.ps1` | 旧固件已记录启动、存储、内存、150ms模拟器采集、warn/模拟器静默恢复、LLM对话与告警解释、手动带工具报告。长测实际16:40:30启动，COM3独占；复核未复位或抢占串口。该长测不包含本次补修复。剩余：新固件快速从站、候选编辑/试读后人工确认、crit与物理拔线、屏幕目视、断网/缺凭证/工具超时恢复、定时日报有效落盘、24小时零异常复位、响应/周期/资源前后对比。 |
+| QA-01 | P0 / 旧固件长测**失败归档**，新固件板验进行中 | 当前缺完整24小时及全部故障恢复证据。`scripts/maintenance_soak.ps1` | 旧固件长测 2026-10-17T16:40:30 启动，2026-10-17T19:53:57 因 COM3 端口被关闭异常退出，实际只跑 3 小时 13 分（13.4%），脚本写 `FAIL` 而非 `PASS`，**不得记为通过**。部分结果：57 轮全部 `online=14`、57 次 `vgstoretest 50` 全 OK、58 次点表读取恒为 `committed n=14`、堆 318,104→318,608 B 无增长、`uptime_s` 连续无复位。该长测用 13:03:04 旧固件与 150ms 慢速从站，不验证本次补修复。详见 [old-soak-verdict.md](maintenance-evidence/2026-10-18/old-soak-verdict.md)。剩余：新固件快速从站、候选编辑/试读后人工确认、crit与物理拔线、屏幕目视、断网/缺凭证/工具超时恢复、定时日报有效落盘、24小时零异常复位、响应/周期/资源前后对比。 |
 | DATA-02 | P1 / 补修复完成，主机通过，待板验 | 文件替换锁在RAM换表前已释放，两个提交可让磁盘B而内存A。`vg_point_table.c`、`vgpoint.c` | 新增统一 `vg_point_table_commit`，在同一提交互斥区内落盘、换内存/代次、通知MQTT；启动重载也与提交互斥。`test_point_commit` 定向暂停A再提交B，修前不一致、修后通过；ENOSPC不更新内存/通知，显式空表仍兼容。依赖ST-01；需板上确认两入口一致。 |
 | SYS-01 | P0 / 旧固件板验通过，长测中 | 系统入口实际2KiB栈，在刷新Skill时越界HardFault。defconfig、`velaguard.c`、`test_boot_stack.py` | 系统栈改8192并设构建检查，重烧后正常启动。保留复现日志；新修复仍需后续烧录及长期运行复核。 |
 | SYS-02 | P0 / 引脚修复已板验，长期观察中 | LCD G0/G1误配PG0/PG1，占用SDRAM A10/A11，堆统计失真。NuttX板级头文件、`test_board_pins.py` | 本地官方MB1381 B-01原理图第3页U6B及ST BSP确认PJ7/PJ8；改后哨兵与堆统计正常。保留2MiB保守显示预留；构建前拒绝错误引脚。eMMC历史损坏仍见ST-02。 |
 | DEP-01 | P0 / 本地依赖已提交，待公共仓PR | 仅参赛仓PR无法交付LCD及Agent修复；主机测试依赖公共仓新增源文件。 | NuttX本地提交 `75cbc8eb7a5`，ai_agent本地提交 `131642d`；构建前检查runner、回调关联与progress过滤等必要能力。按C2分别提PR并集成复验后关闭；本次未推送或发布公共仓PR。 |
-| QA-02 | P0 / 重启原因待定位 | 旧板测14:28与15:20附近出现重启，仅时间上接近接线操作。 | 尚无复位原因寄存器或供电波形证据，不能认定为供电抖动或排除固件。保留日志，后续采集复位原因并结合24小时运行定位。 |
+| QA-02 | P0 / 重启原因待定位 | 旧板测14:28与15:20附近出现重启，仅时间上接近接线操作。 | 尚无复位原因寄存器或供电波形证据，不能认定为供电抖动或排除固件。保留日志，后续采集复位原因并结合24小时运行定位。2026-10-18 新固件发现一条**可复现的软件崩溃路径**（见 FS-01），但两者是否相关无证据，不据此关闭本项。 |
+| FS-01 | P0 / 新发现，待定位 | `mv` 覆盖已存在文件触发 HardFault 并导致整机失联。`apps/nshlib/nsh_fscmds.c`、NuttX FAT `rename()` | 新固件（`75cbc8eb7a5`）上在 `/data` 复现：`echo AAA > r1.txt; echo BBB > r2.txt; mv r1.txt r2.txt` → `CFSR=0x00008200`（PRECISERR+BFARVALID）、`BFAR=0x3b`、`HFSR=0x40000000`，`task: velaguard_app_main`。故障后 COM3 无回显、ping 无响应，须 SWD 复位。`rename` 本身已完成（目标内容变为源内容），崩溃在其后。复位后配置与点表完好（`seq=6`、`committed n=14`）。目标不存在时 `mv` 正常。需 GDB 取调用栈定位 0x3b 解引用来源。详见 [defects.md](maintenance-evidence/2026-10-18/defects.md) 的 D-02。 |
 | QA-03 | P1 / 漏提交已修正 | Makefile调用的两个Python回归脚本被通配ignore忽略，提交缺文件。`.gitignore`、`host_tests/Makefile` | 放行并提交 `test_boot_stack.py`、`test_board_pins.py`；28个C目标与2个Python检查重新构建执行通过。关闭条件：参赛仓提交实际包含二者；公共源码依赖仍见DEP-01。 |
 | ARCH-01 | P1 / 部分完成 | 采集、文件和Agent调度仍集中在板端后端 | 已抽出可恢复文件替换、告警滑窗和shell执行器，删除重复JSON扫描及界面判定。其余文件工作与调度职责在稳定性板验后继续拆分，以行为回归约束改动。 |
 
@@ -49,11 +50,12 @@
 
 ## 验收记录
 
-最新复核见 [review.md](maintenance-evidence/2026-10-17-review/review.md)，原始修前/修后输出及构建记录保存在同目录。
+最新板端记录见 [2026-10-18 目录](maintenance-evidence/2026-10-18/)：`board-baseline.md`（新固件基线）、`defects.md`（D-01/D-02 两个缺陷）、`old-soak-verdict.md`（旧长测失败归档）。上一轮复核见 [review.md](maintenance-evidence/2026-10-17-review/review.md)。
 
-- `make -C app/velaguard/host_tests clean test`：28个C目标、2个Python检查全部通过。
-- HMI重新构建，CTest 5/5；备份故障回归经ASan/UBSan通过。
-- 默认 `bash scripts/build.sh` 通过，本次增量构建无warning/error；此前全量构建仍有6处既有告警，不能宣称全量零告警。
-- 本次补修复固件未烧录，保留COM3正在执行的旧固件24小时存储/运行状态检查。当前进度快照见复核证据，完成前不记PASS。
-- 旧阶段记录见 [board-history.md](maintenance-evidence/2026-10-17/board-history.md)。历史 `validation.txt` 是板测开始前的主机阶段记录，不是当前固件验收结论。
-- 本次复核未修改真实候选表，未执行 `vgpoint test` 或apply。后续试读仍必须展示结果并停下等人确认，再单独发送 `vgpoint apply --confirm`。
+- `make -C app/velaguard/host_tests clean test`：30个目标全部通过。
+- HMI重新构建，CTest 5/5。
+- 默认 `bash scripts/build.sh` 通过，本次增量构建无warning/error；静态SRAM 292,252/524,288。
+- 新固件已烧录并核对哈希，启动基线、存储诊断、只读工具与禁止工具拒绝均已取证。
+- 新固件发现两个 P0 缺陷：D-01 候选点表写入恒失败（PT-02 板验失败）、D-02 `mv` 覆盖已存在文件触发 HardFault 并导致整机失联（FS-01）。
+- COM4（RS485 从站）被未知进程独占，`access denied`，重新插拔、PnP 禁用/启用、restart-device、remove-device+rescan 均未释放。RS485 采集、阈值告警注入与 24 小时长测因此缺少条件，未开始。
+- 本次未修改真实候选表以外的配置，未执行 `vgpoint apply`。候选编辑试验只到写入失败为止，已确认表始终为 `committed n=14`。后续试读仍必须展示结果并停下等人确认，再单独发送 `vgpoint apply --confirm`。
