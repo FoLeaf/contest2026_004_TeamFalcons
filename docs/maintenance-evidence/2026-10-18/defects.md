@@ -391,7 +391,7 @@ powershell -File scripts/maintenance_rtu_slave.ps1 -ComPort COM7 -ReplyDelayMs 0
 
 ---
 
-## D-06：`vgpoint test` 与周期采集争用总线（主机已修复，待板端复验）
+## D-06：`vgpoint test` 与周期采集争用总线（主机已修复，最终固件待复验）
 
 优先级 P1，影响阶段 D 的人工试读流程。
 
@@ -433,7 +433,13 @@ vgpoint: OK cmd=test table=candidate n=14
 
 - 修前：`d06-candidate-bus-wait-pre-fix.log`，退出码 1，输出 `probe waits for a released bus`、`probe reaches the bus poll` 两项失败及 `bus_busy`。
 - 修后：`d06-candidate-bus-wait-post-fix.log`，同一个 `test_vgpoint` 退出码 0；`d06-host-tests.log` 记录完整主机回归。
-- 板端：待最终固件统一烧录后，在 HMI 采集持续运行时执行 `vgpoint test`，记录是否无需反复重试即可完成。
+- 板端尝试：18:41:50 固件不包含修复，复位后 1+8 次 `vgpoint test` 全部返回
+  `bus_busy`，见 `d06-11-candidate-test-after-recovery.log` 和
+  `d06-12-candidate-test-retries-after-recovery.log`。该结果不能算修后板验。
+- 同一时段的串口失联与人工恢复见
+  [d06-13-console-unresponsive.md](d06-13-console-unresponsive.md)。
+- 最终固件统一烧录后，仍需在 HMI 采集持续运行时执行 `vgpoint test`，记录是否无需
+  反复重试即可完成。
 
 ### 边界
 

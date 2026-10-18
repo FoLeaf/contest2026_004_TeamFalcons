@@ -1,0 +1,50 @@
+########## boot settle len=1348 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgtime: synced 2026-10-18 19:51:26
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgtime: synced 2026-10-18 20:21:34
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## uname -a ########## len=0
+
+
+########## vgruntime dump ########## len=0
+
+
+########## vgpoint list -c ########## len=0
+
+
+########## vgpoint list ########## len=0
+
+
+########## vgpoint get ########## len=0
+
+
+########## vgnet status ########## len=0
+
+
+########## vgcfg dump ########## len=0
+
+
+########## ps ########## len=0
+

@@ -1,0 +1,125 @@
+########## boot settle len=0 ##########
+
+
+########## uname -a ########## len=89
+uname -a
+NuttX  0.0.0 43702275f28-dirty Oct 18 2026 18:41:50 arm stm32h750b-dk
+nsh> [K
+
+########## vgruntime dump ########## len=3226
+vgruntime dump
+vgruntime: uptime_s=53 wall=2026-10-18T20:33:31
+vgruntime: slave=1 boot_total=66 boot_ok=66 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=110 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=33 boot_ok=33 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=30 boot_lat_avg=22 win_total=33 win_ok=33 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=33 boot_ok=33 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=80 boot_lat_avg=25 win_total=33 win_ok=33 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=99 boot_ok=99 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=80 boot_lat_avg=25 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=99 boot_ok=99 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=40 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=98 boot_ok=98 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=80 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=32 boot_ok=32 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=40 boot_lat_avg=25 win_total=32 win_ok=32 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=460 boot_ok=460 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=53970 offline_s=0 last_ok_ago_s=0 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=53980 offline_s=0 last_ok_ago_s=0 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=53990 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=54000 offline_s=0 last_ok_ago_s=0 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=54010 offline_s=0 last_ok_ago_s=0 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=54020 offline_s=0 last_ok_ago_s=0 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=54030 offline_s=0 last_ok_ago_s=0 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=54040 offline_s=0 last_ok_ago_s=0 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=54050 offline_s=0 last_ok_ago_s=1 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=54060 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=54070 offline_s=0 last_ok_ago_s=1 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=54070 offline_s=0 last_ok_ago_s=1 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=54080 offline_s=0 last_ok_ago_s=1 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=54090 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+nsh> [Kvgtime: sync failed (servers unreachable)
+
+
+########## vgpoint list -c ########## len=1756
+vgpoint list -c
+vgpoint: POINT id=temp name=温度验收 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=candidate n=14
+nsh> [K
+
+########## vgpoint list ########## len=1751
+vgpoint list
+vgpoint: POINT id=temp name=温度 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=committed n=14
+nsh> [K
+
+########## vgpoint get ########## len=885
+vgpoint get
+vgpoint: VALUE id=temp value=24 ok=1 unit=C age_ms=530
+vgpoint: VALUE id=humid value=50 ok=1 unit=%RH age_ms=530
+vgpoint: VALUE id=flood value=0 ok=1 unit=- age_ms=530
+vgpoint: VALUE id=smoke value=1 ok=1 unit=% age_ms=530
+vgpoint: VALUE id=acu_ret value=25 ok=1 unit=C age_ms=530
+vgpoint: VALUE id=acu_set value=24 ok=1 unit=C age_ms=530
+vgpoint: VALUE id=acu_run value=1 ok=1 unit=- age_ms=530
+vgpoint: VALUE id=ups_load value=40 ok=1 unit=% age_ms=530
+vgpoint: VALUE id=ups_soc value=80 ok=1 unit=% age_ms=530
+vgpoint: VALUE id=ups_bypass value=0 ok=1 unit=- age_ms=530
+vgpoint: VALUE id=volt_a value=230 ok=1 unit=V age_ms=530
+vgpoint: VALUE id=pwr_kw value=3 ok=1 unit=kW age_ms=530
+vgpoint: VALUE id=energy_kwh value=123.4 ok=1 unit=kWh age_ms=530
+vgpoint: VALUE id=door value=0 ok=1 unit=- age_ms=530
+vgpoint: OK cmd=get table=committed n=14
+nsh> [K
+
+########## vgnet status ########## len=226
+vgnet status
+state=online_rj45 egress=rj45 tcp=posix mqtt=up reason=egress=rj45
+rj45 link=1 ip=192.168.137.65 gw=192.168.137.1 ping_ok=1 fail_streak=0
+wifi ssid=19y assoc=0 ip=-
+nsh> [Kvgtime: synced 2026-10-18 20:50:11
+
+
+########## vgcfg dump ########## len=71
+vgcfg dump
+vgcfg: OK seq=6 schema=1 committed=1 name=vgpoint
+nsh> [K
+
+########## ps ########## len=1805
+ps
+  PID GROUP PRI POLICY   TYPE    NPX STATE    EVENT     SIGMASK            STACK    CPU COMMAND
+    0     0   0 FIFO     Kthread   - Ready              0000000000000000 0001000 31.0% CPU0 IDLE
+    1     0 224 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976  7.8% hpwork 0x24000300 0x24000348
+    2     0 100 RR       Kthread   - Waiting  Semaphore 0000000000000000 0001976  1.8% lpwork 0x24000280 0x240002c8
+    3     3 100 RR       Task      - Waiting  Signal    0000000000000000 0008136  0.6% velaguard_app_main
+    4     3 100 RR       pthread   - Running            0000000000000000 0008168  2.3% velaguard_app_main 0x9000cabd 0
+    5     3 100 RR       pthread   - Waiting  Signal    0000000000000000 0012264  4.7% velaguard_app_main 0x90010349 0
+    6     3 100 RR       pthread   - Waiting  Signal    0000000000000000 0004072  0.0% velaguard_app_main 0x90013951 0
+    7     3 200 RR       pthread   - Waiting  Semaphore 0000000000000000 0002024  3.5% ESP8266 0x9005e239 0
+    8     3  80 RR       pthread   - Waiting  Signal    0000000000000000 0002024  0.5% netinit 0x9006005d 0
+    9     9 100 RR       Task      - Waiting  Signal    0000000000000000 0049104 33.9% vghmi vghmi
+   10     9 100 RR       pthread   - Waiting  Signal    0000000000000000 0008168 12.7% vghmi 0x90014191 0
+   11    11 100 RR       Task      - Waiting  Signal    0000000000000000 0032696  0.0% ai_agent ai_agent --daemon
+   12    11  50 FIFO     pthread   - Waiting  Semaphore 0000000000000000 0012264  0.0% ai_agent 0x9002a23d 0x20011850
+   13    11   3 FIFO     pthread   - Waiting  Signal    0000000000000000 0004072  0.0% ai_agent 0x9002f9e5 0x2404b048
+   14    11  50 FIFO     pthread   - Waiting  Signal    0000000000000000 0028648  0.0% ai_agent 0x9002a23d 0x2404c150
+nsh> [K
