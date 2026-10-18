@@ -1,0 +1,9 @@
+{
+  "source": ".debug/final-g-postreset-slave-20261018-2230.log",
+  "byte_offset": 2817520,
+  "byte_length": 95445,
+  "slice_sha256": "345ce11d726bc77f7c76123b27421e04d76714e1e39bd73cda36fb272407195a",
+  "source_size_at_capture": 2939779,
+  "source_prefix_sha256": "0a79ced536184f562e48f129d47699dc9b7fd0cdbfcecfc3fb9e4cdec73427db",
+  "note": "Source remains append-only; excerpt stops at first normal control after test."
+}
