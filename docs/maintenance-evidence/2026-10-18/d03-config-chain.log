@@ -1,0 +1,15 @@
+evidence=d03-config-chain
+nuttx_branch=velaguard/eth-mii-stm32h750b-dk
+nuttx_head=2373ab4a45dd
+contest_source=scripts/configs/velaguard-lvgl.defconfig
+contest_source_sha256=d02be7adf022e9de81bd9a1eb35b44347be21ee5e5d720e60da9943b3a2a4ccb
+board_target=nuttx/boards/arm/stm32h7/stm32h750b-dk/configs/velaguard-lvgl/defconfig
+board_target_sha256=d02be7adf022e9de81bd9a1eb35b44347be21ee5e5d720e60da9943b3a2a4ccb
+source_target_identical=yes
+builder=scripts/build.sh calls scripts/ensure-upstream-velaguard-trees.sh before configure.sh -E
+installer=nuttx_lvgl_hmi_defconfig_ready copies scripts/configs/velaguard-lvgl.defconfig to the board target when bytes differ
+CONFIG_VG_MQTT_USERNAME=ABSENT
+CONFIG_VG_MQTT_PASSWORD=ABSENT
+CONFIG_VG_MQTT_CREDENTIALS=PRESENT
+CONFIG_VG_WIFI_PASSWORD=PRESENT
+wifi_password_note=key presence checked only; value not read or copied; independent unresolved issue

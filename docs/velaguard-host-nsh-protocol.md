@@ -404,6 +404,35 @@ JSON 参数需要的引号，`{"query":"ups_load"}` 会变成 `{query:ups_load}`
 
 板上验收不依赖模型的路径是 `scripts/vg_agent_tools_probe.ps1`。
 
+### 8.3 MQTT 运行时凭证：`vgprovision mqtt`
+
+MQTT broker 用户名和口令不再来自 Kconfig。主机侧先用 `vgprovision uid` 取得芯片
+UID，再用 `scripts/vg-provision-pack.py` 把专用测试 JSON 封存成 blob。串口只传输
+封存后的十六进制，不传输口令明文。
+
+```text
+nsh> vgprovision mqtt put <hex 段>
+nsh> vgprovision mqtt commit
+nsh> vgprovision mqtt status
+nsh> vgprovision mqtt wipe
+```
+
+| 子命令 | 行为 | 失败与边界 |
+|---|---|---|
+| `mqtt put <hex>` | 追加封存 blob 到 `.staging.mqtt` | 单段必须是偶数个十六进制字符，最多 32 字节；非法字符返回失败 |
+| `mqtt commit` | 先解密并校验暂存记录，再可靠替换 `mqtt_secrets.v1` | 暂存为空返回 `-EINVAL`，超长返回 `-E2BIG`；解析、用途标签或写入失败时保留上一条有效记录 |
+| `mqtt status` | 只报存在性、脱敏用户名、口令长度、路径与存储持久性 | 不返回完整用户名或口令 |
+| `mqtt wipe` | 删除 MQTT 暂存与有效记录 | 只用于专用测试记录或完成备份后的验收，不删除 LLM 记录 |
+
+常驻会话在打开 TCP 之前调用 `vg_mqtt_cred_load()`。记录缺失、完整性问题或用途不匹配
+时直接拒绝建链并打印不含凭证的错误；网络管理器在离线时按既有周期重试，记录提交后
+不需要复位。已经在线时，新记录在下一次断线重连或出口切换时读取。`vgmqtt` 不带
+`-u` / `-P` 时读取同一记录；显式传入两个参数只用于调试其它 broker，并且会留在 NSH
+历史中。
+
+`vgstoretest` 只写 `/data/velaguard/diagnostics/store-probe.bin`，不能用于制造或修复
+凭证故障。缺失、损坏与恢复工况必须使用专用测试记录和可恢复的密文备份。
+
 ---
 
 ## 9. 上位机脚本约定

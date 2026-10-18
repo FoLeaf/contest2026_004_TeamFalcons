@@ -21,7 +21,7 @@ VelaGuard 板端 ──MQTT──▶ Broker 8.148.67.174:1883 ◀──只读订
 | 项 | 现行实现 |
 |----|----------|
 | Broker | `CONFIG_VG_MQTT_BROKER_HOST` 默认 `8.148.67.174`，端口 1883，明文 |
-| Username / Password | Kconfig 测试凭据 `velaguard` / 对应口令；赛后轮换。日志不打印口令 |
+| Username / Password | eMMC 封存记录 `mqtt_secrets.v1`，常驻会话每次建链前读取；仓库和镜像不放编译期口令。配置与板验见 [D-03](d03-mqtt-runtime-credentials.md)，日志不打印口令 |
 | `device_id` / `client_id` | 同一字符串：`vg-` + STM32 96 位 UID 的 24 位小写 hex。空的 `CONFIG_VG_MQTT_DEVICE_ID` 表示自动派生；非空则覆盖（host/测试） |
 | Clean session | `true` |
 | Keepalive | 60 s |

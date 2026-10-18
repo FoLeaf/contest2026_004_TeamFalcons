@@ -185,6 +185,9 @@ make -C app/velaguard/host_tests test
 
 原始构建和运行输出见
 [d03-mqtt-auth-entrypoints.log](maintenance-evidence/2026-10-18/d03-mqtt-auth-entrypoints.log)。
+集成后的完整主机测试记录见
+[host-tests-mqtt-integration.log](maintenance-evidence/2026-10-18/host-tests-mqtt-integration.log)，
+`EXIT_STATUS=0`。
 
 另外用 `gcc -fsyntax-only -Wall -Wextra -Werror` 检查了 `vgprovision.c`、
 `velaguard_mqtt.c`、`vg_mqtt_session.c`，`CONFIG_VG_MQTT_CREDENTIALS` 打开和关闭两种
@@ -200,23 +203,27 @@ make -C app/velaguard/host_tests test
 
 ## 9. 集成时需要一起改的地方
 
-1. **共享 `../nuttx` 板级 defconfig 还留着口令。**
-   `/home/hello19y/openvela/nuttx/boards/arm/stm32h7/stm32h750b-dk/configs/velaguard-lvgl/defconfig`
-   里仍有 `CONFIG_VG_MQTT_USERNAME` 和 `CONFIG_VG_MQTT_PASSWORD` 两个键，值就是那个
-   明文口令。它是实际参与编译的配置，本仓的 `scripts/configs/*.defconfig` 只是参考
-   副本。本会话按约束没有改共享树，需要在 nuttx 的 `velaguard/*` 分支上同步删除这
-   两行（属于 AGENTS.md 允许的配置复制）。改之前构建出的镜像仍然带口令。
+1. **共享 `../nuttx` 板级 defconfig 已同步。**
+   `velaguard/eth-mii-stm32h750b-dk` 分支提交 `2373ab4a45d` 删除了
+   `CONFIG_VG_MQTT_USERNAME`、`CONFIG_VG_MQTT_PASSWORD`，加入
+   `CONFIG_VG_MQTT_CREDENTIALS=y`。参赛仓 `scripts/configs/velaguard-lvgl.defconfig`
+   与实际板级目标的 SHA256 现在一致，构建入口会继续校验并安装这份配置。
+   原始路径、键存在性与哈希记录见
+   [d03-config-chain.log](maintenance-evidence/2026-10-18/d03-config-chain.log)。
    `velaguard-min` / `velaguard-emmc` / `velaguard-net` / `velaguard-ai-probe` 四个预设
-   没有这两个键，不需要动。
+   本来就没有这两个键，不需要动。
 
-2. **协议文档。** `docs/velaguard-host-nsh-protocol.md` 的 `vgprovision` 一节需要补
-   `mqtt put` / `mqtt commit` / `mqtt status` / `mqtt wipe` 与新的失败码；
-   `docs/velaguard-mqtt-contract.md` 里"凭证来自 Kconfig"的说法要改成运行时记录。
-   按会话约束本次没有改这两份文档。
+2. **协议文档。** `docs/velaguard-host-nsh-protocol.md` 与
+   `docs/velaguard-mqtt-contract.md` 已改为 MQTT 运行时封存记录，不能再按 Kconfig
+   测试凭据理解。
 
-3. **维护清单。** `docs/maintenance-todo.md` 的 SEC-01 一行可以在集成时关闭，关闭
-   条件（仓库与镜像都不再含明文口令、板端仍能连上 broker）里"镜像"这一半要等第 1
-   项和板验都完成。
+3. **维护清单。** `docs/maintenance-todo.md` 的 SEC-01 已更新为实现完成、主机测试
+   通过、镜像扫描和板端验收待做。关闭条件是仓库与镜像都不再含 MQTT 明文口令，且
+   板端仍能用运行时记录连上 broker。
+
+4. **WiFi 静态口令是独立待办。** `CONFIG_VG_WIFI_PASSWORD` 仍存在于受版本控制的
+   defconfig 中，本轮只核对键是否出现，没有读取、迁移或改写该口令，也没有据此认定
+   WiFi 凭证边界已经解决。不得因为 MQTT 运行时记录已完成而关闭这一项。
 
 ## 10. 遗留事项
 

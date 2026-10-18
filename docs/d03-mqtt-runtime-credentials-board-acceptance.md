@@ -5,11 +5,20 @@
 
 前置条件：
 
-- 集成完 [实现说明](d03-mqtt-runtime-credentials.md) 第 9 节的第 1 项（删掉共享
-  `../nuttx` 板级 defconfig 里的 MQTT 用户名和口令两行），否则镜像里仍然带口令，
-  这一项本身就是关闭条件的一半。
+- 共享 `../nuttx` 板级 defconfig 已删除 MQTT 用户名和口令，并打开
+  `CONFIG_VG_MQTT_CREDENTIALS`。
 - 开发板空闲。另一个会话正在用 COM3 / COM7 做点表验收，必须等它结束再开始。
 - 一个可以连的 broker 和一个测试用口令。**不要**在验收过程中使用或打印线上口令。
+
+凭证隔离要求：
+
+- 全程只使用专用测试凭据，不读取、复制或改写 `llm_secrets.v1`。
+- 若板上已有真实 MQTT 记录，先把密文文件移到同一目录的
+  `mqtt_secrets.v1.acceptance-hold`，验收结束后移回原文件名。记录只以封存 blob
+  形式备份，不打印内容。
+- `vgstoretest` 只写 `/data/velaguard/diagnostics/store-probe.bin`，不得用来覆盖或
+  损坏任何凭证文件。
+- `CONFIG_VG_WIFI_PASSWORD` 是独立待办。本清单不能作为 WiFi 凭证已整改的结论。
 
 ## 0. 构建与烧录
 
@@ -28,13 +37,17 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/flash.ps1
 
 ## 1. 镜像里没有口令（关闭条件之一）
 
-对烧录用的镜像做一次字符串检查，只看是否命中，不打印命中内容：
+由验收脚本从旧提交的受控 defconfig 中读取 MQTT 键值，在内存中扫描镜像；输出只允许
+包含键名、文件 SHA256 和是否命中。不得把口令写入命令行参数、临时明文文件、日志或
+串口。检查对象至少包括：
 
-```bash
-grep -c "<旧口令>" .debug/nuttx.bin
-```
+- `.debug/nuttx.bin`
+- `.debug/nuttx.elf`
+- 实际烧录的 QSPI 二进制或 HEX 中可还原的载荷
 
-期望 `0`。同时确认 `nuttx.elf` 里也没有同一个字符串。
+期望 MQTT 用户名和口令两个键均为 `hit=no`。同时确认生成的 `nuttx/.config` 不含
+`CONFIG_VG_MQTT_USERNAME` / `CONFIG_VG_MQTT_PASSWORD`，含
+`CONFIG_VG_MQTT_CREDENTIALS=y`。
 
 ## 2. 未 provision 时拒绝连接
 
@@ -99,13 +112,21 @@ vgnet: mqtt online network=... backend=... device=vg-...
 
 ## 7. 坏记录的行为
 
-按顺序做，每步之后恢复：
+每项都先保护现有 MQTT 密文，再只操作 MQTT 路径。不得动 LLM 记录，也不得用
+`vgstoretest` 生成损坏数据。
 
-- [ ] `vgprovision mqtt wipe` 之后复位：回到第 2 节的 MISSING 行为，本地功能正常；
+- [ ] 缺失恢复：把 `mqtt_secrets.v1` 移到 `mqtt_secrets.v1.acceptance-hold`，
+      触发一次会话重开或复位，确认第 2 节的 MISSING 行为，随后把 `acceptance-hold`
+      移回原名并确认 `vgprovision mqtt status` 恢复为 `OK`；
 - [ ] 把 LLM 的 blob（`llm_secrets.v1` 的十六进制）`put` 进去再 `commit`：
-      应打印 `mqtt commit refused`，且 `status` 仍显示上一条好记录；
-- [ ] `commit` 之后手工往 `mqtt_secrets.v1` 里写几个字节（或用 `vgstoretest` 之类
-      的手段破坏它），复位后应回 `UNREADABLE`，MQTT 不连，本地功能正常。
+      应打印 `mqtt commit refused`，且 `status` 仍显示上一条好记录；这里的 blob
+      只作为“外来记录”输入，不修改 LLM 文件；
+- [ ] 损坏恢复：把 `mqtt_secrets.v1` 移到 `mqtt_secrets.v1.acceptance-hold`，在原名
+      路径写入 `not-a-sealed-record` 这几个字节，触发会话重开或复位，确认状态为
+      `UNREADABLE`、MQTT 不连且本地功能正常；随后移走坏文件并把
+      `acceptance-hold` 移回原名；
+- [ ] 恢复后确认 `vgprovision mqtt status` 为 `OK`，MQTT 重新上线，用户名仍脱敏、
+      口令仍只显示长度。
 
 ## 8. 调试入口
 
