@@ -60,10 +60,86 @@ function Get-SoakScenarios {
       Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'Firmware failure detected'; NoPass = $true }
     }
 
+    'panic-split-command' = @{
+      Note  = 'PANIC 在命令响应的多次读取之间被拆开；只看单个 chunk 会漏掉。'
+      Soak  = $common
+      Board = @{
+        FaultAtCycle = 2
+        FaultMode = 'panic'
+        SplitNeedle = 'PANIC'
+        SplitAt = 2
+      }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'Firmware failure detected'; NoPass = $true }
+    }
+
+    'fault-split-clear' = @{
+      Note  = 'HARDFAULT 在命令下发前排空缓冲的多次读取之间被拆开。'
+      Soak  = $common
+      Board = @{
+        FaultInjectionAtCycle = 2
+        FaultInjectionContext = '^before '
+        FaultInjectionText = 'HARDFAULT: split across clear reads'
+        SplitNeedle = 'HARDFAULT'
+        SplitAt = 4
+      }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'Firmware failure detected'; NoPass = $true }
+    }
+
+    'fault-split-wait' = @{
+      Note  = 'HARDFAULT 在轮次等待的多次读取之间被拆开。'
+      Soak  = @{ Hours = 0.02; IntervalSec = 10; MinimumOnline = 14; CommandTimeoutSec = 30; StoreRounds = 50 }
+      Board = @{
+        FaultInjectionAtCycle = 1
+        FaultInjectionContext = '^interval wait$'
+        FaultInjectionText = 'HARDFAULT: split across interval reads'
+        SplitNeedle = 'HARDFAULT'
+        SplitAt = 4
+      }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'Firmware failure detected'; NoPass = $true }
+    }
+
     'unexpected-reboot' = @{
       Note  = '命令输出里出现启动横幅。'
       Soak  = $common
       Board = @{ RebootAtCycle = 2 }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'boot banner'; NoPass = $true }
+    }
+
+    'reboot-split-command' = @{
+      Note  = '启动横幅在命令响应的多次读取之间被拆开；只看单个 chunk 会漏掉。'
+      Soak  = $common
+      Board = @{
+        RebootAtCycle = 2
+        RebootBannerText = 'NuttShell (NSH)'
+        SplitNeedle = 'NuttShell (NSH)'
+        SplitAt = 6
+      }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'boot banner'; NoPass = $true }
+    }
+
+    'reboot-split-clear' = @{
+      Note  = '启动横幅在命令下发前排空缓冲的多次读取之间被拆开。'
+      Soak  = $common
+      Board = @{
+        FaultInjectionAtCycle = 2
+        FaultInjectionContext = '^before '
+        FaultInjectionText = 'NuttShell (NSH): reboot split across clear reads'
+        SplitNeedle = 'NuttShell (NSH)'
+        SplitAt = 6
+      }
+      Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'boot banner'; NoPass = $true }
+    }
+
+    'reboot-split-wait' = @{
+      Note  = '启动横幅在轮次等待的多次读取之间被拆开。'
+      Soak  = @{ Hours = 0.02; IntervalSec = 10; MinimumOnline = 14; CommandTimeoutSec = 30; StoreRounds = 50 }
+      Board = @{
+        FaultInjectionAtCycle = 1
+        FaultInjectionContext = '^interval wait$'
+        FaultInjectionText = 'NuttShell (NSH): reboot split across interval reads'
+        SplitNeedle = 'NuttShell (NSH)'
+        SplitAt = 6
+      }
       Expect = @{ Verdict = 'FAIL'; ExitCode = 1; ReasonContains = 'boot banner'; NoPass = $true }
     }
 

@@ -1,0 +1,114 @@
+VelaGuard soak split fault and boot-banner pre-fix evidence
+captured_at=2026-10-18T20:24:27+08:00
+integration_worktree=/home/hello19y/openvela/.vg-maintenance-closeout
+head=b043c6127ba8d2d712bc095e0bc9b9dd5621b5aa
+baseline_script=HEAD:scripts/maintenance_soak.ps1 (script_version=soak-2)
+baseline_script_sha256=f6c5a4bdbf5f3839cc645fb51b557065b78ba41e4e8797e80842ffbd590e5424
+scenario_file_sha256=1566ebee86847fa31677fc6147d4b923875c7236954036a0043c032f4a107c28
+fake_file_sha256=ba8c61e61406ca96ca3d67c8bc0e2a614f61775ba0f6edacb7613ec47ffa5ed9
+isolated_prefix=.debug/soak-prefix-20261018-202345
+command=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File <prefix>/scripts/tests/soak/test_soak.ps1 -Filter (panic|fault|reboot)-split
+note=The isolated copy pairs the unmodified HEAD soak script with the final split-read scenarios and fake transport.
+
+CASE panic-split-command
+  ok   panic-split-command/exit-code
+  ok   panic-split-command/log-exists
+  ok   panic-split-command/run-begin
+  ok   panic-split-command/fail-line
+  ok   panic-split-command/run-end-fail
+  ok   panic-split-command/no-pass
+  FAIL panic-split-command/reason -- FAIL reason does not contain 'Firmware failure detected'
+  ok   panic-split-command/verdict-order
+CASE fault-split-clear
+  FAIL fault-split-clear/exit-code -- expected exit 1, got 0
+  ok   fault-split-clear/log-exists
+  ok   fault-split-clear/run-begin
+  FAIL fault-split-clear/fail-line -- no FAIL line
+  FAIL fault-split-clear/run-end-fail -- no RUN_END status=FAIL
+  FAIL fault-split-clear/no-pass -- a PASS line exists although the run did not pass
+  FAIL fault-split-clear/reason -- FAIL reason does not contain 'Firmware failure detected'
+  ok   fault-split-clear/verdict-order
+CASE fault-split-wait
+  FAIL fault-split-wait/exit-code -- expected exit 1, got 0
+  ok   fault-split-wait/log-exists
+  ok   fault-split-wait/run-begin
+  FAIL fault-split-wait/fail-line -- no FAIL line
+  FAIL fault-split-wait/run-end-fail -- no RUN_END status=FAIL
+  FAIL fault-split-wait/no-pass -- a PASS line exists although the run did not pass
+  FAIL fault-split-wait/reason -- FAIL reason does not contain 'Firmware failure detected'
+  ok   fault-split-wait/verdict-order
+CASE reboot-split-command
+  FAIL reboot-split-command/exit-code -- expected exit 1, got 0
+  ok   reboot-split-command/log-exists
+  ok   reboot-split-command/run-begin
+  FAIL reboot-split-command/fail-line -- no FAIL line
+  FAIL reboot-split-command/run-end-fail -- no RUN_END status=FAIL
+  FAIL reboot-split-command/no-pass -- a PASS line exists although the run did not pass
+  FAIL reboot-split-command/reason -- FAIL reason does not contain 'boot banner'
+  ok   reboot-split-command/verdict-order
+CASE reboot-split-clear
+  FAIL reboot-split-clear/exit-code -- expected exit 1, got 0
+  ok   reboot-split-clear/log-exists
+  ok   reboot-split-clear/run-begin
+  FAIL reboot-split-clear/fail-line -- no FAIL line
+  FAIL reboot-split-clear/run-end-fail -- no RUN_END status=FAIL
+  FAIL reboot-split-clear/no-pass -- a PASS line exists although the run did not pass
+  FAIL reboot-split-clear/reason -- FAIL reason does not contain 'boot banner'
+  ok   reboot-split-clear/verdict-order
+CASE reboot-split-wait
+  FAIL reboot-split-wait/exit-code -- expected exit 1, got 0
+  ok   reboot-split-wait/log-exists
+  ok   reboot-split-wait/run-begin
+  FAIL reboot-split-wait/fail-line -- no FAIL line
+  FAIL reboot-split-wait/run-end-fail -- no RUN_END status=FAIL
+  FAIL reboot-split-wait/no-pass -- a PASS line exists although the run did not pass
+  FAIL reboot-split-wait/reason -- FAIL reason does not contain 'boot banner'
+  ok   reboot-split-wait/verdict-order
+CASE killed-run-leaves-no-verdict
+  ok   killed-run/reached-cycle
+  ok   killed-run/no-pass
+  ok   killed-run/no-run-end
+  ok   killed-run/has-run-begin
+CASE appended-log-does-not-inherit-old-pass
+  ok   appended/first-run-passed
+  ok   appended/two-run-begins
+  ok   appended/old-pass-intact
+  ok   appended/second-run-incomplete
+  ok   appended/last-run-has-no-pass
+CASE prompt-detection-regression
+  ok   prompt/old-pattern-misses
+  ok   prompt/new-pattern-matches
+
+artifacts: \\wsl.localhost\Debian\home\hello19y\openvela\.vg-maintenance-closeout\.debug\soak-prefix-20261018-202345\.debug\soak-tests\20261018-202346
+passed=33 failed=26
+failures:
+  - panic-split-command/reason: FAIL reason does not contain 'Firmware failure detected'
+  - fault-split-clear/exit-code: expected exit 1, got 0
+  - fault-split-clear/fail-line: no FAIL line
+  - fault-split-clear/run-end-fail: no RUN_END status=FAIL
+  - fault-split-clear/no-pass: a PASS line exists although the run did not pass
+  - fault-split-clear/reason: FAIL reason does not contain 'Firmware failure detected'
+  - fault-split-wait/exit-code: expected exit 1, got 0
+  - fault-split-wait/fail-line: no FAIL line
+  - fault-split-wait/run-end-fail: no RUN_END status=FAIL
+  - fault-split-wait/no-pass: a PASS line exists although the run did not pass
+  - fault-split-wait/reason: FAIL reason does not contain 'Firmware failure detected'
+  - reboot-split-command/exit-code: expected exit 1, got 0
+  - reboot-split-command/fail-line: no FAIL line
+  - reboot-split-command/run-end-fail: no RUN_END status=FAIL
+  - reboot-split-command/no-pass: a PASS line exists although the run did not pass
+  - reboot-split-command/reason: FAIL reason does not contain 'boot banner'
+  - reboot-split-clear/exit-code: expected exit 1, got 0
+  - reboot-split-clear/fail-line: no FAIL line
+  - reboot-split-clear/run-end-fail: no RUN_END status=FAIL
+  - reboot-split-clear/no-pass: a PASS line exists although the run did not pass
+  - reboot-split-clear/reason: FAIL reason does not contain 'boot banner'
+  - reboot-split-wait/exit-code: expected exit 1, got 0
+  - reboot-split-wait/fail-line: no FAIL line
+  - reboot-split-wait/run-end-fail: no RUN_END status=FAIL
+  - reboot-split-wait/no-pass: a PASS line exists although the run did not pass
+  - reboot-split-wait/reason: FAIL reason does not contain 'boot banner'
+
+EXIT_STATUS=1
+PREFIX_DIR=.debug/soak-prefix-20261018-202345
+HEAD=b043c6127ba8d2d712bc095e0bc9b9dd5621b5aa

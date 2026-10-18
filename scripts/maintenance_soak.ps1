@@ -31,11 +31,12 @@ class SoakRealClock {
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 
-$ScriptVersion = 'soak-2'
+$ScriptVersion = 'soak-3'
 # 提示符。板端输出是 "nsh> " 加 ESC[K，ANSI 已在 Get-PlainText 中剥离。
 $PromptPattern = 'nsh>(?:\s|$)'
 # 固件崩溃特征。取自 docs/maintenance-evidence 里的 HardFault / panic 转储。
-$FatalPattern = 'HARDFAULT|dump_assert_info|up_dump_register|Assertion failed|outside SRAM|Queue full'
+$FatalPattern = 'HARDFAULT|PANIC|dump_assert_info|up_dump_register|Assertion failed|outside SRAM|Queue full'
+$FaultWindowChars = 160
 # 启动横幅。这些字符串只在板端重启后的启动阶段出现。
 $RebootPattern = 'NuttShell \(NSH\)|eMMC mounted at|Symlink /data ->'
 $Checks = 'store-probe,committed-table-stable,credentials-provisioned,uptime-monotonic,online-min,heap-consistency'
@@ -63,6 +64,7 @@ if (!$RunId) {
 $script:Writer = $null
 $script:Port = $port
 $script:LastReply = ''
+$script:FaultTail = ''
 $script:Verdict = $null
 $script:ExitCode = 0
 
@@ -91,17 +93,28 @@ function Get-PlainLines([string]$Text) {
 }
 
 function Assert-NoFirmwareFault([string]$Text, [string]$Context) {
-  if ($Text -match $FatalPattern) {
+  # Serial reads split anywhere. Keep a bounded plain-text tail so a fault word
+  # or boot banner spanning two chunks is still detected in every read path.
+  $plain = Get-PlainText $Text
+  $window = $script:FaultTail + $plain
+  if ($window -match $FatalPattern) {
     Record $Text
     throw "Firmware failure detected in $Context; soak stopped without reset."
   }
-  if ($Text -match $RebootPattern) {
+  if ($window -match $RebootPattern) {
     Record $Text
     throw "Board boot banner seen in $Context; the board restarted during the soak."
+  }
+  if ($window.Length -gt $FaultWindowChars) {
+    $script:FaultTail = $window.Substring($window.Length - $FaultWindowChars)
+  }
+  else {
+    $script:FaultTail = $window
   }
 }
 
 function Read-TransportText([string]$Context) {
+  if ($testMode) { $script:Port.ReadContext = $Context }
   try { return $script:Port.ReadExisting() }
   catch [System.Management.Automation.PipelineStoppedException] { throw }
   catch { throw "Serial link lost during ${Context}: $(Get-InnerMessage $_)" }

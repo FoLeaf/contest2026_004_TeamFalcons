@@ -3,6 +3,7 @@
 更新日期：2026-10-18。对象是 `scripts/maintenance_soak.ps1`，用于在真实开发板上跑串口长测。
 本文说明判定规则、正式运行的命令模板、启动前条件，以及脚本无法证明的事项。
 离线测试见 `scripts/tests/soak/`。
+当前脚本版本是 `soak-3`，每次运行的 `RUN_BEGIN` 会记录该版本。
 
 ## 1. 覆盖范围
 
@@ -152,6 +153,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\tests\soak\test_
 覆盖的用例：正常完成、未满时长、启动失败、命令超时、串口断开、固件崩溃输出、异常重启、
 uptime 回退、点表变化、在线不足、堆统计异常、凭证缺失、分片与交错输出、提示符后跟异步日志、
 ANSI 转义、模拟中断、进程被强制结束、追加到旧日志后不得继承早先的 PASS、串口不存在时不打开端口。
+`panic-split-command`、`fault-split-clear`、`fault-split-wait` 分别验证 `PANIC` 或
+`HARDFAULT` 跨读取时仍能在命令响应、下发前排空、轮次等待三条路径被识别；
+`reboot-split-command`、`reboot-split-clear`、`reboot-split-wait` 对启动横幅做同样验证。
+假串口只把目标字符串拆到两次读取，不把所有响应都切成小片，避免测试因命令超时提前结束。
 
 用例用 `-TestRuntime` 注入假串口。该参数标记为 `DontShow`，正式长测不要传。
 测试模式下脚本跳过串口枚举检查；测试还固定传 `-ComPort COM_TEST`，即使注入失效也会因串口不存在而失败，
@@ -179,5 +184,7 @@ ANSI 转义、模拟中断、进程被强制结束、追加到旧日志后不得
 | 中断时不写结论 | 中断与"没有输出"无法区分 | `finally` 写 `ABORT` 与 `RUN_END status=INCOMPLETE` |
 | 退出码不确定 | 自动化无法区分三种结果 | 退出码放在 `finally`：0 / 1 / 2 |
 | 清理阶段一个异常会跳过后续清理 | 文件句柄泄漏 | 关闭、释放各自独立 try |
-| 崩溃特征只匹配 5 个字符串 | panic 转储可能被漏掉 | 增加 `dump_assert_info`、`up_dump_register`；另加启动横幅检测 |
+| 崩溃特征漏掉 panic | panic 转储可能只留下 `PANIC` 行 | 在 `soak-3` 恢复 `PANIC`，与 HardFault、assert 和队列特征一起匹配 |
+| 故障字样或启动横幅跨串口读取 | 每次只检查单个 chunk 会漏掉实际故障 | 保留 160 字符纯文本窗口，把上一分块和当前分块合并后检查 |
+| 三条串口读取路径检测不一致 | 排空或等待期间的重启可能拖到后续命令才暴露 | 命令响应、下发前排空和轮次等待统一调用同一检测函数 |
 | `MinimumOnline` 默认 0 | 全部离线也能 PASS | 保留默认值，写 `WARN` 并在 `PASS` 行显式记录 `online_min` |

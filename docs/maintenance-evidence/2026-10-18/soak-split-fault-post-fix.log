@@ -1,0 +1,85 @@
+VelaGuard soak split fault and boot-banner post-fix evidence
+captured_at=2026-10-18T20:24:27+08:00
+integration_worktree=/home/hello19y/openvela/.vg-maintenance-closeout
+head=b043c6127ba8d2d712bc095e0bc9b9dd5621b5aa
+working_script_sha256=1c7185412e2d252a6e697d0d6c5859b82a4c2c357324558ec64badfc8956c5d8
+scenario_file_sha256=1566ebee86847fa31677fc6147d4b923875c7236954036a0043c032f4a107c28
+fake_file_sha256=ba8c61e61406ca96ca3d67c8bc0e2a614f61775ba0f6edacb7613ec47ffa5ed9
+command=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File \\wsl.localhost\Debian\home\hello19y\openvela\.vg-maintenance-closeout\scripts\tests\soak\test_soak.ps1 -Filter (panic|fault|reboot)-split
+note=Working tree contains the bounded plain-text fault window across all serial read paths.
+
+CASE panic-split-command
+  ok   panic-split-command/exit-code
+  ok   panic-split-command/log-exists
+  ok   panic-split-command/run-begin
+  ok   panic-split-command/fail-line
+  ok   panic-split-command/run-end-fail
+  ok   panic-split-command/no-pass
+  ok   panic-split-command/reason
+  ok   panic-split-command/verdict-order
+CASE fault-split-clear
+  ok   fault-split-clear/exit-code
+  ok   fault-split-clear/log-exists
+  ok   fault-split-clear/run-begin
+  ok   fault-split-clear/fail-line
+  ok   fault-split-clear/run-end-fail
+  ok   fault-split-clear/no-pass
+  ok   fault-split-clear/reason
+  ok   fault-split-clear/verdict-order
+CASE fault-split-wait
+  ok   fault-split-wait/exit-code
+  ok   fault-split-wait/log-exists
+  ok   fault-split-wait/run-begin
+  ok   fault-split-wait/fail-line
+  ok   fault-split-wait/run-end-fail
+  ok   fault-split-wait/no-pass
+  ok   fault-split-wait/reason
+  ok   fault-split-wait/verdict-order
+CASE reboot-split-command
+  ok   reboot-split-command/exit-code
+  ok   reboot-split-command/log-exists
+  ok   reboot-split-command/run-begin
+  ok   reboot-split-command/fail-line
+  ok   reboot-split-command/run-end-fail
+  ok   reboot-split-command/no-pass
+  ok   reboot-split-command/reason
+  ok   reboot-split-command/verdict-order
+CASE reboot-split-clear
+  ok   reboot-split-clear/exit-code
+  ok   reboot-split-clear/log-exists
+  ok   reboot-split-clear/run-begin
+  ok   reboot-split-clear/fail-line
+  ok   reboot-split-clear/run-end-fail
+  ok   reboot-split-clear/no-pass
+  ok   reboot-split-clear/reason
+  ok   reboot-split-clear/verdict-order
+CASE reboot-split-wait
+  ok   reboot-split-wait/exit-code
+  ok   reboot-split-wait/log-exists
+  ok   reboot-split-wait/run-begin
+  ok   reboot-split-wait/fail-line
+  ok   reboot-split-wait/run-end-fail
+  ok   reboot-split-wait/no-pass
+  ok   reboot-split-wait/reason
+  ok   reboot-split-wait/verdict-order
+CASE killed-run-leaves-no-verdict
+  ok   killed-run/reached-cycle
+  ok   killed-run/no-pass
+  ok   killed-run/no-run-end
+  ok   killed-run/has-run-begin
+CASE appended-log-does-not-inherit-old-pass
+  ok   appended/first-run-passed
+  ok   appended/two-run-begins
+  ok   appended/old-pass-intact
+  ok   appended/second-run-incomplete
+  ok   appended/last-run-has-no-pass
+CASE prompt-detection-regression
+  ok   prompt/old-pattern-misses
+  ok   prompt/new-pattern-matches
+
+artifacts: \\wsl.localhost\Debian\home\hello19y\openvela\.vg-maintenance-closeout\.debug\soak-tests\20261018-202307
+passed=59 failed=0
+
+EXIT_STATUS=0
+HEAD=b043c6127ba8d2d712bc095e0bc9b9dd5621b5aa
+SCRIPT_SHA256=1c7185412e2d252a6e697d0d6c5859b82a4c2c357324558ec64badfc8956c5d8

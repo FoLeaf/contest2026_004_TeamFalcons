@@ -125,6 +125,11 @@ class SoakFakeBoard {
     $faultAt = [int]$this.Cfg['FaultAtCycle']
     if ($faultAt -gt 0 -and $cmd -match '^vgstoretest ' -and ($this.Cycles + 1) -ge $faultAt) {
       $this.Cycles++
+      if ($this.Cfg['FaultMode'] -eq 'panic') {
+        # Keep this response free of the other fatal markers so the test
+        # specifically proves that PANIC itself is detected across reads.
+        return @($cmd, 'PANIC: injected scheduler failure')
+      }
       return @($cmd,
         'HARDFAULT: CFSR=00008200 HFSR=40000000 BFAR=0000003b MMFAR=0000003b',
         'HARDFAULT: stacked PC=90095ff8 LR=9007bfc5',
@@ -165,7 +170,7 @@ class SoakFakeBoard {
     $out += $body
     $rebootAt = [int]$this.Cfg['RebootAtCycle']
     if ($rebootAt -gt 0 -and $this.Cycles -ge $rebootAt -and $cmd -match '^vgstoretest ') {
-      $out += @('eMMC mounted at /mnt/emmc', 'Symlink /data -> /mnt/emmc/data', 'NuttShell (NSH)')
+      $out += @($this.Cfg['RebootBannerText'])
     }
     $out += "nsh> $([char]27)[K"
     if ($this.Cfg['EscapeSuffix']) {
@@ -188,6 +193,8 @@ class SoakFakePort {
   [int]$ChunkSize = 32
   [int]$ReadCalls = 0
   [object]$Board = $null
+  [string]$ReadContext = ''
+  [bool]$InjectionDone = $false
 
   [void] Open() { $this.IsOpen = $true }
   [void] Close() { $this.IsOpen = $false }
@@ -201,15 +208,42 @@ class SoakFakePort {
     $cmd = $text.TrimEnd([char]13, [char]10)
     # 整段响应按固定长度切片，允许切片跨行——真实串口读取就是这样分段的。
     $full = (($this.Board.Respond($cmd) | ForEach-Object { "$_`r`n" }) -join '')
-    for ($i = 0; $i -lt $full.Length; $i += $this.ChunkSize) {
-      $len = [Math]::Min($this.ChunkSize, $full.Length - $i)
-      $this.Pending.Enqueue($full.Substring($i, $len))
+    $this.EnqueueChunkedText($full)
+  }
+
+  [void] EnqueueChunkedText([string]$text) {
+    $needle = [string]$this.Board.Cfg['SplitNeedle']
+    $splitAt = [int]$this.Board.Cfg['SplitAt']
+    if ($needle -and $splitAt -gt 0 -and $splitAt -lt $needle.Length) {
+      $pos = $text.IndexOf($needle, [StringComparison]::Ordinal)
+      if ($pos -ge 0) {
+        # Force exactly this pattern across two reads, without reducing every
+        # command response to tiny chunks and exhausting the command timeout.
+        $cut = $pos + $splitAt
+        $this.Pending.Enqueue($text.Substring(0, $cut))
+        $text = $text.Substring($cut)
+      }
+    }
+    $size = [Math]::Max(1, $this.ChunkSize)
+    for ($i = 0; $i -lt $text.Length; $i += $size) {
+      $len = [Math]::Min($size, $text.Length - $i)
+      $this.Pending.Enqueue($text.Substring($i, $len))
     }
   }
 
   [string] ReadExisting() {
     $this.ReadCalls++
     if ($this.Board.LinkDropped) { throw [System.InvalidOperationException]::new('端口被关闭。') }
+    $cfg = $this.Board.Cfg
+    $injectAt = [int]$cfg['FaultInjectionAtCycle']
+    if (!$this.InjectionDone -and $injectAt -gt 0 -and
+        $this.Board.Cycles -ge $injectAt -and
+        $this.ReadContext -match [string]$cfg['FaultInjectionContext'] -and
+        $this.Pending.Count -eq 0) {
+      $this.InjectionDone = $true
+      $text = ([string]$cfg['FaultInjectionText']) + "`r`n"
+      $this.EnqueueChunkedText($text)
+    }
     if ($this.Pending.Count -eq 0) { return '' }
     return $this.Pending.Dequeue()
   }
@@ -247,8 +281,15 @@ function New-SoakScenario {
     HeapFaultAtCycle      = 0
     FaultAtCycle          = 0
     RebootAtCycle         = 0
+    RebootBannerText      = @('eMMC mounted at /mnt/emmc', 'Symlink /data -> /mnt/emmc/data', 'NuttShell (NSH)')
     DropLinkAtCycle       = 0
     StopAtCycle           = 0
+    FaultMode             = 'hardfault'
+    FaultInjectionAtCycle = 0
+    FaultInjectionContext = ''
+    FaultInjectionText    = 'HARDFAULT: injected fault text split across serial reads'
+    SplitNeedle           = ''
+    SplitAt               = 0
     StallCommands         = @()
     StallFromCycle        = 0
     AsyncAfterPrompt      = $true
