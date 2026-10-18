@@ -100,10 +100,12 @@ vg_advice_decision_t vg_advice_decide(const vg_advice_gate_t *g)
       return VG_ADV_SKIP_BACKOFF;
     }
 
-  /* Advice for the alarm set on screen is only worth replacing once it has
-   * aged out. */
+  /* Advice for the exact context last asked is only worth replacing once it
+   * has aged out.  Coverage deliberately matches id and epoch only, so a
+   * warn-to-crit transition in the same episode still needs a new request:
+   * otherwise the page keeps advice describing the old severity. */
 
-  if (g->covered)
+  if (g->covered && g->same_asked_context)
     {
       return g->refresh_due ? VG_ADV_ASK : VG_ADV_SKIP_COVERED;
     }

@@ -204,6 +204,7 @@ static vg_advice_gate_t gate_for(bool covered)
 
   memset(&g, 0, sizeof(g));
   g.covered = covered;
+  g.same_asked_context = true;
   g.min_gap_ms = 20000u;
   return g;
 }
@@ -225,6 +226,21 @@ static int test_ask_gate(void)
   g.refresh_due = true;
   fails += expect_int(vg_advice_decide(&g), VG_ADV_ASK,
                       "aged advice is refreshed");
+
+  /* Coverage is keyed by id and epoch, but the request context also includes
+   * severity.  A warn-to-crit transition in the same episode must not leave
+   * the old warn advice on screen for five minutes. */
+
+  g = gate_for(true);
+  g.asked_once = true;
+  g.same_asked_context = false;
+  g.since_last_ask_ms = 20000u;
+  fails += expect_int(vg_advice_decide(&g), VG_ADV_ASK,
+                      "changed severity refreshes covering advice");
+
+  g.since_last_ask_ms = 5000u;
+  fails += expect_int(vg_advice_decide(&g), VG_ADV_SKIP_MIN_GAP,
+                      "severity refresh still obeys the minimum gap");
 
   /* Nothing covers the set, no pause armed: ask. */
 

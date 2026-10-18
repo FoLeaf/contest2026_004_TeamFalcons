@@ -510,6 +510,7 @@ void vg_advice_tick(void)
   gate.min_gap_ms = VG_ADV_MIN_GAP_MS;
 
   pthread_mutex_lock(&g_lock);
+  gate.same_asked_context = (strcmp(g_sig, sig) == 0);
   gate.backoff_armed = (g_next_ask_ms != 0);
   gate.backoff_expired = (g_next_ask_ms == 0) ||
                          ((int32_t)(now - g_next_ask_ms) >= 0);

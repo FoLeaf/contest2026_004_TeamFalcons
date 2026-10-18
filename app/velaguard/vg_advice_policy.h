@@ -132,6 +132,7 @@ typedef struct
 {
   bool        covered;          /* advice on hand answers this alarm set */
   bool        refresh_due;      /* ... and has aged past the refresh time */
+  bool        same_asked_context; /* ... and matches the context last asked */
   bool        asked_once;       /* an ask has happened since boot */
   bool        backoff_armed;    /* a retry pause is set */
   bool        backoff_expired;  /* ... and its time is up */
