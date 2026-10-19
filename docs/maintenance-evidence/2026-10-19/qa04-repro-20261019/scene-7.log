@@ -1,0 +1,105 @@
+0x90001036 in exception_common ()
+S00 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000dea msp: 0x24048028
+S01 0xe000ed04:	0x00437836
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x8100000e pc: 0x90001054 msp: 0x24047fc0
+S02 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e36 msp: 0x24047ed0
+S03 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e5e msp: 0x24047ed0
+S04 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S05 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100180e pc: 0x90001070 msp: 0x24047ee8
+S06 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x61000036 pc: 0x90000c36 msp: 0x24048028
+S07 0xe000ed04:	0x00437836
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e6e msp: 0x24047ed0
+S08 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000de8 msp: 0x24048030
+S09 0xe000ed04:	0x00437836
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001044 msp: 0x24047fc0
+S10 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001010 msp: 0x24048030
+S11 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S12 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S13 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001086 msp: 0x24048030
+S14 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001092 msp: 0x24048030
+S15 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000dee msp: 0x24048028
+S16 0xe000ed04:	0x00437836
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e36 msp: 0x24047ed0
+S17 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x9000107c msp: 0x24048030
+S18 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001092 msp: 0x24048030
+S19 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x0100000e pc: 0x90001030 msp: 0x24047fc0
+S20 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001024 msp: 0x24047fc0
+S21 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x0100000e pc: 0x9000102c msp: 0x24047fc0
+S22 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x9000107c msp: 0x24048030
+S23 0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100180e pc: 0x90001070 msp: 0x24047ee8
+FINAL
+0xe000ed04:	0x0043680e
+0x24007344 <g_system_ticks>:	0x0003a897
+0x40004400:	0x2000002d
+0x40004404:	0x00000000
+0x40004408:	0x06000000
+0x40004800:	0x2000002d
+[Inferior 1 (Remote target) detached]

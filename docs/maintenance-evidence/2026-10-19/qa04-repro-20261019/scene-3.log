@@ -1,0 +1,36 @@
+0x90000c40 in modifyreg32 ()
+STATE3
+pc             0x90000c40          0x90000c40 <modifyreg32+12>
+lr             0xffffffe9          -23
+sp             0x24048028          0x24048028
+msp            0x24048028          0x24048028
+psp            0x240480cc          0x240480cc
+basepri        0x80                -128
+primask        0x0                 0
+ICSR
+0xe000ed04:	0x00437836
+TICKS3
+0x24007344 <g_system_ticks>:	0x0003a897
+SAMPLE_A
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x000ee7df
+SLEEP_200MS
+SAMPLE_B
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x000ee7df
+SLEEP_1S
+SAMPLE_C
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x000ee7df
+SAMPLE_PC
+pc             0x90000c40          0x90000c40 <modifyreg32+12>
+lr             0xffffffe9          -23
+0xe000ed04:	0x00437836
+SLEEP_2S
+SAMPLE_D
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x000ee7df
+pc             0x90000c40          0x90000c40 <modifyreg32+12>
+lr             0xffffffe9          -23
+0xe000ed04:	0x00437836
+[Inferior 1 (Remote target) detached]

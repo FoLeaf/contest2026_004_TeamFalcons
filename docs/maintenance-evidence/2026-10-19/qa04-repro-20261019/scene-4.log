@@ -1,0 +1,24 @@
+0x9000101c in exception_common ()
+HALT_A
+pc             0x9000101c          0x9000101c <exception_common+20>
+sp             0x24048030          0x24048030
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x003466db
+0xe000ed04:	0x0043680e
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001020 msp: 0x24048030
+HALT_B
+pc             0x9000101c          0x9000101c <exception_common+20>
+sp             0x24048030          0x24048030
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x00234b5f
+0xe000ed04:	0x0043680e
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e32 msp: 0x24047ed0
+HALT_C
+pc             0x9000101c          0x9000101c <exception_common+20>
+sp             0x24048030          0x24048030
+0x24007344 <g_system_ticks>:	0x0003a897
+0xe000e018:	0x00109725
+0xe000ed04:	0x0043680e
+[Inferior 1 (Remote target) detached]

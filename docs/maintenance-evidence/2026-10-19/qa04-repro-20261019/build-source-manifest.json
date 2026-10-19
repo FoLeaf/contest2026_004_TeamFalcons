@@ -1,0 +1,25 @@
+{
+  "created_at": "2026-10-19T16:54:03+08:00",
+  "build_log": ".debug/qa04-baseline-20261019/build-20261019T1435.log",
+  "build_mode": "incremental (scripts/build.sh, no --clean)",
+  "build_id_in_image": "73ab4a45d Oct 19 2026 16:53:33",
+  "repos": {
+    "contest": {"path": "/home/hello19y/openvela/.vg-maintenance-closeout", "branch": "codex/maintenance-closeout", "head": "1b88a07008004cff05865e34a3736f7924aaabbb", "status_short": ""},
+    "nuttx": {"path": "/home/hello19y/openvela/nuttx", "branch": "velaguard/eth-mii-stm32h750b-dk", "head": "2373ab4a45ddfebe67706110db460b27f3a8d127", "status_short": ""},
+    "apps": {"path": "/home/hello19y/openvela/apps", "branch": "velaguard/netinit-esp8266", "head": "0ea954b79740756318ce1f0b13271dd94235fe2a", "status_short": "?? testing/drivers/nist-sts/.gitee/|?? testing/drivers/nist-sts/.github/|?? testing/drivers/nist-sts/sts/|"},
+    "ai_agent": {"path": "/home/hello19y/openvela/packages/ai_agent", "branch": "velaguard/llm-tls-send-retry", "head": "7dc0a8816292cd58675863e9a1cde8b1cd96a535", "status_short": ""},
+    "mqtt_c": {"path": "/home/hello19y/openvela/apps/netutils/mqttc/MQTT-C", "branch": "velaguard/mqtt-pal-hook", "head": "4dbb7f321ceeed47822171787e0742df2ddb4959", "status_short": ""}
+  },
+  "artifacts": {
+    "nuttx.elf": "520331debc6536c281ac1040f13da9528ce25f1a2c7892f884af28a4ec8b820a",
+    "nuttx.bin": "bc2eb8c2c0ceb37f6b032cf36d861527ee7ddcd4225e41a1586c9b85d14a06ca",
+    "nuttx.hex": "b3e31ebe34a5c44233a69ad53304066c3a142fa941aca1e5cff8af75696e6d2e",
+    "qspi_bootstub.bin": "9e6ddfa058915cdb3fec18ff8f862a1ca7dfe2b6a31134d1bc31df037fc2026d",
+    "qspi_bootstub.hex": "877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e"
+  },
+  "daily_report_fix": {
+    "commit": "22a9bfe900e8ebb9955a356708e77b1d5394fddb",
+    "in_head": true,
+    "verified_in_binary": "vg_ui_backend_acq_start first call -> ensure_file_worker_started (0x90013fd8)"
+  }
+}

@@ -1,0 +1,123 @@
+0x9000101c in exception_common ()
+S00 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e38 msp: 0x24047ed0
+S01 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100180e pc: 0x90001070 msp: 0x24047ee8
+S02 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000df4 msp: 0x24048028
+S03 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S04 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x61000036 pc: 0x90000c3a msp: 0x24048028
+S05 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x9000107c msp: 0x24048030
+S06 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100180e pc: 0x9000103a msp: 0x24047fc0
+S07 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000df4 msp: 0x24048028
+S08 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100180e pc: 0x9000103a msp: 0x24047fc0
+S09 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S10 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001430 msp: 0x24047ed0
+S11 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001008 msp: 0x24048030
+S12 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e28 msp: 0x24047ed0
+S13 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x9000107c msp: 0x24048030
+S14 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001008 msp: 0x24048030
+S15 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x01000036 pc: 0x90001496 msp: 0x24048028
+S16 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000e02 msp: 0x24048028
+S17 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S18 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e2c msp: 0x24047ed0
+S19 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x9000101c msp: 0x24048030
+S20 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001024 msp: 0x24047fc0
+S21 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001078 msp: 0x24047ee8
+S22 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001024 msp: 0x24047fc0
+S23 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e68 msp: 0x24047ed0
+S24 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x61000036 pc: 0x90000c34 msp: 0x24048030
+S25 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x61000036 pc: 0x90000c3a msp: 0x24048028
+S26 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90000e58 msp: 0x24047ed0
+S27 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x0100000e pc: 0x9000102c msp: 0x24047fc0
+S28 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e52 msp: 0x24047ed0
+S29 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90001066 msp: 0x24047ee8
+S30 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000c40 msp: 0x24048028
+S31 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x6100000e pc: 0x90000e72 msp: 0x24047ed0
+S32 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001092 msp: 0x24048030
+S33 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000c4a msp: 0x24048028
+S34 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x9000104c msp: 0x24047fc0
+S35 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x2100000e pc: 0x90001008 msp: 0x24048030
+S36 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100000e pc: 0x90001048 msp: 0x24047fc0
+S37 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler External Interrupt(38)
+xPSR: 0x21000036 pc: 0x90000df4 msp: 0x24048028
+S38 active=54 pending=55 ticks=0003a897 shpr3=80800080
+target halted due to debug-request, current mode: Handler PendSV
+xPSR: 0x4100180e pc: 0x9000103a msp: 0x24047fc0
+S39 active=14 pending=54 ticks=0003a897 shpr3=80800080
+target not halted
+.debug/qa04-repro-20261019T1751/scene8.gdb:19: Error in sourced command file:
+Protocol error with Rcmd: D0.
+[Inferior 1 (Remote target) detached]
