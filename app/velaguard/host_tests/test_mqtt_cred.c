@@ -180,12 +180,7 @@ ssize_t __wrap_read(int fd, void *buf, size_t n)
         }
 
       clock_gettime(CLOCK_REALTIME, &deadline);
-      deadline.tv_nsec += 200000000L;
-      if (deadline.tv_nsec >= 1000000000L)
-        {
-          deadline.tv_sec++;
-          deadline.tv_nsec -= 1000000000L;
-        }
+      deadline.tv_sec++;
 
       while (!t_second_reached)
         {
@@ -626,6 +621,7 @@ int main(void)
     pthread_t threads[4];
     void *res;
     int started = 0;
+    size_t started_indexes[4];
     size_t i;
 
     put_record(VG_MQTT_CRED_FILE, MQTT_JSON("concurrent", "pw-shared"));
@@ -635,16 +631,22 @@ int main(void)
         memset(&many[i], 0, sizeof(many[i]));
         if (pthread_create(&threads[i], NULL, loader_a, &many[i]) == 0)
           {
-            started++;
+            started_indexes[started++] = i;
+          }
+        else
+          {
+            expect(0, "a concurrent load worker starts");
           }
       }
 
     for (i = 0; i < (size_t)started; i++)
       {
-        pthread_join(threads[i], &res);
+        size_t index = started_indexes[i];
+
+        pthread_join(threads[index], &res);
         expect((int)(intptr_t)res == 0 &&
-               strcmp(many[i].username, "concurrent") == 0 &&
-               strcmp(many[i].password, "pw-shared") == 0,
+               strcmp(many[index].username, "concurrent") == 0 &&
+               strcmp(many[index].password, "pw-shared") == 0,
                "a concurrent load gets the record on the card");
       }
   }

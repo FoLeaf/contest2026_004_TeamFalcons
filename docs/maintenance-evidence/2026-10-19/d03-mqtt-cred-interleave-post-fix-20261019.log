@@ -1,0 +1,14 @@
+MQTT credential interleaving regression: integrated fix
+time_local=2026-10-19T08:30:27.478067+08:00
+source_ref=codex/maintenance-closeout working tree
+test_command=make -C app/velaguard/host_tests test_mqtt_cred && app/velaguard/host_tests/test_mqtt_cred
+run=1 exit=0
+test_mqtt_cred: OK
+run=2 exit=0
+test_mqtt_cred: OK
+run=3 exit=0
+test_mqtt_cred: OK
+run=4 exit=0
+test_mqtt_cred: OK
+run=5 exit=0
+test_mqtt_cred: OK
