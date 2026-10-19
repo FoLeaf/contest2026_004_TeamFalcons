@@ -1,0 +1,16 @@
+0x90001822 in nx_start ()
+=== SANITY ===
+pc             0x90001822          0x90001822 <nx_start+318>
+lr             0x90001827          -1879042009
+sp             0x240480fc          0x240480fc
+basepri        0x0                 0
+primask        0x0                 0
+g_system_ticks=7777
+g_live_cycle=37
+g_arm_freeze_diag @0x24003cd0 (20 words)
+0x24003cd0 <g_arm_freeze_diag>:	7777	7777	7777	15212
+0x24003ce0 <g_arm_freeze_diag+16>:	15212	0	0	0
+0x24003cf0 <g_arm_freeze_diag+32>:	0	14	2164261376	604274720
+0x24003d00 <g_arm_freeze_diag+48>:	0	7920	7920	7712
+0x24003d10 <g_arm_freeze_diag+64>:	7712	4240	160	0
+[Inferior 1 (Remote target) detached]

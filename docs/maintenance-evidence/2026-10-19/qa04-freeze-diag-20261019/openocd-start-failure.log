@@ -1,0 +1,5 @@
+set log_output to ".debugreeze-diag-20261019openocd.log"
+srst_only separate srst_nogate srst_open_drain connect_assert_srst
+Error: libusb_open() failed with LIBUSB_ERROR_ACCESS
+Error: open failed
+
