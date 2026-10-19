@@ -1,0 +1,10 @@
+ethernet_adapter=USB2.0 Ethernet Adapter status=Up ip=192.168.137.1/24
+default_route_interface=WLAN next_hop=192.168.219.171
+wlan_dns=223.5.5.5,119.29.29.29
+ics_status=Running start_type=Manual
+ping target=192.168.137.48 seq=1 status=Success rtt_ms=3
+ping target=192.168.137.48 seq=2 status=Success rtt_ms=2
+ping target=223.5.5.5 seq=1 status=Success rtt_ms=61
+ping target=223.5.5.5 seq=2 status=Success rtt_ms=37
+dns server=system_default cname=token-plan-cn.xiaomimimo.com A=202.69.4.23,202.69.4.22,220.181.104.192,220.181.104.191
+dns server=192.168.137.1 cname=token-plan-cn.xiaomimimo.com A=202.69.4.23,202.69.4.22,220.181.104.192,220.181.104.191

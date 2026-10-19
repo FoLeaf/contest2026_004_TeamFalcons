@@ -1,0 +1,8 @@
+vgnet: join 19y failed
+WARNING: Ignoring ICMP reply with ID 318.  Expected 317
+1 packets transmitted, 0 received, 100% packet loss, time 15560 ms
+nsh> [Kvgnet status
+state=connecting egress=rj45 tcp=posix mqtt=down reason=egress=rj45
+rj45 link=1 ip=192.168.137.48 gw=192.168.137.1 ping_ok=0 fail_streak=2
+wifi ssid=19y assoc=0 ip=-
+nsh> [K

@@ -1,0 +1,15 @@
+########## boot settle len=0 ##########
+
+
+########## arp -a ########## len=56
+arp -a
+nsh: arp: missing required argument(s)
+nsh> [K
+
+########## ping -c 1 223.5.5.5 ########## len=54
+ping -c 1 223.5.5.5
+PING 223.5.5.5 56 bytes of data
+
+
+########## vgnet status ########## len=0
+

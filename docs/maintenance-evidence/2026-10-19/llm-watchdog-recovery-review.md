@@ -74,3 +74,11 @@ DNS 队列处理完后，`free` 两次显示总 heap `7012144` 字节、空闲�
 为确认来源，只在开发机过滤了 `/data/velaguard/logs/agent_tools.log` 中的工具名、返回码和 JSON `command` 的首词，不输出或保存原始参数。当前文件共 23 条 `run_shell` 记录，没有 `dmesg` 命令；最新一次 `nslookup` 返回 `rc=-1`，命令在执行前被安全闸门拒绝。摘要见[脱敏审计摘要](agent-run-shell-audit-summary-20261019.log)，拒绝回显见[只读 DNS 工具拒绝记录](agent-run-shell-dns-blocked-20261019.log)，SHA256 `8e38f453303e8da41450483bb565ae5cd664ee70c3982edc28ce2b1217698d8f`。因此尚不能把 PID 147 归因到一次 Agent 工具调用，也不能认定为 shell runner 泄漏。没有结束该任务。
 
 最终镜像启用 `CONFIG_VG_HMI` 后，`run_shell` 只允许元数据命令；网络命令不能用来制造一个安全的长时间运行工况。DNS 工具探测只是验证拒绝路径，没有执行解析，也没有触发 10 秒执行预算。板端超时后的 shell 子任务回收仍缺可归因证据，AI-01/G 不据此关闭。
+
+## Windows 主机与板端出站对照
+
+Windows 只读快照显示板端网关 `192.168.137.1` 位于 USB Ethernet Adapter，IPv4 `/24`；默认路由走 WLAN `192.168.219.171`，DNS 为 `223.5.5.5`、`119.29.29.29`，Internet Connection Sharing 服务 `SharedAccess` 正在运行。Windows 连续两次 ping 板端 `192.168.137.48` 和公共 DNS 地址 `223.5.5.5` 均成功；系统默认 DNS 与直接查询 `192.168.137.1` 都解析出 MiMo 域名记录。原始输出和采集脚本见[Windows 网络诊断](host-network-diagnostics-20261019.log)及[脚本](host-network-diagnostics-20261019.ps1)。
+
+随后板端直接对数字 IP `223.5.5.5` 发起 1 次 ping，最终为 0/1 收到、耗时 15.56 秒，并报告收到的 ICMP ID 与本次预期值不一致；`vgnet status` 的 `ping_ok=0 fail_streak=2`、`mqtt=down`。第一份串口命令输出只等 5 秒，未等到 ping 结束；被动监听捕获了最终输出和排队的 `vgnet status`，见[命令记录](board-ping-public-ip-20261019.log)和[只读串口监听](board-ping-public-ip-observer-20261019.log)。其中的 `arp -a` 因缺少参数失败，不影响后续 ping。
+
+基于 Windows 到板端、Windows 出站 ping 与经网关 DNS 均成功，而板端 DNS 和出站 ping 失败，可以把排查重点收窄到板端发起请求时的接口、路由、协议栈或并发 ICMP 路径；这是依据这些对照结果的推断，尚不能认定唯一根因。ICMP ID 不匹配也可能与 `vgnet` 后台探测并发有关。板端 TCP/443、TLS 和 LLM 请求仍未验证。COM7 在同一后续观察窗口继续正常工作，10:35:36 计数为 `requests=30938 replies=30938 crc_scan=0 dropped=0`。
