@@ -1,0 +1,20 @@
+run=final-soak-20261019T124500
+soak_windows_pid=3908
+soak_start=2026-10-19T12:43:21+08:00
+expected_end=2026-10-20T12:43:22+08:00
+launcher=Windows WMI Win32_Process.Create
+port=COM3
+hours=24
+interval_s=900
+store_rounds=50
+minimum_online=14
+command_timeout_s=240
+firmware=NuttX 0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk
+git_head=65e99ad
+branch=codex/maintenance-closeout
+slave_windows_pid=21776
+slave_start=2026-10-19T12:40:15+08:00
+slave_status_124337=requests=560 replies=560 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+slave_status_124537=requests=2101 replies=2101 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+board_reset_observed=2026-10-19T12:33:46+08:00
+first_cycle=CYCLE run=final-soak-20261019T124500 n=1 elapsed_s=124 uptime_s=700 online=14/14 heap_used=305504 heap_maxused=393448
