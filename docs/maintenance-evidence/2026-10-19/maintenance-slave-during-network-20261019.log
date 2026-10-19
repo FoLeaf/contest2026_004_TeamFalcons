@@ -1,0 +1,4 @@
+STATUS 2026-10-19T10:23:06.3044856+08:00 elapsed_s=3592.8 mode=normal requests=25584 replies=25584 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T10:23:16.3127738+08:00 elapsed_s=3602.8 mode=normal requests=25654 replies=25654 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T10:23:26.3147356+08:00 elapsed_s=3612.8 mode=normal requests=25723 replies=25723 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T10:23:36.3223437+08:00 elapsed_s=3622.8 mode=normal requests=25793 replies=25793 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0

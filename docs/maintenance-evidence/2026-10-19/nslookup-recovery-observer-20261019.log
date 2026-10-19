@@ -1,0 +1,7 @@
+nsh: nslookup: getaddrinfo failed: 1
+nsh> [Kping -c 1 192.168.137.1
+PING 192.168.137.1 56 bytes of data
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+WARNING: Ignoring ICMP reply with ID 315.  Expected 314
+1 packets transmitted, 0 received, 100% packet loss, time 1560 ms
+nsh> [Kping -c 1 token-plan-cn.xiaomimimo.com

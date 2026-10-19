@@ -48,3 +48,21 @@ Agent 轮次在 watchdog 后释放，NSH 最终返回提示符；但超时后的
 
 - [watchdog 请求起始](llm-watchdog-request-start-20261019.log)，SHA256 `2d2d47e51fa951e831d6b128223dd91c40e89957aa946df4cd3dddad542ddc69`
 - [watchdog 完成监听](llm-watchdog-completion-observer-20261019.log)，SHA256 `6019a5b17da902203f68743e0a186651854f0b7fc53ce4260ddc1d89c248998c`
+
+## 10:18–10:23 网络与串口后续复核
+
+最终镜像继续正常采集，板端 `uptime_s=5622`，14 个点在线，温度为 24°C，`vgagent status` 为 `state=idle gen=11 owner=none`，凭证状态为 ready，最近回复仍是错误。原始串口输出见 [恢复快照](board-resume-snapshot-20261019.log)，SHA256 `10fc03e080225fa199839b12277e91904294c7a6e8be9b90c25bd5496744e625`。
+
+网络查询显示 `eth0` 有地址 `192.168.137.48/24`，网关为 `192.168.137.1`。`nslookup token-plan-cn.xiaomimimo.com` 返回 `getaddrinfo failed: 1`；域名 ping 返回 `ping_gethostip(...) failed`。网关 ping 输出 0/1 收到，并记录了 ICMP ID 不匹配警告。之后 `vgnet status` 为 `state=connecting`、`egress=rj45`、`mqtt=down`，RJ45 `link=1`、`ping_ok=0`、`fail_streak=1`；Wi-Fi 未关联。命令输出和分段只读监听见 [网络查询记录](llm-network-current-20261019.log)、[第一次 COM3 只读监听](nslookup-recovery-observer-20261019.log) 与[第二次 COM3 只读监听](nslookup-recovery-observer-2-20261019.log)。
+
+第一次查询使用的 `serial_cmd.ps1` 每条命令只等 5 秒，但本次镜像配置的 DNS send/receive timeout 为 30 秒且 retries=3；`nslookup` 超出捕获窗口后，测试脚本继续发送了后续命令。被动监听稍后捕获到解析失败、提示符恢复以及排队命令依次执行。因此这一段空输出不能记作新的 QA-04 系统失联；没有复位设备。对应的捕获方式保存在 [COM3 只读监听脚本](observe-com3-readonly.ps1)，DTR/RTS 均为 false。
+
+从站日志在上述等待期间持续递增；最近快照为 `requests=25723 replies=25723 suppressed=0 crc_scan=0 dropped=0`，见[从站计数](maintenance-slave-during-network-20261019.log)。这证明本地采集仍在运行，但域名解析、网关 ping 与 `vgnet` 状态均未通过，不能证明 TCP/443 或 TLS 恢复。本次没有再发 LLM 请求。
+
+相关原始日志 SHA256：
+
+- [分段网络命令输出](llm-network-current-20261019.log)：`2980212d792ba7e619404a26124b2648dbfad81ff4c46d0ff725e7bae9a41a07`
+- [命令等待期间的空响应记录](board-console-after-network-check-20261019.log)：`439b97b5266b0fc98359fe56bb880f73244a2c22229c3b55bb9fd97ffa1a1ba4`
+- [COM7 计数快照](maintenance-slave-during-network-20261019.log)：`58ff29bedb149d4cb74de260f667a125c99f917bdb0fa8ea108d6b208d31c459`
+
+更新结论：Agent 轮次仍为空闲，LLM 与 MQTT 网络恢复尚未通过。先前 QA-04 的自发控制台失联原因仍未定位；本次 DNS 等待由测试命令本身触发，不据此关闭或重定义 QA-04。

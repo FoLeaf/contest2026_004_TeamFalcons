@@ -1,0 +1,16 @@
+ERROR: ping_gethostip(token-plan-cn.xiaomimimo.com) failed
+nsh> [Kvgagent status
+round: state=idle gen=11 owner=none
+llm: credentials=ready provision_file=present
+reply: Sorry, I encountered an error.
+nsh> [Kvgnet status
+state=connecting egress=rj45 tcp=posix mqtt=down reason=egress=rj45
+rj45 link=1 ip=192.168.137.48 gw=192.168.137.1 ping_ok=0 fail_streak=1
+wifi ssid=19y assoc=0 ip=-
+nsh> [Kuptime
+10:22:22 up  1:38, load average: 0.73, 0.73, 0.73
+nsh> [Kvgagent status
+round: state=idle gen=11 owner=none
+llm: credentials=ready provision_file=present
+reply: Sorry, I encountered an error.
+nsh> [K[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
