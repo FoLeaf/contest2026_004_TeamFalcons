@@ -1,0 +1,30 @@
+0x90000e58 in arm_doirq ()
+CURRENT\npc             0x90000e58          0x90000e58 <arm_doirq+56>
+sp             0x24047f80          0x24047f80
+lr             0x90000e37          -1879044553
+control        0x0                 0
+primask        0x0                 0
+basepri        0x80                -128
+msp            0x24047f80          0x24047f80
+psp            0x240480cc          0x240480cc
+0x24007344 <g_system_ticks>:	0x000aca9b
+0xe000ed18:	0x00808080	0x70000000	0x80000080	0x00010400
+0xe000ed04:	0x0043700e
+0xe000e010:	0x00010007
+0xe000e100:	0x00000100	0x200200c0	0x81040000	0x00000001
+0xe000e200:	0x00000000	0x20000080	0x12000000	0x00000000
+LATER\npc             0x90000e58          0x90000e58 <arm_doirq+56>
+sp             0x24047f80          0x24047f80
+lr             0x90000e37          -1879044553
+control        0x0                 0
+primask        0x0                 0
+basepri        0x80                -128
+msp            0x24047f80          0x24047f80
+psp            0x240480cc          0x240480cc
+0x24007344 <g_system_ticks>:	0x000aca9b
+0xe000ed18:	0x00808080	0x70000000	0x80000080	0x00010400
+0xe000ed04:	0x0043700e
+0xe000e010:	0x00010007
+0xe000e100:	0x00000100	0x200200c0	0x81040000	0x00000001
+0xe000e200:	0x00000000	0x20000080	0x12000000	0x00000000
+[Inferior 1 (Remote target) detached]
