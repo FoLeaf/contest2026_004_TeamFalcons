@@ -1,4 +1,4 @@
-filtered_run_shell_records 22
+filtered_run_shell_records 23
 797.290 tool=run_shell rc=-1 command_head=unparsed
 121.260 tool=run_shell rc=0 command_head=vgstats
 121.820 tool=run_shell rc=0 command_head=vgcfg
@@ -21,3 +21,4 @@ filtered_run_shell_records 22
 1119.870 tool=run_shell rc=-1 command_head=vgpoint
 3952.790 tool=run_shell rc=-1 command_head=vgpoint
 4093.350 tool=run_shell rc=0 command_head=ps
+6427.390 tool=run_shell rc=-1 command_head=nslookup

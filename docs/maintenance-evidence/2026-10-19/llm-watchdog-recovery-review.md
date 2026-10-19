@@ -71,4 +71,6 @@ Agent 轮次在 watchdog 后释放，NSH 最终返回提示符；但超时后的
 
 DNS 队列处理完后，`free` 两次显示总 heap `7012144` 字节、空闲约 `6742 KB`，Agent 仍为 `state=idle gen=11 owner=none`。两次 `ps` 快照都出现 PID 147 `sh -c dmesg`，状态为 `Waiting Semaphore`，栈列为 `0001992`。记录见[首次资源快照](board-resource-network-snapshot-20261019.log)与[再次 ps/free](board-ps-repeat-20261019.log)。
 
-为确认来源，只在开发机过滤了 `/data/velaguard/logs/agent_tools.log` 中的工具名、返回码和 JSON `command` 的首词，不输出或保存原始参数。当前文件共 22 条 `run_shell` 记录，没有 `dmesg` 命令；摘要见[脱敏审计摘要](agent-run-shell-audit-summary-20261019.log)。因此尚不能把 PID 147 归因到一次 Agent 工具调用，也不能认定为 shell runner 泄漏。没有结束该任务。板端超时后的 shell 子任务回收仍缺可归因证据，AI-01/G 不据此关闭。
+为确认来源，只在开发机过滤了 `/data/velaguard/logs/agent_tools.log` 中的工具名、返回码和 JSON `command` 的首词，不输出或保存原始参数。当前文件共 23 条 `run_shell` 记录，没有 `dmesg` 命令；最新一次 `nslookup` 返回 `rc=-1`，命令在执行前被安全闸门拒绝。摘要见[脱敏审计摘要](agent-run-shell-audit-summary-20261019.log)，拒绝回显见[只读 DNS 工具拒绝记录](agent-run-shell-dns-blocked-20261019.log)，SHA256 `8e38f453303e8da41450483bb565ae5cd664ee70c3982edc28ce2b1217698d8f`。因此尚不能把 PID 147 归因到一次 Agent 工具调用，也不能认定为 shell runner 泄漏。没有结束该任务。
+
+最终镜像启用 `CONFIG_VG_HMI` 后，`run_shell` 只允许元数据命令；网络命令不能用来制造一个安全的长时间运行工况。DNS 工具探测只是验证拒绝路径，没有执行解析，也没有触发 10 秒执行预算。板端超时后的 shell 子任务回收仍缺可归因证据，AI-01/G 不据此关闭。

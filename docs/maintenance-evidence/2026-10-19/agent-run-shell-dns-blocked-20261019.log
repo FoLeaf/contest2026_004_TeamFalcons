@@ -1,0 +1,10 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent tool run_shell '{"command":"nslookup token-plan-cn.xiaomimimo.com"}' ########## len=300
+vgagent tool run_shell '{"command":"nslookup token-plan-cn.xiaomimimo.com"}'
+[tools] Executing tool: run_shell
+[shell] Blocked dangerous command: nslookup token-plan-cn.xiaomimimo.com
+tool run_shell rc=-1
+{"error":"Command 'nslookup token-plan-cn.xiaomimimo.com' is blocked for safety"}
+nsh> [K
