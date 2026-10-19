@@ -1,8 +1,12 @@
-# 复位后重新启动 24 小时长测
+# 复位后重新启动的 24 小时长测（FAIL）
 
 记录时间：2026-10-19 12:43（Asia/Shanghai）
 
+最终状态更新：2026-10-19 15:25（Asia/Shanghai）
+
 宿主中断和板端复位现场归档后，从复位后的稳定状态重新启动正式长测。运行 ID 为 `final-soak-20261019T124500`，Windows PID 3908 由 WMI `Win32_Process.Create` 创建，父进程不依赖当前 Codex 会话。COM7 从站为 Windows PID 21776，12:43:37 已累计 560 请求、560 回复，`crc_scan=0`。
+
+该运行最终在 14:46:32 以 `FAIL` 结束：第 8 次 `vgstoretest 50` 于 14:42:32 发出后达到 240 秒上限，脚本写出 `FAIL` 与 `RUN_END status=FAIL`。前 7 轮通过，后续 COM3 为 0 字节、COM7 请求停止。完整失败现场和只读诊断见 [正式长测失败归档](final-soak-failure-20261019.md)。本文下文保留启动和已通过轮次的历史记录，不再表示运行仍在进行。
 
 长测参数保持 COM3、24 小时、900 秒周期、每轮 50 次存储写入、最少 14 点在线、命令上限 240 秒。基线固件为 23:48:40 镜像，已确认点表 14 行，温度显示名仍为 `温度验收`。
 
@@ -40,3 +44,16 @@ heap_used=305536 heap_maxused=393448
 | `final-soak-20261019T124500.start-metadata.txt` | `f32a0beb79e5ab37ff76c581333480cacf6f24e208c6524d60dba00fd1950002` |
 | `final-soak-20261019T124500.actual-end.utc` | `65fe7fe0ee29549fa8c778d0d8d8ba90b1f2b64612c2217f2b5f7cc3b612db82` |
 | `final-soak-20261019T124500-start.json` | `4a1aef190e9ede1d236789836cd590500a53a01afc9149d875c9ba67dd4ab9cf` |
+
+## 最终状态
+
+| 项目 | 结果 |
+|---|---|
+| 同一运行的结束标记 | `FAIL`、`RUN_END status=FAIL` |
+| 通过轮次 | 7 |
+| 最后完整周期 | `elapsed_s=6,250 uptime_s=6,826 online=14/14` |
+| 失败命令 | `vgstoretest 50` |
+| 失败原因 | 240 秒命令超时 |
+| 24 小时验收 | 未完成 |
+
+不得把此前单轮通过或第 7 轮结果写成 24 小时通过。
