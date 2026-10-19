@@ -1,0 +1,43 @@
+########## boot settle len=0 ##########
+
+
+########## vgruntime dump ########## len=5190
+vgruntime dump
+vgruntime: uptime_s=2315 wall=2026-10-19T09:22:54
+vgruntime: slave=1 boot_total=2188 boot_ok=2170 boot_crc=0 boot_timeout=18 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=210 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=1094 boot_ok=1086 boot_crc=0 boot_timeout=8 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=690 boot_lat_avg=28 win_total=64 win_ok=63 win_crc=0 win_timeout=1 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=1094 boot_ok=1087 boot_crc=0 boot_timeout=7 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=200 boot_lat_avg=27 win_total=64 win_ok=63 win_crc=0 win_timeout=1 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=3282 boot_ok=3264 boot_crc=0 boot_timeout=18 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=670 boot_lat_avg=27 win_total=64 win_ok=63 win_crc=0 win_timeout=1 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=3282 boot_ok=3267 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=3281 boot_ok=3266 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=1093 boot_ok=1088 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=180 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=15314 boot_ok=15228 boot_crc=0 boot_timeout=86 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=2236240 offline_s=0 last_ok_ago_s=3 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=2236250 offline_s=0 last_ok_ago_s=3 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=2236260 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=2239080 offline_s=0 last_ok_ago_s=3 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=2239090 offline_s=0 last_ok_ago_s=3 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=2239090 offline_s=0 last_ok_ago_s=3 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=2239100 offline_s=0 last_ok_ago_s=3 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=2239110 offline_s=0 last_ok_ago_s=3 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=2239120 offline_s=0 last_ok_ago_s=3 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=2239130 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=2239140 offline_s=0 last_ok_ago_s=3 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=2239150 offline_s=0 last_ok_ago_s=3 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=2239160 offline_s=0 last_ok_ago_s=3 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=2239170 offline_s=0 last_ok_ago_s=3 value=0 kind=none
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+nsh> [K

@@ -1,0 +1,48 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent tool vg_run_report ########## len=599
+vgagent tool vg_run_report
+[tools] Executed vg tool: vg_run_report
+tool vg_run_report rc=0
+运行报告由板上统计生成，数字不是推测。
+运行报告（本次上电起）
+2026-10-19 09:33  已运行 49分0秒
+
+通信质量
+总线成功 100%（19599/19687），超时 88，CRC 0
+近窗全部正常。
+最差从站 1：成功 99%（2794/2814）
+
+点位在线
+temp 在线 47分41秒  24
+humid 在线 47分41秒  50
+flood 在线 47分41秒  0
+smoke 在线 47分44秒  1
+acu_ret 在线 47分44秒  25
+acu_set 在线 47分44秒  24
+acu_run 在线 47分44秒  1
+ups_load 在线 47分44秒  40
+其余 6 个未列出
+
+异常时间线
+08:45 flood 恢复在线
+08:45 humid 恢复在线
+08:45 temp 恢复在线
+08:45 door 恢复在线
+08:45 energy_kwh 恢复在线
+08:45 pwr_kw 恢复在线
+08:45 volt_a 恢复在线
+08:45 ups_bypass 恢复在线
+nsh> [K
+
+########## vgagent status ########## len=213
+vgagent status
+round: state=idle gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: 📊 运行报告（本次上电，已运行约 45 分钟）
+
+**通信质量**
+- 总线成功率 100%（17748/17836），超时 88 次，CRC 错误 0
+- 近期窗口全部正常，最差从站
+nsh> [K

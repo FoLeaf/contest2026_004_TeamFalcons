@@ -1,0 +1,54 @@
+########## boot settle len=0 ##########
+
+
+########## vgruntime dump ########## len=5190
+vgruntime dump
+vgruntime: uptime_s=3044 wall=2026-10-19T09:35:03
+vgruntime: slave=1 boot_total=2918 boot_ok=2898 boot_crc=0 boot_timeout=20 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=210 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=1459 boot_ok=1451 boot_crc=0 boot_timeout=8 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=690 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=1459 boot_ok=1452 boot_crc=0 boot_timeout=7 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=200 boot_lat_avg=26 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=4377 boot_ok=4359 boot_crc=0 boot_timeout=18 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=670 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=4377 boot_ok=4362 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=4377 boot_ok=4362 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=26 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=1459 boot_ok=1454 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=200 boot_lat_avg=27 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=20426 boot_ok=20338 boot_crc=0 boot_timeout=88 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=2964980 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=2964990 offline_s=0 last_ok_ago_s=1 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=2965000 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=2967820 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=2967830 offline_s=0 last_ok_ago_s=1 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=2967840 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=2967850 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=2967860 offline_s=0 last_ok_ago_s=1 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=2967870 offline_s=0 last_ok_ago_s=1 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=2967880 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=2967890 offline_s=0 last_ok_ago_s=1 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=2967900 offline_s=0 last_ok_ago_s=1 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=2967910 offline_s=0 last_ok_ago_s=1 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=2967920 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+nsh> [K
+
+########## vgagent status ########## len=213
+vgagent status
+round: state=idle gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: 📊 运行报告（本次上电，已运行约 45 分钟）
+
+**通信质量**
+- 总线成功率 100%（17748/17836），超时 88 次，CRC 错误 0
+- 近期窗口全部正常，最差从站
+nsh> [K

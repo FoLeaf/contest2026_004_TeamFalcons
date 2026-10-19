@@ -1,0 +1,59 @@
+########## boot settle len=58 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## vgmqtt -h 192.0.2.1 ########## len=141
+vgmqtt -h 192.0.2.1
+ERROR: no MQTT credentials in the provision store (err -2); run 'vgprovision mqtt' on the board, or pass -u/-P
+nsh> [K
+
+########## vgagent status ########## len=180
+vgagent status
+round: state=idle gen=1 owner=none
+llm: credentials=ready provision_file=present
+reply: OK: wrote 1512 bytes to /data/velaguard/reports/alarm_advice.txt
+nsh> [K
+
+########## vgruntime dump ########## len=5239
+vgruntime dump
+vgruntime: uptime_s=1837 wall=2026-10-19T09:14:56
+vgruntime: slave=1 boot_total=1780 boot_ok=1768 boot_crc=0 boot_timeout=12 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=190 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=890 boot_ok=884 boot_crc=0 boot_timeout=6 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=50 boot_lat_avg=22 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=890 boot_ok=885 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=80 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=2670 boot_ok=2655 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=100 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=2670 boot_ok=2655 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=110 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=2670 boot_ok=2655 boot_crc=0 boot_timeout=15 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=150 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=890 boot_ok=885 boot_crc=0 boot_timeout=5 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=40 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=12460 boot_ok=12387 boot_crc=0 boot_timeout=73 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=1758150 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=1758160 offline_s=0 last_ok_ago_s=1 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=1758170 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=1760990 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=1761000 offline_s=0 last_ok_ago_s=1 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=1761010 offline_s=0 last_ok_ago_s=1 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=1761020 offline_s=0 last_ok_ago_s=1 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=1761030 offline_s=0 last_ok_ago_s=1 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=1761040 offline_s=0 last_ok_ago_s=1 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=1761040 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=1761050 offline_s=0 last_ok_ago_s=1 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=1761060 offline_s=0 last_ok_ago_s=1 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=1761070 offline_s=0 last_ok_ago_s=1 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=1761080 offline_s=0 last_ok_ago_s=1 value=0 kind=none
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=smoke action=clear kind=offline value=1 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_ret action=clear kind=offline value=25 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_set action=clear kind=offline value=24 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=acu_run action=clear kind=offline value=1 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_load action=clear kind=offline value=40 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_soc action=clear kind=offline value=80 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=ups_bypass action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=volt_a action=clear kind=offline value=230 thr=0 cmp=le reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=pwr_kw action=clear kind=offline value=3 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=energy_kwh action=clear kind=offline value=123.4 thr=0 cmp=- reason=offline_recovered
+vgruntime: event t_boot_s=76 wall=2026-10-19T08:45:06 id=door action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=temp action=clear kind=offline value=24 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=humid action=clear kind=offline value=50 thr=0 cmp=ge reason=offline_recovered
+vgruntime: event t_boot_s=79 wall=2026-10-19T08:45:09 id=flood action=clear kind=offline value=0 thr=0 cmp=eq reason=offline_recovered
+nsh> [K[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+--- STDERR ---

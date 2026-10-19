@@ -1,0 +1,48 @@
+START 2026-10-19T09:19:44.4081174+08:00 port=COM7 mode=slave-only baud=9600 rts=False dtr=False reply_delay_ms=20 request_log=False
+CONTROL 2026-10-19T09:19:44.4257711+08:00 written=2026-10-19T09:19:42.5941815+08:00 line="normal" effect=mode=normal
+STATUS 2026-10-19T09:19:44.4268752+08:00 elapsed_s=0.0 mode=normal requests=0 replies=0 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+RX 2026-10-19T09:19:44.5215751+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-19T09:19:44.6272911+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-19T09:19:44.7494103+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-19T09:19:44.8576270+08:00 04-03-00-01-00-01-D5-9F
+RX 2026-10-19T09:19:44.9800897+08:00 04-03-00-02-00-01-25-9F
+RX 2026-10-19T09:19:45.0897672+08:00 05-03-00-00-00-01-85-8E
+RX 2026-10-19T09:19:45.1967024+08:00 05-03-00-01-00-01-D4-4E
+RX 2026-10-19T09:19:45.3038542+08:00 05-03-00-02-00-01-24-4E
+RX 2026-10-19T09:19:45.4105217+08:00 06-03-00-00-00-01-85-BD
+RX 2026-10-19T09:19:45.5328830+08:00 06-03-00-01-00-01-D4-7D
+RX 2026-10-19T09:19:45.6415663+08:00 06-03-00-02-00-01-24-7D
+RX 2026-10-19T09:19:45.7513191+08:00 07-03-00-00-00-01-84-6C
+RX 2026-10-19T09:19:46.6681189+08:00 01-03-00-00-00-01-84-0A
+RX 2026-10-19T09:19:46.9076700+08:00 01-03-00-01-00-01-D5-CA
+RX 2026-10-19T09:19:47.0178949+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-19T09:19:47.1272315+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-19T09:19:47.2367759+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-19T09:19:47.3443086+08:00 04-03-00-01-00-01-D5-9F
+RX 2026-10-19T09:19:47.4530595+08:00 04-03-00-02-00-01-25-9F
+RX 2026-10-19T09:19:47.5636862+08:00 05-03-00-00-00-01-85-8E
+RX 2026-10-19T09:19:47.6871753+08:00 05-03-00-01-00-01-D4-4E
+RX 2026-10-19T09:19:47.7967772+08:00 05-03-00-02-00-01-24-4E
+RX 2026-10-19T09:19:47.9062883+08:00 06-03-00-00-00-01-85-BD
+RX 2026-10-19T09:19:48.0151773+08:00 06-03-00-01-00-01-D4-7D
+RX 2026-10-19T09:19:48.1247639+08:00 06-03-00-02-00-01-24-7D
+RX 2026-10-19T09:19:48.2524435+08:00 07-03-00-00-00-01-84-6C
+RX 2026-10-19T09:19:49.2781593+08:00 01-03-00-00-00-01-84-0A
+RX 2026-10-19T09:19:49.3877122+08:00 01-03-00-01-00-01-D5-CA
+RX 2026-10-19T09:19:49.4966708+08:00 02-03-00-02-00-01-25-F9
+RX 2026-10-19T09:19:49.6049254+08:00 03-03-00-00-00-01-85-E8
+RX 2026-10-19T09:19:49.7137786+08:00 04-03-00-00-00-01-84-5F
+RX 2026-10-19T09:19:49.8233624+08:00 04-03-00-01-00-01-D5-9F
+STATUS 2026-10-19T09:19:54.4283463+08:00 elapsed_s=10.0 mode=normal requests=59 replies=59 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:04.4357472+08:00 elapsed_s=20.0 mode=normal requests=120 replies=120 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:14.4407638+08:00 elapsed_s=30.0 mode=normal requests=180 replies=180 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:24.4417806+08:00 elapsed_s=40.0 mode=normal requests=239 replies=239 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:34.4442504+08:00 elapsed_s=50.0 mode=normal requests=301 replies=301 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:44.4894633+08:00 elapsed_s=60.1 mode=normal requests=361 replies=361 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:20:54.5022696+08:00 elapsed_s=70.1 mode=normal requests=418 replies=418 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:21:04.5116014+08:00 elapsed_s=80.1 mode=normal requests=476 replies=476 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:21:14.5357467+08:00 elapsed_s=90.1 mode=normal requests=539 replies=539 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:21:24.5369007+08:00 elapsed_s=100.1 mode=normal requests=600 replies=600 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+STATUS 2026-10-19T09:21:34.5433412+08:00 elapsed_s=110.1 mode=normal requests=658 replies=658 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+CONTROL 2026-10-19T09:21:41.6272895+08:00 written=2026-10-19T09:21:41.5576027+08:00 line="stop" effect=stop
+STOP 2026-10-19T09:21:41.6278204+08:00 requests=700 replies=700 suppressed=0 crc_scan=0 dropped=0

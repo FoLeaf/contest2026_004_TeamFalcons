@@ -1,0 +1,44 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent ask Use vg_run_report to summarize current runtime statistics. Do not write any files. ########## len=2132
+vgagent ask Use vg_run_report to summarize current runtime statistics. Do not write any files.
+vgagent: queued 82 bytes, waiting [vgagent] round submitte(d: 82 bytes
+up to [agent] Processing message from local_client:velaguard:2
+300 s)...
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad5e27935c3b13a] BEGIN chat=velaguard:2 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 5748 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:2
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792402041
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 1: 1 calls
+[trace:6ad5e27935c3b13a] iter=0 tool=vg_run_report latency=97100ms llm=ok backend=0
+[agent] Tool call: vg_run_report args={}
+[tools] Executed vg tool: vg_run_report
+[agent] Tool vg_run_report result: 757 bytes
+[llm] OpenAI API with tools (model: mimo-v2.5, 6756 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792402140
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+[llm] Response: 618 bytes text, 0 tool calls, finish=end_turn
+[agent] LLM resp: text=618, tool_use=0, calls=0
+[trace:6ad5e27935c3b13a] iter=1 tool=(none) latency=7920ms llm=ok backend=0
+[trace:6ad5e27935c3b13a] END status=ok iters=2 tools=1 llm_ms=105020 elapsed=106s backend=0
+[agent] Dispatching response → local_client:velaguard:2
+[vgagent] round finished: reply
+round: state=done gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: 📊 运行报告（本次上电，已运行约 45 分钟）
+
+**通信质量**
+- 总线成功率 100%（17748/17836），超时 88 次，CRC 错误 0
+- 近期窗口全部正常，最差从站
+nsh> [K[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
