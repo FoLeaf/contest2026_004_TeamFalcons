@@ -1,6 +1,6 @@
 # 公共仓 PR 待发布清单
 
-更新时间：2026-10-19 13:00（Asia/Shanghai）。本文只登记本地分支和证据，不表示已推送或已创建 PR。
+更新时间：2026-10-19 13:12（Asia/Shanghai）。本文只登记本地分支和证据，不表示已推送或已创建 PR。
 
 ## NuttX
 
@@ -16,7 +16,7 @@
 
 - 本地分支：`velaguard/llm-tls-send-retry`
 - fork 分支：`FoLeaf/velaguard/llm-tls-send-retry`
-- 上游基线：`open-vela/packages_ai_agent` 的 `dev-ai-contest-2026`，当前基线 `31faed70f683`
+- 上游基线：`open-vela/packages_ai_agent` 的 `dev-ai-contest-2026`，13:12 远端为 `e65550f18759`。本地功能分支的合并基线仍是 `31faed70f683`；上游新增提交只改 `src/infra/vela_tls.c`。`git merge-tree` 三方预检生成干净树 `9487dbf71953`，无冲突，但创建 PR 前仍需在新基线上复跑相关主机测试。
 - 待推送提交：6 个，HEAD `7dc0a88`
 - 范围：shell 执行预算和输出治理、回复关联与迟到回调过滤、date 工具参数护栏和限流预留、文件写入末段软链接防护、VelaGuard 内建工具面收窄。
 - 关键主机证据：`test_shell_runner`、`test_local_client`、`test_file_policy`、`test_agent_round`、`test_shell_output`、工具范围与限流专项均包含在 [2026-10-19 主机套件日志](maintenance-evidence/2026-10-19/host-tests-full-20261019-current.log)。
