@@ -23,6 +23,7 @@
 - `scripts/flash.ps1 -ValidateOnly` 通过。主镜像地址范围为 `0x90000000..0x90135080`，内部 boot stub 地址范围为 `0x08000000..0x080002d0`。
 - `scripts/flash.ps1` 返回码为 0；外部 QSPI 主镜像与内部 boot stub 均输出 `Download verified successfully`，随后复位目标。刷写原始日志 SHA256：`362480a2eb38c17bb7338029fcace57ed6e3a82027dc9eb9d27923378d693fb9`。
 - COM3 返回板端身份 `NuttX 0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk`，与本次 clean 构建产物时间一致。
+- 在本次 23:48:40 镜像上复验 D-02：仅在 `/data/velaguard/discover_bad/` 新建唯一 `d02probe_20261019_0907_{a,b}.txt`，将 A 覆盖改名到 B，`cat` 返回 `D02-A`，`ps` 显示 PID 4 栈仍为 `0008168`，`vgruntime` 与后续命令均返回。随后仅删除本次创建的 B 文件；前后目录列表相同，原有 `point_table_candidate.json`、`discover_state.bin` 等文件未改动，未见 HardFault 或重启。复验日志 SHA256：`1cadc1d47820af29fe3f5aa37b91595a89519c106a43024189c35a37364cccdd`；清理后目录核对 SHA256：`0b9700eede1910ef6b2396f2cbfd7639375b247fde3e5d54b5a32f56f29dc8c7`。
 - 刷写后的板端基线日志 SHA256：`30634fc874739e079d2042a5c099079f91f16916468d5009e52426f0c798fe71`；含在线状态检查的稳定快照 SHA256：`aae31c03dd98aefa798e3de11e58ba065b7eca3c386c9f6d92c50d26693124cc`。
 - COM7 从站配置为 9600 8N1、0 ms 回复。08:45:32 至 08:52:32 记录 2,965 次请求、2,965 次应答、`crc_scan=0`，没有静默或丢帧。COM7 日志 SHA256：`51779d41dd2c24d8c54218a418379b153c0b5a41953be88670a70148d4d379a9`。
 - 08:51:49 板端运行快照为 `uptime_s=451`，14 个已确认点全部 `online=1` 且 `kind=none`；`vgpoint list` 显示 `table=committed n=14`。`vgagent status` 为 idle，LLM 凭证状态为 ready。此项不代表 LLM 调用或 MQTT 通信通过。
