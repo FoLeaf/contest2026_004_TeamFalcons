@@ -1,0 +1,8 @@
+=== skill_loader_build_summary canary test (dir=/tmp/vgtest-skill-summary/skills/) ===
+[skill_summary] cap=1024  n=1022   front=ok  rear=ok  len=ok  nul=ok  -> PASS
+[skill_summary] cap=1086  n=1022   front=ok  rear=ok  len=ok  nul=ok  -> PASS
+[skill_summary] cap=64    n=0      front=ok  rear=ok  len=ok  nul=ok  -> PASS
+[skill_summary] cap=2     n=0      front=ok  rear=ok  len=ok  nul=ok  -> PASS
+[skill_summary] cap=0     n=0      front=ok  rear=ok  len=ok  nul=ok  -> PASS
+=== ALL PASS ===
+EXIT_STATUS=0
