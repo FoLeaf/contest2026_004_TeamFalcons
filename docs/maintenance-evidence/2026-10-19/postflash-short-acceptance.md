@@ -29,6 +29,8 @@
 - 从板端 `vgpoint list` 抽取的 14 行通过 `python3 scripts/alarm_scenarios/gen_alarm_scenarios.py --list-dump .debug/vgpoint-list-20261019.txt` 核对；结果为与 `vgpoint_scene_room.json` 一致，25 个工况、83 个步骤。点表记录 `temp.name=温度验收`、warn=28、crit=35；这证明配置内容，不能代替屏幕目视。点表快照 SHA256：`41b257c4e8a82a846b0826ab767929f402f6d5ca3186f3c58db76b27363f00ef`。
 - 08:57:08 检查到 14 点仍在线、均为 `kind=none`，`/data/velaguard/pending_alarm.txt` 不存在；读取期间看到的是重启后最初离线告警的恢复事件。该快照日志 SHA256：`b417b304459ce47175a3989cc079cd18fec9564b023ca79be387cb21baa1d24b`。
 - `vgstoretest 10` 返回 `OK rounds=10 bytes=5120 elapsed_ms=24910`。此探测仅写 `/data/velaguard/diagnostics`；没有注入存储故障，不能代替失败恢复验收。日志 SHA256：`4b18fe6ceadf536076c370a9f7818b2b5b8ad2e59c087dd6d637c77b1990e242`。
+- 长测单轮参数 `vgstoretest 50` 也返回 `OK rounds=50 bytes=25600 elapsed_ms=121510`，低于正式长测配置的 240 秒命令上限；日志 SHA256：`818da8790411a763b3eb4fcfe86a4f8d667f3359bfa6d57edddac4223c20ee77`。这仍是正常写入探测，不是失败注入或恢复测试。
+- 50 轮探测后 09:05:16 再查，板端 `uptime_s=1258` 连续递增，14 点全在线且 `kind=none`，Agent idle、LLM 凭证 ready，`pending_alarm.txt` 仍不存在。累计 `boot_timeout=73` 与 08:51 快照相同，COM7 从站运行期间没有新增超时；复查日志 SHA256：`745190e992431d5260ad0951aa130d2f9725a27cc48b68b46b7069a7fb55fae3`。
 
 ## 凭证扫描与待验收项
 
