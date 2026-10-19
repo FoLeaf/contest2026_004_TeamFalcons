@@ -1,0 +1,30 @@
+﻿[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+ls -l /data/velaguard/reports/daily-2026-10-19.md
+ -rw-rw-rw-   0         546 /data/velaguard/reports/daily-2026-10-19.md
+nsh> [Kcp /data/velaguard/reports/daily-2026-10-19.md /data/velaguard/reports/daily-2026-10-19.baseline.md
+nsh> [Kls -l /data/velaguard/reports/daily-2026-10-19.baseline.md
+ -rw-rw-rw-   0         546 /data/velaguard/reports/daily-2026-10-19.baseline.md
+nsh> [Krm /data/velaguard/reports/daily-2026-10-19.md
+nsh> [Kvghmi: daily report requested
+[vgagent] round submitted: 124 bytes
+[agent] Processing message from local_client:velaguard:13
+ls -l /data/velaguard/reports/daily-2026-10-19.md
+nsh: ls: stat failed: 2
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad5f7d72a3159a6] BEGIN chat=velaguard:13 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 5791 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792407511
+[agent] Dispatching response → local_client:velaguard:13
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vela_tls] net_connect token-plan-cn.xiaomimimo.com:443 ret=0x52
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 3 (backoff 4)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad5f7d72a3159a6] iter=0 tool=(none) latency=90090ms llm=fail backend=0
+[trace:6ad5f7d72a3159a6] END status=fail iters=1 tools=0 llm_ms=90090 elapsed=90s backend=0
+[agent] Dispatching response → local_client:velaguard:13
+[vgagent] round finished: reply
+

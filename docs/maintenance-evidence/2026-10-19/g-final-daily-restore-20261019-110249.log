@@ -1,0 +1,53 @@
+########## boot settle len=58 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## ls -l /data/velaguard/reports/daily-2026-10-19.md ########## len=84
+ls -l /data/velaguard/reports/daily-2026-10-19.md
+nsh: ls: stat failed: 2
+nsh> [K
+
+########## ls -l /data/velaguard/reports/daily-2026-10-19.baseline.md ########## len=150
+ls -l /data/velaguard/reports/daily-2026-10-19.baseline.md
+ -rw-rw-rw-   0         546 /data/velaguard/reports/daily-2026-10-19.baseline.md
+nsh> [K
+
+########## cp /data/velaguard/reports/daily-2026-10-19.baseline.md /data/velaguard/reports/daily-2026-10-19.md ########## len=109
+cp /data/velaguard/reports/daily-2026-10-19.baseline.md /data/velaguard/reports/daily-2026-10-19.md
+nsh> [K
+
+########## ls -l /data/velaguard/reports/daily-2026-10-19.md ########## len=132
+ls -l /data/velaguard/reports/daily-2026-10-19.md
+ -rw-rw-rw-   0         546 /data/velaguard/reports/daily-2026-10-19.md
+nsh> [K
+
+########## cat /data/velaguard/reports/daily-2026-10-19.md ########## len=371
+cat /data/velaguard/reports/daily-2026-10-19.md
+AI-DAILY v1
+date=2026-10-19
+source=agent
+---
+通信质量
+总线成功 0%（0/78），超时 78 次，CRC 错误 0。
+近窗成功 0%（0/78），超时 78 次，CRC 错误 0。
+最差从站 1：成功 0%（0/12）。
+总线通信全部超时，需检查接线与从站地址。
+
+点位在线
+本次上电已运行 1分21秒。
+temp、humid、flood、smoke 离线 1分21秒，读值 0。
+acu_ret、acu_set、acu_run、ups_load 离线 1分21秒，读值 0。
+另有 6 个点位未列出，同样未在线。
+
+异常时间线
+暂无异常记录。
+nsh> [K
+
+########## rm /data/velaguard/reports/daily-2026-10-19.baseline.md ########## len=65
+rm /data/velaguard/reports/daily-2026-10-19.baseline.md
+nsh> [K
+
+########## ls -l /data/velaguard/reports/daily-2026-10-19.baseline.md ########## len=93
+ls -l /data/velaguard/reports/daily-2026-10-19.baseline.md
+nsh: ls: stat failed: 2
+nsh> [K
