@@ -1,0 +1,20 @@
+observer start=2026-10-19T09:58:37.1572268+08:00 dtr=False rts=False
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[agent] LLM watchdog: call took 122790 ms (limit 120s), treating as timeout
+[trace:6ad5e8e3142c97da] iter=0 tool=(none) latency=122790ms llm=fail backend=0
+[trace:6ad5e8e3142c97da] END status=timeout iters=1 tools=0 llm_ms=122790 elapsed=123s backend=0
+[agent] Dispatching response ¡ú local_client:velaguard:7
+[vgagent] round finished: reply
+round: state=done gen=7 owner=none
+llm: credentials=ready provision_file=present
+reply: ÇëÇó³¬Ê±£¬LLM ÏìÓ¦Ê±¼ä¹ý³¤¡£ÇëÉÔºóÖØÊÔ£¬»ò³¢ÊÔ¼ò»¯ÄãµÄÎÊÌâ¡£
+nsh> [Kvgagent status
+round: state=idle gen=7 owner=none
+llm: credentials=ready provision_file=present
+reply: ÇëÇó³¬Ê±£¬LLM ÏìÓ¦Ê±¼ä¹ý³¤¡£ÇëÉÔºóÖØÊÔ£¬»ò³¢ÊÔ¼ò»¯ÄãµÄÎÊÌâ¡£
+nsh> [Kvgagent status
+round: state=idle gen=7 owner=none
+llm: credentials=ready provision_file=present
+reply: ÇëÇó³¬Ê±£¬LLM ÏìÓ¦Ê±¼ä¹ý³¤¡£ÇëÉÔºóÖØÊÔ£¬»ò³¢ÊÔ¼ò»¯ÄãµÄÎÊÌâ¡£
+nsh> [K[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+observer end=2026-10-19T09:59:22.2544601+08:00

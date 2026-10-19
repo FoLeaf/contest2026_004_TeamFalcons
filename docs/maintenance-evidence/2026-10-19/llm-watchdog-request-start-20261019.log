@@ -1,0 +1,22 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent ask Invoke run_shell with command ps, then reply only with its exit code. Read-only and no file writes. ########## len=840
+vgagent ask Invoke run_shell with command ps, then reply only with its exit code. Read-only and no file writes.
+vgagent: queued 99 bytes, waiting ([vgagent] round submitted: 99 bytes
+up to 300 s)...
+[agent] Processing message from local_client:velaguard:7
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad5e8e3142c97da] BEGIN chat=velaguard:7 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7245 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:7
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792403683
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+
+
+########## vgagent status ########## len=58
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+

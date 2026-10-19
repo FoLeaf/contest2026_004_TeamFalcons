@@ -1,0 +1,36 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent status ########## len=147
+vgagent status
+round: state=idle gen=10 owner=none
+llm: credentials=ready provision_file=present
+reply: Sorry, I encountered an error.
+nsh> [K
+
+########## ping -c 1 192.168.137.1 ########## len=243
+ping -c 1 192.168.137.1
+PING 192.168.137.1 56 bytes of data
+56 bytes from 192.168.137.1: icmp_seq=0 time=20.0 ms
+1 packets transmitted, 1 received, 0% packet loss, time 1010 ms
+rtt min/avg/max/mdev = 20.000/20.000/20.000/0.000 ms
+nsh> [K
+
+########## ping -c 1 token-plan-cn.xiaomimimo.com ########## len=391
+ping -c 1 token-plan-cn.xiaomimimo.com
+PING 220.181.104.192 56 bytes of data
+56 bytes from 220.181.104.192: icmp_seq=0 time=70.0 ms
+1 packets transmitted, 1 received, 0% packet loss, time 1010 ms
+rtt min/avg/max/mdev = 70.000/70.000/70.000/0.000 ms
+nsh> [Kvgnet: join 19y failed
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+
+
+########## ifconfig ########## len=368
+ifconfig
+eth0	Link encap:Ethernet HWaddr 06:01:f5:3c:d6:7a at RUNNING mtu 1486
+	inet addr:192.168.137.48 DRaddr:192.168.137.1 Mask:255.255.255.0
+
+nsh> [Kvgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+

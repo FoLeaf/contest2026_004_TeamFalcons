@@ -1,0 +1,12 @@
+########## boot settle len=478 ##########
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+vgnet: no MQTT credentials in the provision store (err -2); provision with 'vgprovision mqtt' and retry
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## netstat -a ########## len=53
+netstat -a
+nsh: netstat: command not found
+nsh> [K

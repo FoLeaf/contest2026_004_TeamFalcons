@@ -1,0 +1,10 @@
+########## boot settle len=58 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## ifconfig ########## len=158
+ifconfig
+eth0	Link encap:Ethernet HWaddr 06:01:f5:3c:d6:7a at RUNNING mtu 1486
+	inet addr:192.168.137.48 DRaddr:192.168.137.1 Mask:255.255.255.0
+
+nsh> [K
