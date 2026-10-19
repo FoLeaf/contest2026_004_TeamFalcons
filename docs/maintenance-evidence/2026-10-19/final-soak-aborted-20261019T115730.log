@@ -1,0 +1,50 @@
+﻿RUN_BEGIN run=final-soak-20261019T115730 script_version=soak-3 time=2026-10-19T11:57:32.0556460+08:00 host=19Y-PC user=19y log=\\wsl.localhost\Debian\home\hello19y\openvela\.vg-maintenance-closeout\.debug\final-soak-20261019T115730.log
+START run=final-soak-20261019T115730 time=2026-10-19T11:57:32.0924090+08:00 port=COM3 hours=24 interval_s=900 store_rounds=50 online_min=14 cmd_timeout_s=240 scope=storage-runtime
+CHECKS run=final-soak-20261019T115730 checks=store-probe,committed-table-stable,credentials-provisioned,uptime-monotonic,online-min,heap-consistency not_checked=alarm,mqtt,llm-call,daily-report,voice,screen
+COMMAND 2026-10-19T11:57:32.1255933+08:00 run=final-soak-20261019T115730 
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+nsh> [K
+COMMAND_MS 12
+COMMAND 2026-10-19T11:57:32.2264444+08:00 run=final-soak-20261019T115730 uname -a
+uname -a
+NuttX  0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk
+nsh> [K
+COMMAND_MS 129
+FIRMWARE run=final-soak-20261019T115730 NuttX  0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk
+COMMAND 2026-10-19T11:57:32.4430153+08:00 run=final-soak-20261019T115730 vgpoint list
+vgpoint list
+vgpoint: POINT id=temp name=温度验收 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+vgpoint: OK cmd=list table=committed n=14
+nsh> [K
+COMMAND_MS 431
+BASELINE run=final-soak-20261019T115730 table=committed n=14
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=temp name=温度验收 addr=1 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=35 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=humid name=湿度 addr=1 fc=3 reg=1 qty=1 dtype=uint16 scale=0.1 unit=%RH cmp=ge warn=70 crit=85 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=flood name=水浸 addr=2 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=smoke name=烟雾 addr=3 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=5 crit=10 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=acu_ret name=回风温度 addr=4 fc=3 reg=0 qty=1 dtype=int16 scale=0.1 unit=C cmp=ge warn=28 crit=32 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=acu_set name=设定温度 addr=4 fc=3 reg=1 qty=1 dtype=int16 scale=0.1 unit=C cmp=- warn=- crit=- fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=acu_run name=空调运行 addr=4 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=- warn=- crit=- fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=ups_load name=UPS负载 addr=5 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=% cmp=ge warn=70 crit=90 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=ups_soc name=UPS电池 addr=5 fc=3 reg=1 qty=1 dtype=uint16 scale=1 unit=% cmp=le warn=40 crit=20 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=ups_bypass name=UPS旁路 addr=5 fc=3 reg=2 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=volt_a name=A相电压 addr=6 fc=3 reg=0 qty=1 dtype=uint16 scale=0.1 unit=V cmp=le warn=200 crit=180 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=pwr_kw name=有功功率 addr=6 fc=3 reg=1 qty=1 dtype=uint16 scale=0.01 unit=kW cmp=ge warn=8 crit=10 fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=energy_kwh name=正向电能 addr=6 fc=3 reg=2 qty=1 dtype=uint16 scale=0.1 unit=kWh cmp=- warn=- crit=- fail_n=3
+BASELINE_ROW run=final-soak-20261019T115730 vgpoint: POINT id=door name=门磁 addr=7 fc=3 reg=0 qty=1 dtype=uint16 scale=1 unit=- cmp=eq warn=- crit=1 fail_n=3
+COMMAND 2026-10-19T11:57:32.9299547+08:00 run=final-soak-20261019T115730 vgstoretest 50
