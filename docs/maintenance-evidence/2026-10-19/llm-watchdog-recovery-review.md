@@ -57,7 +57,7 @@ Agent 轮次在 watchdog 后释放，NSH 最终返回提示符；但超时后的
 
 第一次查询使用的 `serial_cmd.ps1` 每条命令只等 5 秒，但本次镜像配置的 DNS send/receive timeout 为 30 秒且 retries=3；`nslookup` 超出捕获窗口后，测试脚本继续发送了后续命令。被动监听稍后捕获到解析失败、提示符恢复以及排队命令依次执行。因此这一段空输出不能记作新的 QA-04 系统失联；没有复位设备。对应的捕获方式保存在 [COM3 只读监听脚本](observe-com3-readonly.ps1)，DTR/RTS 均为 false。
 
-从站日志在上述等待期间持续递增；最近快照为 `requests=25723 replies=25723 suppressed=0 crc_scan=0 dropped=0`，见[从站计数](maintenance-slave-during-network-20261019.log)。这证明本地采集仍在运行，但域名解析、网关 ping 与 `vgnet` 状态均未通过，不能证明 TCP/443 或 TLS 恢复。本次没有再发 LLM 请求。
+从站日志在上述等待期间持续递增；最近快照为 `requests=25723 replies=25723 suppressed=0 crc_scan=0 dropped=0`，见[从站计数](maintenance-slave-during-network-20261019.log)。这证明本地采集仍在运行。该时段的域名解析失败是有效观察；网关 ping 同时出现 ICMP ID 不匹配，后续源码复核显示可能受后台探测并发影响。`vgnet` 当时为 `connecting`，而 MQTT 测试凭证缺失；这些记录不能证明 TCP/443 或 TLS 恢复。本次没有再发 LLM 请求。
 
 相关原始日志 SHA256：
 
@@ -81,4 +81,12 @@ Windows 只读快照显示板端网关 `192.168.137.1` 位于 USB Ethernet Adapt
 
 随后板端直接对数字 IP `223.5.5.5` 发起 1 次 ping，最终为 0/1 收到、耗时 15.56 秒，并报告收到的 ICMP ID 与本次预期值不一致；`vgnet status` 的 `ping_ok=0 fail_streak=2`、`mqtt=down`。第一份串口命令输出只等 5 秒，未等到 ping 结束；被动监听捕获了最终输出和排队的 `vgnet status`，见[命令记录](board-ping-public-ip-20261019.log)和[只读串口监听](board-ping-public-ip-observer-20261019.log)。其中的 `arp -a` 因缺少参数失败，不影响后续 ping。
 
-基于 Windows 到板端、Windows 出站 ping 与经网关 DNS 均成功，而板端 DNS 和出站 ping 失败，可以把排查重点收窄到板端发起请求时的接口、路由、协议栈或并发 ICMP 路径；这是依据这些对照结果的推断，尚不能认定唯一根因。ICMP ID 不匹配也可能与 `vgnet` 后台探测并发有关。板端 TCP/443、TLS 和 LLM 请求仍未验证。COM7 在同一后续观察窗口继续正常工作，10:35:36 计数为 `requests=30938 replies=30938 crc_scan=0 dropped=0`。
+Windows 到板端、Windows 出站 ping 与经网关 DNS 均成功；板端 DNS 查询失败。板端数字 IP ping 的 0/1 结果暂不能用来证明出站不可达，详见下节的 ICMP 源码复核。板端 TCP/443、TLS 和 LLM 请求仍未验证。COM7 在同一后续观察窗口继续正常工作，10:35:36 计数为 `requests=30938 replies=30938 crc_scan=0 dropped=0`。
+
+## ICMP ID 不匹配的源码复核
+
+板级 `.config` 为 `CONFIG_BUILD_FLAT=y`。在这个构建中，NuttX shell `ping` 与 VelaGuard 网络管理线程调用同一份 `apps/netutils/ping/icmp_ping.c`：shell 入口位于 `apps/system/ping/ping.c`，VelaGuard 入口为 `app/velaguard/vg_net_mgr.c` → `app/velaguard/vg_eth.c::vg_eth_ping()`。`vg_eth_sample(..., false)` 用于只读状态查询，不会发起新 ping；后台网络管理循环会在探测退避时间到期时运行健康探测。
+
+`icmp_ping.c` 中 `g_pingid` 是静态共享变量，`ping_newid()` 无锁递增；每次调用建立自己的 raw ICMP socket，接收 Echo Reply 后再比对 ID。ID 不匹配时回调 `ICMP_W_IDDIFF` 并继续等待/重试。板端 `ping -c 1 223.5.5.5` 输出的实际 ID 与预期 ID 相差 1，与后台健康探测同时运行相符；不过两条调用的逐包时间戳没有记录，不能据此确认是哪一个回复造成交错。
+
+因此这次 0/1 及 15.56 秒耗时不能作为干净的板端出站失败测量，`vgnet status` 的 `fail_streak=2` 也只反映管理器的探测结果。当前仍能确认板端曾发生域名解析失败，Windows 侧的 DNS/出站正常；差异原因未定位。MQTT 测试凭证未提供，`mqtt=down` 是预期状态，不能作为网络出站证据。没有改动固件、点表或模拟温度，也没有复位设备。
