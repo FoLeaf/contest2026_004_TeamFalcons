@@ -1,0 +1,60 @@
+########## boot settle len=0 ##########
+
+
+########## vgruntime dump ########## len=3537
+vgruntime dump
+vgruntime: uptime_s=2209 wall=2026-10-19T11:52:14
+vgruntime: slave=1 boot_total=2566 boot_ok=2566 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=200 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=2 boot_total=1283 boot_ok=1283 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=130 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=3 boot_total=1283 boot_ok=1283 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=140 boot_lat_avg=23 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=4 boot_total=3847 boot_ok=3847 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=160 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=5 boot_total=3846 boot_ok=3846 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=200 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=6 boot_total=3846 boot_ok=3846 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=10 boot_lat_max=150 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: slave=7 boot_total=1282 boot_ok=1282 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0 boot_lat_min=20 boot_lat_max=140 boot_lat_avg=24 win_total=64 win_ok=64 win_crc=0 win_timeout=0 win_echo=0 win_other=0
+vgruntime: bus boot_total=17953 boot_ok=17953 boot_crc=0 boot_timeout=0 boot_echo=0 boot_other=0
+vgruntime: point id=temp slave=1 online=1 online_ms=2209880 offline_s=0 last_ok_ago_s=0 value=24 kind=none
+vgruntime: point id=humid slave=1 online=1 online_ms=2209890 offline_s=0 last_ok_ago_s=0 value=50 kind=none
+vgruntime: point id=flood slave=2 online=1 online_ms=2209900 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: point id=smoke slave=3 online=1 online_ms=2209910 offline_s=0 last_ok_ago_s=0 value=1 kind=none
+vgruntime: point id=acu_ret slave=4 online=1 online_ms=2209910 offline_s=0 last_ok_ago_s=0 value=25 kind=none
+vgruntime: point id=acu_set slave=4 online=1 online_ms=2209920 offline_s=0 last_ok_ago_s=0 value=24 kind=none
+vgruntime: point id=acu_run slave=4 online=1 online_ms=2209930 offline_s=0 last_ok_ago_s=0 value=1 kind=none
+vgruntime: point id=ups_load slave=5 online=1 online_ms=2209940 offline_s=0 last_ok_ago_s=0 value=40 kind=none
+vgruntime: point id=ups_soc slave=5 online=1 online_ms=2209950 offline_s=0 last_ok_ago_s=0 value=80 kind=none
+vgruntime: point id=ups_bypass slave=5 online=1 online_ms=2209960 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: point id=volt_a slave=6 online=1 online_ms=2209970 offline_s=0 last_ok_ago_s=0 value=230 kind=none
+vgruntime: point id=pwr_kw slave=6 online=1 online_ms=2209980 offline_s=0 last_ok_ago_s=0 value=3 kind=none
+vgruntime: point id=energy_kwh slave=6 online=1 online_ms=2209990 offline_s=0 last_ok_ago_s=0 value=123.4 kind=none
+vgruntime: point id=door slave=7 online=1 online_ms=2210000 offline_s=0 last_ok_ago_s=0 value=0 kind=none
+vgruntime: event t_boot_s=2057 wall=2026-10-19T11:49:42 id=ups_load action=raise kind=threshold value=70.1 thr=70 cmp=ge reason=threshold_ge
+vgruntime: event t_boot_s=2206 wall=2026-10-19T11:52:12 id=ups_load action=clear kind=threshold value=40 thr=0 cmp=ge reason=threshold_cleared
+nsh> [K
+
+########## ls -l /data/velaguard/reports/alarm_advice.txt ########## len=126
+ls -l /data/velaguard/reports/alarm_advice.txt
+ -rw-rw-rw-   0         288 /data/velaguard/reports/alarm_advice.txt
+nsh> [K
+
+########## cat /data/velaguard/reports/alarm_advice.txt ########## len=235
+cat /data/velaguard/reports/alarm_advice.txt
+VGADV1
+boot=30deb923
+req=1
+n=1
+[1]
+id=ups_load
+epoch=1
+sev=warn
+unres=0
+sum=负载刚达告警线，建议先观察趋势暂不增容
+ev=实测负载70.1%，阈值70%，刚越限；总线成功率100%，无超时CRC
+att=关注负载是否持续上升，接近90%前应减载或扩容
+END
+nsh> [K
+
+########## vgagent status ########## len=179
+vgagent status
+round: state=idle gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: OK: wrote 288 bytes to /data/velaguard/reports/alarm_advice.txt
+nsh> [K

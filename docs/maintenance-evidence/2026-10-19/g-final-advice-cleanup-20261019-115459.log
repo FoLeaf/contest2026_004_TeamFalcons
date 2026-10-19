@@ -1,0 +1,24 @@
+########## boot settle len=0 ##########
+
+
+########## cmp /data/velaguard/reports/alarm_advice.txt /data/velaguard/reports/alarm_advice.baseline.txt ########## len=128
+cmp /data/velaguard/reports/alarm_advice.txt /data/velaguard/reports/alarm_advice.baseline.txt
+files differ: byte 128
+nsh> [K
+
+########## rm /data/velaguard/reports/alarm_advice.baseline.txt ########## len=62
+rm /data/velaguard/reports/alarm_advice.baseline.txt
+nsh> [K
+
+########## ls /data/velaguard/reports ########## len=233
+ls /data/velaguard/reports
+/data/velaguard/reports:
+ runtime-report.md
+ daily-2026-09-17.md
+ alarm_advice.txt
+ daily-2026-09-18.md
+ daily-2026-09-20.md
+ daily-2026-10-17.md
+ daily-2026-10-18.md
+ daily-2026-10-19.md
+nsh> [K
