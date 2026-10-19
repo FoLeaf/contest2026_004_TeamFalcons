@@ -24,6 +24,15 @@ heap_used=305744 heap_maxused=393448
 
 本轮 `vgstoretest 50` 用时 117.216 秒。13:03:38 从站累计 9702 请求、9702 回复，`crc_scan=0`，无 drop、抑制或覆盖；长测 PID 3908 和从站 PID 21776 均存活。
 
+13:20:21 检查第 3 轮通过：
+
+```text
+CYCLE n=3 elapsed_s=2,163 uptime_s=2739 online=14/14
+heap_used=305536 heap_maxused=393448
+```
+
+本轮 `vgstoretest 50` 用时 118.579 秒。13:20:19 从站累计 16748 请求、16748 回复，`crc_scan=0`，无 drop、抑制或覆盖；两个进程均存活。
+
 ## 启动元数据哈希
 
 | 文件 | SHA256 |
