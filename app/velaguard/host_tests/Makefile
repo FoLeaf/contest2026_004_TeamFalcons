@@ -138,6 +138,7 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 	./test_modbus_port
 	./test_point_commit
 	./test_mqtt_session
+	python3 test_hmi_worker_start.py
 	python3 test_boot_stack.py
 	python3 test_board_pins.py
 

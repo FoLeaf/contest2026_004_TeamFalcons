@@ -1210,6 +1210,12 @@ void vg_ui_backend_acq_start(void)
   struct vg_discover_summary live;
   int n;
 
+  /* Daily scheduling, agent-round bookkeeping and alarm advice all run in
+   * this worker.  Start it with acquisition so those flows do not depend on
+   * the user opening the report page or on a later alarm event. */
+
+  ensure_file_worker_started();
+
   if(g_acq_started) {
     return;
   }
