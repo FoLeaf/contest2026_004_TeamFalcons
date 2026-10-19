@@ -71,9 +71,11 @@ vgprovision: mqtt credentials: MISSING (err -2)
 
 ## 3. 写入凭证
 
-按实现说明第 3 节：`vgprovision uid` 取 UID，主机侧用
-`scripts/vg-provision-pack.py` 封存 `{"kind":"mqtt","username":...,"password":...}`，
-再分段 `vgprovision mqtt put <hex>`，最后 `vgprovision mqtt commit`。
+按实现说明第 3 节：`vgprovision uid` 取 UID，主机侧把专用测试用户名和口令放进
+当前进程环境变量，运行 `scripts/vg-provision-pack-mqtt.py` 封存
+`{"kind":"mqtt","username":...,"password":...}`。再分段
+`vgprovision mqtt put <hex>`，最后 `vgprovision mqtt commit`。打包脚本不从命令行、
+临时明文文件或标准输入读取口令。
 
 - [ ] `commit` 打印 `committed to .../mqtt_secrets.v1`，没有 `WARNING store is not
       persistent`；

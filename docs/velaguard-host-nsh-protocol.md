@@ -407,8 +407,9 @@ JSON 参数需要的引号，`{"query":"ups_load"}` 会变成 `{query:ups_load}`
 ### 8.3 MQTT 运行时凭证：`vgprovision mqtt`
 
 MQTT broker 用户名和口令不再来自 Kconfig。主机侧先用 `vgprovision uid` 取得芯片
-UID，再用 `scripts/vg-provision-pack.py` 把专用测试 JSON 封存成 blob。串口只传输
-封存后的十六进制，不传输口令明文。
+UID，再把专用测试用户名和口令放进当前进程环境变量，用
+`scripts/vg-provision-pack-mqtt.py` 封存成 blob。串口只传输封存后的十六进制，
+不传输口令明文。
 
 ```text
 nsh> vgprovision mqtt put <hex 段>

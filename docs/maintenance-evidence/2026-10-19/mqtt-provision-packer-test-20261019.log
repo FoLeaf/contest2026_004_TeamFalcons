@@ -1,0 +1,12 @@
+HOST_START=2026-10-19T13:55:59+08:00
+test_empty_environment_fails_without_output (__main__.MqttPackerTests.test_empty_environment_fails_without_output) ... ok
+test_environment_inputs_never_appear_in_arguments (__main__.MqttPackerTests.test_environment_inputs_never_appear_in_arguments) ... ok
+test_missing_values_are_rejected (__main__.MqttPackerTests.test_missing_values_are_rejected) ... ok
+test_output_decrypts_to_expected_record (__main__.MqttPackerTests.test_output_decrypts_to_expected_record) ... ok
+test_payload_has_only_mqtt_fields (__main__.MqttPackerTests.test_payload_has_only_mqtt_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.052s
+
+OK
+EXIT_STATUS=0

@@ -63,11 +63,14 @@ nsh> vgprovision uid
 vgprovision: uid=<24 位十六进制>
 ```
 
+在主机当前进程内设置 `VG_MQTT_USER` 和 `VG_MQTT_PASSWORD` 环境变量，然后运行：
+
 ```bash
-python3 scripts/vg-provision-pack.py <uid> - > .debug/mqtt_secrets.v1 <<'EOF'
-{"kind":"mqtt","username":"<broker 用户名>","password":"<broker 口令>"}
-EOF
+python3 scripts/vg-provision-pack-mqtt.py <uid> > .debug/mqtt_secrets.v1
 ```
+
+打包器只读取上述两个环境变量，不读取命令行、标准输入或临时明文文件。生成的文件
+只含封存后的二进制，串口传输时再按十六进制分段。
 
 封好的 blob 按 32 字节（64 个十六进制字符）一段推进暂存文件，然后提交：
 
