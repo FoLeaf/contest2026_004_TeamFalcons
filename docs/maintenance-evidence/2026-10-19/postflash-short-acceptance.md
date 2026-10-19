@@ -26,6 +26,7 @@
 - 刷写后的板端基线日志 SHA256：`30634fc874739e079d2042a5c099079f91f16916468d5009e52426f0c798fe71`；含在线状态检查的稳定快照 SHA256：`aae31c03dd98aefa798e3de11e58ba065b7eca3c386c9f6d92c50d26693124cc`。
 - COM7 从站配置为 9600 8N1、0 ms 回复。08:45:32 至 08:52:32 记录 2,965 次请求、2,965 次应答、`crc_scan=0`，没有静默或丢帧。COM7 日志 SHA256：`51779d41dd2c24d8c54218a418379b153c0b5a41953be88670a70148d4d379a9`。
 - 08:51:49 板端运行快照为 `uptime_s=451`，14 个已确认点全部 `online=1` 且 `kind=none`；`vgpoint list` 显示 `table=committed n=14`。`vgagent status` 为 idle，LLM 凭证状态为 ready。此项不代表 LLM 调用或 MQTT 通信通过。
+- 08:57:08 检查到 14 点仍在线、均为 `kind=none`，`/data/velaguard/pending_alarm.txt` 不存在；读取期间看到的是重启后最初离线告警的恢复事件。该快照日志 SHA256：`b417b304459ce47175a3989cc079cd18fec9564b023ca79be387cb21baa1d24b`。
 - `vgstoretest 10` 返回 `OK rounds=10 bytes=5120 elapsed_ms=24910`。此探测仅写 `/data/velaguard/diagnostics`；没有注入存储故障，不能代替失败恢复验收。日志 SHA256：`4b18fe6ceadf536076c370a9f7818b2b5b8ad2e59c087dd6d637c77b1990e242`。
 
 ## 凭证扫描与待验收项
