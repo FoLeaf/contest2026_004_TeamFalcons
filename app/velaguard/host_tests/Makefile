@@ -141,6 +141,14 @@ test: test_net_policy test_config_store test_frame_stats test_runtime test_disco
 	python3 test_hmi_worker_start.py
 	python3 ../../../scripts/tests/test_vg_provision_pack_mqtt.py
 	python3 ../../../scripts/tests/test_classify_daily_report_accept_log.py
+	@if command -v powershell.exe >/dev/null 2>&1; then \
+	  powershell.exe -NoProfile -ExecutionPolicy Bypass \
+	    -File ../../../scripts/tests/test_daily_auto_accept.ps1; \
+	elif command -v pwsh >/dev/null 2>&1; then \
+	  pwsh -NoProfile -File ../../../scripts/tests/test_daily_auto_accept.ps1; \
+	else \
+	  echo "test_daily_auto_accept: SKIP (no PowerShell runtime)"; \
+	fi
 	python3 test_boot_stack.py
 	python3 test_board_pins.py
 

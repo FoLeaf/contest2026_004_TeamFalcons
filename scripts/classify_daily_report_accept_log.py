@@ -24,7 +24,7 @@ MARKERS = {
     "REQUEST": r"^vghmi: daily report requested$",
     "SUBMITTED": r"^\[vgagent\] round submitted: (?:1[0-9][0-9]|[2-9][0-9]|[1-9][0-9]{2,}) bytes$",
     "TRACE_BEGIN": r"^\[trace:([0-9a-f]{16})\] BEGIN chat=(\S+) chan=local_client$",
-    "WRITE_INTENT": r"^\[agent\] Tool call: write_file args=(\{.*\})$",
+    "WRITE_INTENT": r"^\[agent\] Tool call: write_file args=(\{.*)$",
     "WRITE_EXEC": r"^\[tools\] Executing tool: write_file$",
     "TRACE_END": r"^\[trace:([0-9a-f]{16})\] END status=(\S+) iters=(\d+) tools=(\d+)(?: .*)?$",
     "VERIFIED": r"^VERIFY OK path=(\S+)(?: bytes=(\d+))?$",
@@ -34,7 +34,7 @@ MARKERS = {
 
 REPORT_DATE_RE = re.compile(r"^daily-(\d{4}-\d{2}-\d{2})\.md$")
 REPORT_PATH_RE = re.compile(r"^/data/velaguard/reports/daily-(\d{4}-\d{2}-\d{2})\.md$")
-REPORT_DIR_RE = re.compile(r"^/data/velaguard/reports/daily-\d{4}-\d{2}-\d{2}_acceptance\.hold\.md$")
+REPORT_DIR_RE = re.compile(r"^/data/velaguard/reports/daily-\d{4}-\d{2}-\d{2}\.hold\.md$")
 EXPECTED_SECTIONS = ("通信质量", "点位在线", "异常时间线")
 
 
@@ -81,21 +81,39 @@ def _events(lines: Sequence[str]) -> Iterable[Event]:
                 yield Event(index, kind, match)
 
 
-def parse_write_intent(raw_json: str) -> tuple[str | None, str | None]:
-    """Return (path, content); malformed JSON is treated as no evidence."""
+def parse_write_intent(raw_json: str) -> tuple[str | None, str | None, bool]:
+    """Return (path, content, complete_json), rejecting malformed evidence."""
     import json
 
     try:
         payload = json.loads(raw_json)
     except (json.JSONDecodeError, TypeError):
-        return None, None
+        return None, None, False
     if not isinstance(payload, dict):
-        return None, None
+        return None, None, False
     path = payload.get("path")
     content = payload.get("content")
     if not isinstance(path, str) or not isinstance(content, str):
-        return None, None
-    return path, content
+        return None, None, False
+    return path, content, True
+
+
+def parse_write_intent_prefix(raw_json: str) -> str | None:
+    """Extract an exact path from a complete JSON or its 500-byte log prefix."""
+    path, _, complete = parse_write_intent(raw_json)
+    if complete:
+        return path
+
+    # add_tool_result_messages uses the precision "%.500s".  A long report
+    # therefore leaves a cut-off JSON object, but the model's path convention
+    # puts this field near the front.  The following cat/read is the authority
+    # for the complete report body and format.
+    match = re.fullmatch(
+        r'\{"path":\s*"([^"\\]+)"(?:,.*)?',
+        raw_json,
+        re.DOTALL,
+    )
+    return match.group(1) if match else None
 
 
 def validate_report(text: str, expected_date: str) -> ReportBody:
@@ -129,7 +147,7 @@ def validate_report(text: str, expected_date: str) -> ReportBody:
 
 def read_board_report(lines: Sequence[str], wanted_path: str) -> str | None:
     """Extract the last report body printed by the script's exact cat command."""
-    command = f"NSH> cat {wanted_path}"
+    command = f"DAILY_ACCEPT> cat {wanted_path}"
     starts = [index for index, line in enumerate(lines) if line == command]
     for command_index in reversed(starts):
         body_start = next(
@@ -164,6 +182,7 @@ def classify(
     """Require one ordered, attributable success path."""
     lines = split_lines(text)
     events = list(_events(lines))
+    last_failure = "no trace close was found after the request"
 
     def fail(reason: str) -> Result:
         return Result(False, reason, "")
@@ -194,9 +213,26 @@ def classify(
     requests = [e for e in events if e.kind == "REQUEST"]
     if not requests:
         return fail("board did not print vghmi: daily report requested")
+    wanted_path = f"/data/velaguard/reports/daily-{expected_date}.md"
+    matching_removed = next(
+        (
+            e
+            for e in held_events
+            if e.kind == "REMOVED"
+            and e.match.group(1) == wanted_path
+            and e.index > held_events[0].index
+        ),
+        None,
+    )
+    if matching_removed is None:
+        return fail("missing REMOVED OK for expected path after HOLD; check the report date/path")
     # The capture can include an unrelated earlier request.  Select the last
-    # complete request on the stream and require all later evidence for it.
+    # complete request after the destructive step and require all later
+    # evidence for it.
     for request in reversed(requests):
+        if request.index <= matching_removed.index:
+            last_failure = "the daily request occurred before the report was removed"
+            continue
         submitted = next(
             (
                 e
@@ -206,6 +242,7 @@ def classify(
             None,
         )
         if submitted is None:
+            last_failure = "no vgagent round submission followed the request"
             continue
         begins = [
             e
@@ -213,6 +250,7 @@ def classify(
             if e.kind == "TRACE_BEGIN" and e.index > submitted.index
         ]
         if not begins:
+            last_failure = "no agent trace began after the round submission"
             continue
         begin = begins[0]
         trace_id = begin.match.group(1)
@@ -226,11 +264,14 @@ def classify(
             and e.match.group(1) == trace_id
         ]
         if not ends:
+            last_failure = "no matching trace END followed the trace BEGIN"
             continue
         end = ends[0]
         if end.match.group(2) != "ok":
+            last_failure = f"the daily trace ended with status={end.match.group(2)}"
             continue
         if int(end.match.group(4)) <= 0:
+            last_failure = "the successful daily trace reported no tool calls"
             continue
 
         writes = [
@@ -246,30 +287,42 @@ def classify(
             and begin.index < e.index < end.index
         ]
         if not writes or not execs:
+            last_failure = "the trace lacks a logged write_file intent or execution"
             continue
         write = writes[-1]
-        path, content = parse_write_intent(write.match.group(1))
-        wanted_path = f"/data/velaguard/reports/daily-{expected_date}.md"
+        path, content, complete_json = parse_write_intent(write.match.group(1))
+        if path is None:
+            path = parse_write_intent_prefix(write.match.group(1))
         match = REPORT_PATH_RE.fullmatch(path or "")
         if path != wanted_path or match is None or match.group(1) != expected_date:
-            continue
-        if content is None:
-            continue
-        try:
-            report = validate_report(content, expected_date)
-        except ValueError:
-            continue
-        if expected_content is not None and normalize_report(expected_content) != report.text:
+            last_failure = (
+                f"write_file intent did not name the exact report path: {path!r}"
+            )
             continue
         board_text = read_board_report(lines, wanted_path)
         if board_text is None:
+            last_failure = "no board-side read of the exact report path followed the trace"
             continue
         try:
             board_report = validate_report(board_text, expected_date)
-        except ValueError:
+        except ValueError as error:
+            last_failure = f"board-side report validation failed: {error}"
             continue
-        if board_report.text.rstrip("\n") != report.text.rstrip("\n"):
-            continue
+        if complete_json:
+            try:
+                report = validate_report(content or "", expected_date)
+            except ValueError as error:
+                last_failure = f"write_file content validation failed: {error}"
+                continue
+            if (
+                expected_content is not None
+                and normalize_report(expected_content) != report.text
+            ):
+                last_failure = "write_file content differs from the expected report"
+                continue
+            if board_report.text.rstrip("\n") != report.text.rstrip("\n"):
+                last_failure = "the board-side report differs from the write_file content"
+                continue
 
         verified = next(
             (
@@ -282,9 +335,12 @@ def classify(
             None,
         )
         if verified is None:
+            last_failure = "no VERIFY OK marker followed the successful trace and board read"
             continue
         reported_bytes = verified.match.group(2)
-        if reported_bytes is not None and int(reported_bytes) != len(report.text.encode("utf-8")):
+        board_bytes = len(board_text.encode("utf-8"))
+        if reported_bytes is not None and int(reported_bytes) != board_bytes:
+            last_failure = "VERIFY OK byte count differs from the board-side report"
             continue
 
         restored = next(
@@ -299,6 +355,7 @@ def classify(
             None,
         )
         if restored is None:
+            last_failure = "no matching RESTORE OK marker followed VERIFY OK"
             continue
 
         # Cleanup must be last so a later restore cannot be hidden by an
@@ -324,6 +381,7 @@ def classify(
             None,
         )
         if cleanup is None:
+            last_failure = "no matching CLEANUP OK marker followed RESTORE OK"
             continue
 
         evidence = "\n".join(
@@ -337,9 +395,7 @@ def classify(
         evidence += f"\nBOARD_READ validated bytes={len(board_text.encode('utf-8'))}"
         return Result(True, "ordered board-driven daily report evidence is complete", evidence)
 
-    return fail(
-        "no complete request/submit/valid trace/exact write/success/file/restore sequence"
-    )
+    return fail(f"no complete ordered proof: {last_failure}")
 
 
 def normalize_report(text: str) -> str:
