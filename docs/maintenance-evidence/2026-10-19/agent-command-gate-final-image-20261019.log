@@ -1,0 +1,11 @@
+########## boot settle len=58 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## vgagent tool run_shell '{"command":"vgpoint"}' ########## len=210
+vgagent tool run_shell '{"command":"vgpoint"}'
+[tools] Executing tool: run_shell
+[shell] Blocked dangerous command: vgpoint
+tool run_shell rc=-1
+{"error":"Command 'vgpoint' is blocked for safety"}
+nsh> [K
