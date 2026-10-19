@@ -1,0 +1,18 @@
+run=final-soak-20261019T120155
+soak_windows_pid=14944
+soak_start=2026-10-19T12:03:09+08:00
+expected_end=2026-10-20T12:03:09+08:00
+port=COM3
+hours=24
+interval_s=900
+store_rounds=50
+minimum_online=14
+command_timeout_s=240
+firmware=NuttX 0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk
+git_head=d8ad5dc4e522357f10bfe9e9efbcbc532aad5fba
+branch=codex/maintenance-closeout
+slave_windows_pid=4872
+slave_wsl_pid=65993
+slave_start=2026-10-19T09:23:09+08:00
+slave_status_120341=requests=70695 replies=70695 suppressed=0 crc_scan=0 dropped=0 silent=- overrides=0 drops=0
+first_cycle=CYCLE run=final-soak-20261019T120155 n=1 elapsed_s=122 uptime_s=2989 online=14/14 heap_used=305880 heap_maxused=408104
