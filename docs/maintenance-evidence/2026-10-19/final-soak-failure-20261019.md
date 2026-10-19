@@ -101,6 +101,25 @@ TCB 现场也处于异常路径而非普通任务运行：
 
 该结果与 CPU 困在异常或 IRQ 路径一致，但不能单独证明是哪个中断源造成饥饿。
 
+### 15:12 至 15:14 连续采样
+
+之后又进行了两组连续只读采样，共 36 个 halt 快照。两次采样都只执行 `monitor halt`、读取寄存器、`monitor resume` 和 `detach`，没有单步、复位、写内存或写寄存器。所有 36 个快照的 `g_system_tick_lock` 仍为 `0x000aca9b`，而 `SYST_CVR` 持续变化。
+
+NVIC enable 位图恒为：
+
+```text
+0x00000100 0x200200c0 0x81040000 0x00000001
+```
+
+据此启用的是外部 IRQ 8、38、39、49、61、82、88、95、96。pending 位图有两种状态：
+
+- 35 个快照为 `0x00000000 0x200000c0 0x12000000 0x00000000`，即 IRQ 38、39、61、89、92 pending。
+- 1 个快照为 `0x00000000 0x20000080 0x12000000 0x00000000`，即 IRQ 39、61、89、92 pending，同一时点 IRQ 38 active。
+
+因此 LTDC error IRQ 89 与 QSPI IRQ 92 虽然保留 pending 状态，但 NVIC 未启用，不能进入异常入口。当前真正同时处于 enabled 与 pending 状态的中断源是 Ethernet IRQ 61 和 USART2/3 IRQ 38/39。该结果把怀疑范围从单一 UART 扩展到多源中断与共享异常返回路径，但仍不能只凭 pending 位认定哪个中断产生饥饿。
+
+ICSR 在 35 个快照中为 `0x0043680e`，即 active=PendSV 14、pending=USART2 54、`ISRPENDING=1`。在 1 个快照中为 `0x00437836`，即 active=USART2 54、pending=USART3 55。采样期间 CPU 位于 `exception_common`、`exception_direct`、`arm_doirq` 和这些异常入口之间。QSPI 在构建配置中未启用驱动，LTDC error 也未被驱动注册为独立处理器，两者不能按 enabled 中断源继续分析。
+
 ## 证据文件
 
 原始长测和只读采样位于被忽略的 `.debug/`，以下哈希用于回指原始文件；敏感 UART 原文没有放入 `docs/`。
@@ -113,12 +132,15 @@ TCB 现场也处于异常路径而非普通任务运行：
 | `.debug/qa04-readonly-snapshot-20261019T1515-A.log` | 新候选 ELF 符号采样 | `00273ec2cfbf44bdbf5ad4c86c57ae8ee2f42239e89b911dcb5af490c1d2c12c` |
 | `.debug/qa04-readonly-snapshot-20261019T1515-B-oldelf.log` | 旧 ELF 符号交叉采样 | `589739558baab5d7c92768cb124c3f6d9a3b8082cd155ab6c521a24b2dad004f` |
 | `.debug/qa04-readonly-snapshot-20261019T1522-C-oldelf.log` | 约 3 秒后的独立快照 | `3ef24fdb8ce59266a129f00b0efbe1f232ff5b114409daffee8574d7a4694384` |
+| `.debug/qa04-readonly-samples-20261019T1535.log` | 24 次连续只读采样 | `b875118e1ca5cf1270a56014d61a9a360c4c09799f4b5bacfbdf01afa13f9802` |
+| `.debug/qa04-readonly-samples-20261019T1540.log` | 12 次连续只读采样 | `9e06fd18b98d871d37dc8937d20a670aa4302bed495f52adb10e74266b1c77e0` |
+| `.debug/qa04-readonly-samples-20261019T1540.gdb` | 第二组采样命令 | `af5f4c9b5e1cf58a40b06e43fb092a05f54f09b4f248c7d6f5a95fce3fc760b7` |
 
 B 与 C 文件所用 `board-c20177f-before-rebuild/nuttx.elf` 是 21:50 构建，不是板上确切的 23:48 ELF。它们只能作为 RAM 地址、结构布局和关键文本映射的旁证，不能把其中所有产品函数地址都当成板上精确源码位置。A 使用 14:01 候选 ELF，也不是板上 23:48 ELF。
 
 ## 后续关闭条件
 
-本次失败已经形成可追溯现场。后续必须先确认 UART 中断或异常返回路径的确定性根因，再做源码修复。修复后需要：
+本次失败已经形成可追溯现场。后续必须先确认已启用 IRQ 或异常返回路径的确定性根因，再做源码修复。修复后需要：
 
 1. 完成 clean build 并核对产物哈希。
 2. 同时验证 QSPI 主镜像和内部 boot stub 下载成功。
