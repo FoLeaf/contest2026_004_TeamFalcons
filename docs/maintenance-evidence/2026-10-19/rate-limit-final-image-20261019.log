@@ -1,0 +1,168 @@
+########## boot settle len=0 ##########
+
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1700 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2500 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1050 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1050 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1260 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1750 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2760 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1090 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=260
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=990 warn=ge70 crit=ge90
+nsh> [K[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1620 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1840 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2820 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=202
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=850 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1420 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1920 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2310 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=202
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=920 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1310 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=1770 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=203
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=40 unit=% ok=1 age_ms=2350 warn=ge70 crit=ge90
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=158
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: reason=rate_limited msg=调用过于频繁，请稍后再试
+nsh> [K
+
+########## vgagent tool vg_point_read ups_load ########## len=158
+vgagent tool vg_point_read ups_load
+[tools] Executed vg tool: vg_point_read
+tool vg_point_read rc=0
+vgquery: reason=rate_limited msg=调用过于频繁，请稍后再试
+nsh> [K
+
+########## vgagent status ########## len=213
+vgagent status
+round: state=idle gen=2 owner=none
+llm: credentials=ready provision_file=present
+reply: 📊 运行报告（本次上电，已运行约 45 分钟）
+
+**通信质量**
+- 总线成功率 100%（17748/17836），超时 88 次，CRC 错误 0
+- 近期窗口全部正常，最差从站
+nsh> [K
