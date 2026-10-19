@@ -1,0 +1,38 @@
+─── global hook (machine-wide) ───
+✅ Global hook script: /home/hello19y/.claude/contest-shared/contest-snapshot.sh (executable)
+✅ Global snapshot core: /home/hello19y/.claude/contest-shared/snapshot_core.py
+✅ GitHub login detector: /home/hello19y/.claude/contest-shared/get_github_login.py
+✅ ~/.claude/settings.json registers global Stop+SessionEnd hook
+
+─── opencode global plugin ───
+✅ OpenCode global plugin: /home/hello19y/.config/opencode/plugin/contest-collector.js
+
+─── contest-snapshot shortcut ───
+✅ Shortcut script: /home/hello19y/.local/bin/contest-snapshot (executable)
+✅ ~/.local/bin is on PATH
+
+─── identity (~/.claude/contest-collector.env) ───
+✅ TEAM_ID: contest2026_004_TeamFalcons
+✅ GITHUB_LOGIN: Foleaf
+
+─── staging directory ───
+✅ staging dir: /home/hello19y/.claude/contest-collector-staging
+   currently holds 115 session(s)
+
+─── jsonschema (required by validate-log.py) ───
+✅ jsonschema available
+
+─── non-whitelisted VS Code AI extensions ───
+
+─── summary ───
+Passed: 11
+Failed: 0
+
+✅ All checks passed.
+   Demo repo is intentionally untouched - no per-repo files installed.
+   Sessions inside the openvela workspace are auto-written into logs/
+   when they end; just commit them with your code:
+     git add logs/ && git commit -s -m 'logs: capture session' && git push
+   (Optional) list or re-export manually:
+     contest-snapshot --list                                                # short form
+     python3 ../.claude/skills/contest-log-collector/tools/export-session.py --list   # full path fallback
