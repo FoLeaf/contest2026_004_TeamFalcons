@@ -1,0 +1,232 @@
+CASE happy-path
+  ok   happy-path/exit-code
+  ok   happy-path/log-exists
+  ok   happy-path/run-begin
+  ok   happy-path/pass-line
+  ok   happy-path/run-end-pass
+  ok   happy-path/duration
+  ok   happy-path/cycles
+  ok   happy-path/verdict-order
+CASE prompt-then-async-one-read
+  ok   prompt-then-async-one-read/exit-code
+  ok   prompt-then-async-one-read/log-exists
+  ok   prompt-then-async-one-read/run-begin
+  ok   prompt-then-async-one-read/pass-line
+  ok   prompt-then-async-one-read/run-end-pass
+  ok   prompt-then-async-one-read/duration
+  ok   prompt-then-async-one-read/cycles
+  ok   prompt-then-async-one-read/verdict-order
+CASE ansi-erase-suffix
+  ok   ansi-erase-suffix/exit-code
+  ok   ansi-erase-suffix/log-exists
+  ok   ansi-erase-suffix/run-begin
+  ok   ansi-erase-suffix/pass-line
+  ok   ansi-erase-suffix/run-end-pass
+  ok   ansi-erase-suffix/duration
+  ok   ansi-erase-suffix/cycles
+  ok   ansi-erase-suffix/verdict-order
+CASE no-async-after-prompt
+  ok   no-async-after-prompt/exit-code
+  ok   no-async-after-prompt/log-exists
+  ok   no-async-after-prompt/run-begin
+  ok   no-async-after-prompt/pass-line
+  ok   no-async-after-prompt/run-end-pass
+  ok   no-async-after-prompt/duration
+  ok   no-async-after-prompt/cycles
+  ok   no-async-after-prompt/verdict-order
+CASE start-failure
+  ok   start-failure/exit-code
+  ok   start-failure/log-exists
+  ok   start-failure/run-begin
+  ok   start-failure/fail-line
+  ok   start-failure/run-end-fail
+  ok   start-failure/no-pass
+  ok   start-failure/reason
+  ok   start-failure/verdict-order
+CASE command-timeout
+  ok   command-timeout/exit-code
+  ok   command-timeout/log-exists
+  ok   command-timeout/run-begin
+  ok   command-timeout/fail-line
+  ok   command-timeout/run-end-fail
+  ok   command-timeout/no-pass
+  ok   command-timeout/reason
+  ok   command-timeout/verdict-order
+CASE link-drop
+  ok   link-drop/exit-code
+  ok   link-drop/log-exists
+  ok   link-drop/run-begin
+  ok   link-drop/fail-line
+  ok   link-drop/run-end-fail
+  ok   link-drop/no-pass
+  ok   link-drop/reason
+  ok   link-drop/verdict-order
+CASE firmware-fault
+  ok   firmware-fault/exit-code
+  ok   firmware-fault/log-exists
+  ok   firmware-fault/run-begin
+  ok   firmware-fault/fail-line
+  ok   firmware-fault/run-end-fail
+  ok   firmware-fault/no-pass
+  ok   firmware-fault/reason
+  ok   firmware-fault/verdict-order
+CASE panic-split-command
+  ok   panic-split-command/exit-code
+  ok   panic-split-command/log-exists
+  ok   panic-split-command/run-begin
+  ok   panic-split-command/fail-line
+  ok   panic-split-command/run-end-fail
+  ok   panic-split-command/no-pass
+  ok   panic-split-command/reason
+  ok   panic-split-command/verdict-order
+CASE fault-split-clear
+  ok   fault-split-clear/exit-code
+  ok   fault-split-clear/log-exists
+  ok   fault-split-clear/run-begin
+  ok   fault-split-clear/fail-line
+  ok   fault-split-clear/run-end-fail
+  ok   fault-split-clear/no-pass
+  ok   fault-split-clear/reason
+  ok   fault-split-clear/verdict-order
+CASE fault-split-wait
+  ok   fault-split-wait/exit-code
+  ok   fault-split-wait/log-exists
+  ok   fault-split-wait/run-begin
+  ok   fault-split-wait/fail-line
+  ok   fault-split-wait/run-end-fail
+  ok   fault-split-wait/no-pass
+  ok   fault-split-wait/reason
+  ok   fault-split-wait/verdict-order
+CASE unexpected-reboot
+  ok   unexpected-reboot/exit-code
+  ok   unexpected-reboot/log-exists
+  ok   unexpected-reboot/run-begin
+  ok   unexpected-reboot/fail-line
+  ok   unexpected-reboot/run-end-fail
+  ok   unexpected-reboot/no-pass
+  ok   unexpected-reboot/reason
+  ok   unexpected-reboot/verdict-order
+CASE reboot-split-command
+  ok   reboot-split-command/exit-code
+  ok   reboot-split-command/log-exists
+  ok   reboot-split-command/run-begin
+  ok   reboot-split-command/fail-line
+  ok   reboot-split-command/run-end-fail
+  ok   reboot-split-command/no-pass
+  ok   reboot-split-command/reason
+  ok   reboot-split-command/verdict-order
+CASE reboot-split-clear
+  ok   reboot-split-clear/exit-code
+  ok   reboot-split-clear/log-exists
+  ok   reboot-split-clear/run-begin
+  ok   reboot-split-clear/fail-line
+  ok   reboot-split-clear/run-end-fail
+  ok   reboot-split-clear/no-pass
+  ok   reboot-split-clear/reason
+  ok   reboot-split-clear/verdict-order
+CASE reboot-split-wait
+  ok   reboot-split-wait/exit-code
+  ok   reboot-split-wait/log-exists
+  ok   reboot-split-wait/run-begin
+  ok   reboot-split-wait/fail-line
+  ok   reboot-split-wait/run-end-fail
+  ok   reboot-split-wait/no-pass
+  ok   reboot-split-wait/reason
+  ok   reboot-split-wait/verdict-order
+CASE uptime-regression
+  ok   uptime-regression/exit-code
+  ok   uptime-regression/log-exists
+  ok   uptime-regression/run-begin
+  ok   uptime-regression/fail-line
+  ok   uptime-regression/run-end-fail
+  ok   uptime-regression/no-pass
+  ok   uptime-regression/reason
+  ok   uptime-regression/verdict-order
+CASE table-change
+  ok   table-change/exit-code
+  ok   table-change/log-exists
+  ok   table-change/run-begin
+  ok   table-change/fail-line
+  ok   table-change/run-end-fail
+  ok   table-change/no-pass
+  ok   table-change/reason
+  ok   table-change/verdict-order
+CASE online-short
+  ok   online-short/exit-code
+  ok   online-short/log-exists
+  ok   online-short/run-begin
+  ok   online-short/fail-line
+  ok   online-short/run-end-fail
+  ok   online-short/no-pass
+  ok   online-short/reason
+  ok   online-short/verdict-order
+CASE heap-inconsistent
+  ok   heap-inconsistent/exit-code
+  ok   heap-inconsistent/log-exists
+  ok   heap-inconsistent/run-begin
+  ok   heap-inconsistent/fail-line
+  ok   heap-inconsistent/run-end-fail
+  ok   heap-inconsistent/no-pass
+  ok   heap-inconsistent/reason
+  ok   heap-inconsistent/verdict-order
+CASE credentials-missing
+  ok   credentials-missing/exit-code
+  ok   credentials-missing/log-exists
+  ok   credentials-missing/run-begin
+  ok   credentials-missing/fail-line
+  ok   credentials-missing/run-end-fail
+  ok   credentials-missing/no-pass
+  ok   credentials-missing/reason
+  ok   credentials-missing/verdict-order
+CASE stopped-before-duration
+  ok   stopped-before-duration/exit-code
+  ok   stopped-before-duration/log-exists
+  ok   stopped-before-duration/run-begin
+  ok   stopped-before-duration/fail-line
+  ok   stopped-before-duration/run-end-fail
+  ok   stopped-before-duration/no-pass
+  ok   stopped-before-duration/verdict-order
+CASE simulated-interrupt
+  ok   simulated-interrupt/exit-code
+  ok   simulated-interrupt/log-exists
+  ok   simulated-interrupt/run-begin
+  ok   simulated-interrupt/abort-line
+  ok   simulated-interrupt/run-end-incomplete
+  ok   simulated-interrupt/no-pass
+  ok   simulated-interrupt/verdict-order
+CASE port-unavailable
+  ok   port-unavailable/exit-code
+  ok   port-unavailable/log-exists
+  ok   port-unavailable/run-begin
+  ok   port-unavailable/fail-line
+  ok   port-unavailable/run-end-fail
+  ok   port-unavailable/no-pass
+  ok   port-unavailable/reason
+  ok   port-unavailable/verdict-order
+CASE online-min-default
+  ok   online-min-default/exit-code
+  ok   online-min-default/log-exists
+  ok   online-min-default/run-begin
+  ok   online-min-default/pass-line
+  ok   online-min-default/run-end-pass
+  ok   online-min-default/duration
+  ok   online-min-default/warn
+  ok   online-min-default/cycles
+  ok   online-min-default/verdict-order
+CASE killed-run-leaves-no-verdict
+  ok   killed-run/reached-cycle
+  ok   killed-run/no-pass
+  ok   killed-run/no-run-end
+  ok   killed-run/has-run-begin
+CASE appended-log-does-not-inherit-old-pass
+  ok   appended/first-run-passed
+  ok   appended/two-run-begins
+  ok   appended/old-pass-intact
+  ok   appended/second-run-incomplete
+  ok   appended/last-run-has-no-pass
+CASE prompt-detection-regression
+  ok   prompt/old-pattern-misses
+  ok   prompt/new-pattern-matches
+
+artifacts: \\wsl.localhost\Debian\home\hello19y\openvela\.vg-maintenance-closeout\.debug\soak-tests\20261019-134809
+passed=202 failed=0
