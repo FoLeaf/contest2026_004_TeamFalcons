@@ -1,0 +1,10 @@
+[vela_tls] net_connect token-plan-cn.xiaomimimo.com:443 ret=0x52
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 2 (backoff 2)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad5f632455dba1a] iter=0 tool=(none) latency=90080ms llm=fail backend=0
+[trace:6ad5f632455dba1a] END status=fail iters=1 tools=0 llm_ms=90080 elapsed=90s backend=0
+[agent] Dispatching response → local_client:velaguard:12
+[vgagent] round finished: reply
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)

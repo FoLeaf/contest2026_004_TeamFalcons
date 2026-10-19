@@ -1,0 +1,28 @@
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vgadvice] asked for 1 alarms req=2
+[vgagent] round submitted: 746 bytes
+[agent] Processing message from local_client:velaguard:12
+
+########## vgagent status ##########
+vgagent status
+round: state=running gen=11 owner=advice
+llm: credentials=ready provision_file=present
+nsh> [K
+########## vgagent ask read ups_load current value ##########
+vgagent ask read ups_load current value
+vgagent: queue failed: -16
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+
+########## vgagent status ##########
+vgagent status
+round: state=running gen=11 owner=advice
+llm: credentials=ready provision_file=present
+nsh> [K[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad5f632455dba1a] BEGIN chat=velaguard:12 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 6434 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792407090
+[agent] Dispatching response → local_client:velaguard:12
+
+BUSY-PROBE: matched running advice round
+[saved] .debug/g-final-busy-monitor-20261019-105116.log

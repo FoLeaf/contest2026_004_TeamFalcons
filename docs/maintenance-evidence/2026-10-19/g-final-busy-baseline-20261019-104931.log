@@ -1,0 +1,31 @@
+########## boot settle len=268 ##########
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgtime: synced 2026-10-19 10:46:52
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## uname -a ########## len=83
+uname -a
+NuttX  0.0.0 2373ab4a45d Oct 18 2026 23:48:40 arm stm32h750b-dk
+nsh> [K
+
+########## vgagent status ########## len=147
+vgagent status
+round: state=idle gen=11 owner=none
+llm: credentials=ready provision_file=present
+reply: Sorry, I encountered an error.
+nsh> [K
+
+########## vgpoint get temp ########## len=124
+vgpoint get temp
+vgpoint: VALUE id=temp value=24 ok=1 unit=C age_ms=2480
+vgpoint: OK cmd=get table=committed n=1
+nsh> [K
+
+########## vgpoint get ups_load ########## len=132
+vgpoint get ups_load
+vgpoint: VALUE id=ups_load value=40 ok=1 unit=% age_ms=1100
+vgpoint: OK cmd=get table=committed n=1
+nsh> [K
