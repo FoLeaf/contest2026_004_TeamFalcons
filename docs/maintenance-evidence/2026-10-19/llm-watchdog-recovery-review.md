@@ -66,3 +66,9 @@ Agent 轮次在 watchdog 后释放，NSH 最终返回提示符；但超时后的
 - [COM7 计数快照](maintenance-slave-during-network-20261019.log)：`58ff29bedb149d4cb74de260f667a125c99f917bdb0fa8ea108d6b208d31c459`
 
 更新结论：Agent 轮次仍为空闲，LLM 与 MQTT 网络恢复尚未通过。先前 QA-04 的自发控制台失联原因仍未定位；本次 DNS 等待由测试命令本身触发，不据此关闭或重定义 QA-04。
+
+## 10:24 后资源与任务复核
+
+DNS 队列处理完后，`free` 两次显示总 heap `7012144` 字节、空闲约 `6742 KB`，Agent 仍为 `state=idle gen=11 owner=none`。两次 `ps` 快照都出现 PID 147 `sh -c dmesg`，状态为 `Waiting Semaphore`，栈列为 `0001992`。记录见[首次资源快照](board-resource-network-snapshot-20261019.log)与[再次 ps/free](board-ps-repeat-20261019.log)。
+
+为确认来源，只在开发机过滤了 `/data/velaguard/logs/agent_tools.log` 中的工具名、返回码和 JSON `command` 的首词，不输出或保存原始参数。当前文件共 22 条 `run_shell` 记录，没有 `dmesg` 命令；摘要见[脱敏审计摘要](agent-run-shell-audit-summary-20261019.log)。因此尚不能把 PID 147 归因到一次 Agent 工具调用，也不能认定为 shell runner 泄漏。没有结束该任务。板端超时后的 shell 子任务回收仍缺可归因证据，AI-01/G 不据此关闭。
