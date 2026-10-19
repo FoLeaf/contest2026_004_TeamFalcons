@@ -15,6 +15,15 @@ heap_used=305504 heap_maxused=393448
 
 12:45:37 从站累计 2101 请求、2101 回复，无 CRC、drop、抑制或覆盖。两个 Windows 进程在首轮后均存活。正式计时从约 12:43:22 开始，预计 2026-10-20 12:43:22 结束。只有同运行写出 `PASS` 和 `RUN_END status=PASS` 后才能判通过。
 
+13:03:41 检查第 2 轮也已通过：
+
+```text
+CYCLE n=2 elapsed_s=1,143 uptime_s=1719 online=14/14
+heap_used=305744 heap_maxused=393448
+```
+
+本轮 `vgstoretest 50` 用时 117.216 秒。13:03:38 从站累计 9702 请求、9702 回复，`crc_scan=0`，无 drop、抑制或覆盖；长测 PID 3908 和从站 PID 21776 均存活。
+
 ## 启动元数据哈希
 
 | 文件 | SHA256 |
