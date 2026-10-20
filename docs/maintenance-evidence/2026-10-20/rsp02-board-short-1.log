@@ -1,0 +1,217 @@
+﻿vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[vgadvice] asked for 8 alarms req=4
+[vgagent] round submitted: 1325 bytes
+[agent] Processing message from local_client:velaguard:4
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+vgnet: no CONNACK via posix
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad78a1d73b6c3ea] BEGIN chat=velaguard:4 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7019 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:4
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792510493
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+vgnet: no CONNACK via posix
+[llm] Response: 0 bytes text, 2 tool calls, finish=tool_calls
+[trace:6ad78a1d73b6c3ea] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=10 tls=490 send=200 ttfb=3820 body=0 pool=0 build=10 parse=0 http=4840 backoff=0 total=4850 req=7019 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=2
+[agent] Tool iter 1: 2 calls
+[trace:6ad78a1d73b6c3ea] iter=0 tool=read_file latency=4850ms llm=ok backend=0
+vgnet: no CONNACK via posix
+[tools] Executing tool: read_file
+[tools] Executed vg tool: vg_run_report
+[agent] Tool vg_run_report result: 578 bytes, 620 ms
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+[agent] Tool read_file result: 1874 bytes, 1550 ms
+[trace:6ad78a1d73b6c3ea] tool_iter=0 tool=read_file tool_ms=1550 out=1874 ok=1
+[trace:6ad78a1d73b6c3ea] tool_iter=0 tool=vg_run_report tool_ms=620 out=578 ok=1
+[llm] OpenAI API with tools (model: mimo-v2.5, 10000 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[trace:6ad78a1d73b6c3ea] http iter=1 attempt=1 reused=1 proxy=0 dns_tcp=na(fused) setup=na tls=na send=340 ttfb=8090 body=36770 pool=0 build=0 parse=0 http=45310 backoff=0 total=45320 req=10000 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 2: 1 calls
+[trace:6ad78a1d73b6c3ea] iter=1 tool=write_file latency=45330ms llm=ok backend=0
+[agent] Tool call: write_file args={"path": "/data/velaguard/reports/alarm_advice.txt", "content": "VGADV1\nboot=30c12f6f\nreq=4\nn=8\n[1]\nid=temp\nepoch=1\nsev=offline\nunres=0\nsum=总线全超时致温度点离线\nev=运行报告总线成功0%共889次超时该点离线约19分\natt=检查从站1接线与地址及主站串口参数\n[2]\nid=humid\nepoch=1\nsev=offline\nunres=0\nsum=总线超时致湿度点离线\nev=总线成功0%共889次超时该点自上电起持续离线\natt=确认湿度传感器供电与485链路连接
+[tools] Executing tool: write_file
+vgnet: no CONNACK via posix
+[tool_files] write_file: /data/velaguard/reports/alarm_advice.txt (1616 bytes)
+[agent] Tool write_file result: 64 bytes, 2620 ms
+[trace:6ad78a1d73b6c3ea] tool_iter=1 tool=write_file tool_ms=2620 out=64 ok=1
+[agent] Local tool shortcut: skip LLM round
+[trace:6ad78a1d73b6c3ea] END status=ok iters=2 tools=2 llm_ms=50180 tool_ms=4790 elapsed_ms=54700 backend=0
+[agent] Dispatching response → local_client:velaguard:4
+[vgagent] round finished: reply
+[vgadvice] advice loaded: 8 entries file_req=4 live_req=4
+vgnet: no CONNACK via posix
+[vgadvice] round ended, advice for this alarm set kept
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: esp reset
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[vgadvice] asked for 8 alarms req=5
+[vgagent] round su
+ai_agent --daemon &
+ai_agent [15:100]
+nsh> [Kai_agent
+[agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+vela> ask 你好，请用一句话介绍你自己
+[netmgr] Found iface eth0 addr 192.168.137.243
+Ask queued; agent_[agent] ask: 你好，请用一句话介绍你自己
+loop starting in background...
+Sent to agent: 你好，请用一句话介绍你自己
+vela> [agent] Agent loop started (HMI fixed buffers)
+[agent] Buffers: ctx=4096 hist=4096 tool=4096
+[agent] Tool output pool: 2 x 8192 bytes
+[agent] Tools JSON loaded: 1769 bytes
+[agent] Processing message from cli:console
+[agent] agent_loop started (lazy ask)
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad78b5000000000] BEGIN chat=console chan=cli
+[llm] OpenAI API with tools (model: mimo-v2.5, 8534 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792510800
+[agent] Dispatching response → cli:console
+
+[Agent]: 让我�[agent] [Agent]: 让我查䟥一下...
+vela��下...>
+ [vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+[vela_tls] body progress: gaps=1 first_read=8010ms total=668 bytes
+[vela_tls] body gap 1: idle=8010ms at=8010ms bytes=6
+[llm] Resp bytes=651 text=152 reasoning=48 toolargs=0 calls=0 finish=end_turn tokens=2485/51/2536
+[llm] Response: 152 bytes text, 0 tool calls, finish=end_turn
+[trace:] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=0 tls=460 send=270 ttfb=8010 body=140 pool=0 build=0 parse=0 http=8940 backoff=0 total=8950 req=8534 resp=651 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=152, tool_use=0, calls=0
+[trace:] iter=0 tool=(none) latency=8960ms llm=ok backend=0
+[trace:] END status=ok iters=1 tools=0 llm_ms=8960 tool_ms=0 elapsed_ms=9000 backend=0
+[agent] Dispatching response → cli:console
+
+[Agent]: 我�[agent] [Agent]: 我是 AI Agent，运行在 Vela 嵌入式设备上的智能助手� AI Agent，可帮你查 Modbus 实时数据、解读告警、跑运行日报、设提醒等。
+��运行在 Vela 嵌入式设备上的智能助手，可帮你查 Modbus 实时数据、解读告警、跑运行日报、设提醒等。
+vela> vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgtime: synced 2026-10-20 15:42:58
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[vgadvice] asked for 8 alarms req=1
+[tap] registered tap for channel 'local_client'
+[velaclaw_client] client opened: velaguard
+[vgagent] local agent client ready
+[vgagent] round submitted: 1301 bytes
+[agent] Processing message from local_client:velaguard:1
+quit
+Exiting agent...
+[cli] CLI thread exiting
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+

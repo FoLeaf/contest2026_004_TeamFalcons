@@ -1,0 +1,50 @@
+[
+  {
+    "req_bytes": 295,
+    "t0": 28427.686646351,
+    "first_byte": 8.124965298000461,
+    "done": 28458.533691734,
+    "resp_bytes": 1104,
+    "status": 200,
+    "gap": null,
+    "send_ms": 95,
+    "ttfb_ms": 8124,
+    "body_ms": 22626,
+    "total_ms": 30847,
+    "raw_bytes": 773
+  },
+  {
+    "req_bytes": 295,
+    "t0": 28460.534756907,
+    "first_byte": 8.1324113030023,
+    "done": 28480.818721772,
+    "resp_bytes": 3176,
+    "status": 200,
+    "gap": null,
+    "send_ms": 101,
+    "ttfb_ms": 8132,
+    "body_ms": 12050,
+    "total_ms": 20283,
+    "raw_bytes": 2845
+  },
+  {
+    "req_bytes": 295,
+    "t0": 28482.819668688,
+    "first_byte": 3.1562646799975482,
+    "done": 28486.056056756,
+    "resp_bytes": 1124,
+    "status": 200,
+    "gap": null,
+    "send_ms": 79,
+    "ttfb_ms": 3156,
+    "body_ms": 0,
+    "total_ms": 3236,
+    "prompt_tokens": 43,
+    "completion_tokens": 76,
+    "finish": "stop",
+    "text_bytes": 209,
+    "reasoning_bytes": 161,
+    "toolargs_bytes": 0,
+    "calls": 0
+  }
+]
