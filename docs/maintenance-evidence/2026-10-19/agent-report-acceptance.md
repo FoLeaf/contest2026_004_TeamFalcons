@@ -29,7 +29,13 @@ vghmi: daily report requested
 
 ## 实时运行报告查询
 
-通过 `vgagent ask` 发起真实 LLM 轮次，请求只读调用 `vg_run_report` 且不写文件。trace 记录 `END status=ok iters=2 tools=1`，唯一工具为 `vg_run_report`，工具耗时 97.1 秒；完整串口记录见 [实时报告 ReAct 查询](live-run-report-query.log)，SHA256 `7e13180efbe70a027c1f4ce3916877eba4ba3989a1ff9cdb9b60eb15f809db00`。
+通过 `vgagent ask` 发起真实 LLM 轮次，请求只读调用 `vg_run_report` 且不写文件。trace 记录 `END status=ok iters=2 tools=1`，唯一工具为 `vg_run_report`，该轮 LLM 调用耗时 97.1 秒；完整串口记录见 [实时报告 ReAct 查询](live-run-report-query.log)，SHA256 `7e13180efbe70a027c1f4ce3916877eba4ba3989a1ff9cdb9b60eb15f809db00`。
+
+**2026-10-20 更正**：本节原将 97.1 秒写成工具耗时。源码核对表明，
+`agent_trace_step()` 的 `latency_ms` 取自 `llm_chat_tools()` 前后，工具
+在其后执行，因此该数是那一轮 LLM 调用耗时，工具执行时间当时没有被
+测量。RSP-01 已加入独立工具计时，见
+[RSP-01 分段计时](../2026-10-20/rsp01-segmented-timing.md)。原始日志不改写。
 
 NSH 状态探针只保存 `VG_AGENT_ROUND_REPLY_MAX=192` 字节，09:24 的长报告在 `最差从站` 后被截断，不能用该回显评估完整回答；限制定义见 `app/velaguard/vg_agent_round.h`。09:46 以短提示再次发起真实 LLM 轮次，trace 为 `END status=ok iters=2 tools=1`，唯一工具 `vg_run_report`；145 字节中文回答完整显示：`本次上电已运行约1小时2分钟，总线成功率100%（超时88次、CRC 0），各点位均在线，08:45 起多点位已恢复正常。` 原始记录见 [短答 ReAct 查询](live-run-report-concise-20261019.log)，SHA256 `8e27607e4c99915d0af951ff1edcbc8a576c3ec539ae46bc8c0a474687eed8f0`。短答的完整显示证明该次报告回答适配 192 字节回显上限，不代表长篇报告不会被截断。
 
