@@ -1,0 +1,236 @@
+﻿[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad761992746feb7] BEGIN chat=velaguard:2 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7011 bytes)
+[vela_tls] Pooled connection stale, reconnecting
+[agent] Dispatching response → local_client:velaguard:2
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792500121
+[vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[trace:6ad761992746feb7] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=10 tls=660 send=190 ttfb=1160 body=0 pool=0 build=0 parse=0 http=2160 backoff=0 total=2170 req=7011 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 1: 1 calls
+[trace:6ad761992746feb7] iter=0 tool=read_file latency=2180ms llm=ok backend=0
+[agent] Tool call: read_file args={"path": "/data/agent/skills/alarm_interpretation.md"}
+[tools] Executing tool: read_file
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+[agent] Tool read_file result: 1874 bytes, 2190 ms
+[trace:6ad761992746feb7] tool_iter=0 tool=read_file tool_ms=2190 out=1874 ok=1
+[agent] Instruction file read — no shortcut, LLM will process
+[llm] OpenAI API with tools (model: mimo-v2.5, 9206 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[trace:6ad761992746feb7] http iter=1 attempt=1 reused=1 proxy=0 dns_tcp=na(fused) setup=na tls=na send=240 ttfb=2290 body=0 pool=0 build=0 parse=0 http=2640 backoff=0 total=2640 req=9206 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 2: 1 calls
+[trace:6ad761992746feb7] iter=1 tool=vg_run_report latency=2650ms llm=ok backend=0
+[agent] Tool call: vg_run_report args={}
+[tools] Executed vg tool: vg_run_report
+[agent] Tool vg_run_report result: 559 bytes, 470 ms
+[trace:6ad761992746feb7] tool_iter=1 tool=vg_run_report tool_ms=470 out=559 ok=1
+[llm] OpenAI API with tools (model: mimo-v2.5, 10009 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[trace:6ad761992746feb7] http iter=2 attempt=1 reused=1 proxy=0 dns_tcp=na(fused) setup=na tls=na send=220 ttfb=8080 body=83320 pool=0 build=0 parse=0 http=91730 backoff=0 total=91740 req=10009 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 3: 1 calls
+[trace:6ad761992746feb7] iter=2 tool=write_file latency=91750ms llm=ok backend=0
+[agent] Tool call: write_file args={"path": "/data/velaguard/reports/alarm_advice.txt", "content": "VGADV1\nboot=30c1c54b\nreq=2\nn=8\n[1]\nid=temp\nepoch=1\nsev=offline\nunres=0\nsum=温度点离线，先排查总线通信\nev=总线成功0%（0/381）全部超时，该点离线8分7秒，非单点故障\natt=检查总线接线、供电与从站1是否上电在位\n[2]\nid=humid\nepoch=1\nsev=offline\nunres=0\nsum=湿度点离线，随总线故障排查\nev=总线成功0%（0/381）全部超时，该点离线8分7秒，多点同
+[tools] Executing tool: write_file
+vgnet: no CONNACK via posix
+[tool_files] write_file: /data/velaguard/reports/alarm_advice.txt (1920 bytes)
+[agent] Tool write_file result: 64 bytes, 1750 ms
+[trace:6ad761992746feb7] tool_iter=2 tool=write_file tool_ms=1750 out=64 ok=1
+[agent] Local tool shortcut: skip LLM round
+[trace:6ad761992746feb7] END status=ok iters=3 tools=3 llm_ms=96580 tool_ms=4410 elapsed_ms=101190 backend=0
+[agent] Dispatching response → local_client:velaguard:2
+[vgagent] round finished: reply
+[vgadvice] advice loaded: 8 entries file_req=2 live_req=2
+[vgadvice] round ended, advice for this alarm set kept
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgnet: no CONNACK via posix
+vgnet: esp reset
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: manager started
+vgtime: sync started
+eMMC mounted at /mnt/emmc
+Symlink /data -> /mnt/emmc/data
+
+NuttShell (NSH)
+nsh> [Kvgtime: restore 2026-10-20 12:45:49
+vgcfg: OK seq=6 name=vgpoint
+[tools] Registered tool provider: vg
+vghmi: autostart ok
+[User]	(1.360, +1360)	 check_stack_size: tid: 9, Stack size : 49104 lv_nuttx_entry.c:283
+[User]	(1.370, +10)	 lv_nuttx_fbdev_set_file: The framebuffer device was opened successfully lv_nuttx_fbdev.c:104
+[User]	(1.370, +0)	 lv_nuttx_fbdev_set_file: VideoInfo: lv_nuttx_fbdev.c:112
+[User]	(1.370, +0)	 lv_nuttx_fbdev_set_file:       fmt: 11 lv_nuttx_fbdev.c:113
+[User]	(1.370, +0)	 lv_nuttx_fbdev_set_file:      xres: 480 lv_nuttx_fbdev.c:114
+[User]	(1.380, +10)	 lv_nuttx_fbdev_set_file:      yres: 272 lv_nuttx_fbdev.c:115
+[User]	(1.390, +10)	 lv_nuttx_fbdev_set_file:   nplanes: 1 lv_nuttx_fbdev.c:116
+[User]	(1.390, +0)	 fbdev_get_pinfo: PlaneInfo (plane 0): lv_nuttx_fbdev.c:278
+[User]	(1.400, +10)	 fbdev_get_pinfo:     mem: 0xd0000000 lv_nuttx_fbdev.c:279
+[User]	(1.410, +10)	 fbdev_get_pinfo:     fblen: 522240 lv_nuttx_fbdev.c:280
+[User]	(1.410, +0)	 fbdev_get_pinfo:    stride: 960 lv_nuttx_fbdev.c:281
+[User]	(1.420, +10)	 fbdev_get_pinfo:   display: 0 lv_nuttx_fbdev.c:282
+[User]	(1.430, +10)	 fbdev_get_pinfo:       bpp: 16 lv_nuttx_fbdev.c:283
+[User]	(1.430, +0)	 fbdev_get_pinfo: PlaneInfo (plane 0): lv_nuttx_fbdev.c:27 +1440ms] P3: tool_guard_init (rc=0)
+[skills] Initializing skills system
+[skills] Skill exists: /data/agent/skills/weather.md
+[skills] Skill exists: /data/agent/skills/daily-briefing.md
+[skills] Skill exists: /data/agent/skills/skill-creator.md
+[skills] Skill exists: /data/agent/skills/system-health.md
+[skills] Skill exists: /data/agent/skills/reminder.md
+[skills] Skill exists: /data/agent/skills/note-taker.md
+[skills] Skill exists: /data/agent/skills/translate.md
+[skills] Skill exists: /data/agent/skills/news-digest.md
+[skills] Skill exists: /data/agent/skills/feishu-test.md
+[skills] Skill exists: /data/agent/skills/task-manager.md
+[skills] Skills system ready (10 built-in)
+[agent] [boot +1840ms] P3: skill_loader_init (rc=0)
+[agent] Agent loop initialized
+[agent] [boot +1840ms] P3: agent_loop_init (rc=0)
+[cron] No cron file, starting fresh
+[agent] [boot +1910ms] P3: cron_service_init (rc=0)
+[heartbeat] Heartbeat service initialized (file: /data/agent/HEARTBEAT.md, interval: 180s)
+[agent] [boot +1920ms] P3: heartbeat_init (rc=0)
+[agent] [boot +1930ms] P3: voice_channel_init (rc=0)
+NSH commands registered
+[agent] [boot +1930ms] P4: nsh_commands_init (rc=0)
+[agent] [boot +1940ms] P5: outbound dispatch thread started
+[heartbeat] Heartbeat started (every 3 min)
+[agent] [boot +1950ms] P5: heartbeat started, cron skipped (HMI SRAM save)
+[agent] [boot +1950ms] P5: network_watch thread started (async)
+[agent] [boot +1960ms] P6: nsh_commands skipped (daemon mode)
+[agent] [boot +1960ms] AI Agent ready. Type 'help' in NSH for commands.
+[agent] Outbound dispatch started
+[agent] Network watcher started
+[netmgr] No saved WiFi credentials. Use CLI: set_wifi <ssid> <pass>
+[netmgr] Found iface eth0 addr 192.168.137.238
+[netmgr] Network connected: 192.168.137.238
+[netmgr] Found iface eth0 addr 192.168.137.238
+[agent] Network connected: 192.168.137.238
+[agent] HMI lazy mode: agent_loop starts on first ask
+[agent] All network services started!
+ai_agent --daemon &
+ai_agent [15:100]
+nsh> [Kai_agent
+[agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+vela> ask 你好，请用一句话介绍你自己
+[netmgr] Found iface eth0 addr 192.168.137.238
+Ask queued; [agent] ask: 你好，请用一句话介绍你自己
+agent_loop starting in background...
+Sent to agent: 你好，请用一句话介绍你自己
+vela> [agent] Agent loop started (HMI fixed buffers)
+[agent] Buffers: ctx=4096 hist=4096 tool=4096
+[agent] Tool output pool: 2 x 8192 bytes
+[agent] Tools JSON loaded: 1769 bytes
+[agent] Processing message from cli:console
+[agent] agent_loop started (lazy ask)
+vghmi: live ok=0/14 a1=0.0
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad7629100000000] BEGIN chat=console chan=cli
+[llm] OpenAI API with tools (model: mimo-v2.5, 7848 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792500369
+[agent] Dispatching response → cli:console
+
+[Agent]: 让我�[agent] [Agent]��一下...
+vela>: 让我查一下...
+ [vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+[llm] Response: 198 bytes text, 0 tool calls, finish=end_turn
+[trace:6ad7629100000000] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=40(fused) setup=10 tls=520 send=190 ttfb=2700 body=0 pool=0 build=0 parse=0 http=3470 backoff=0 total=3480 req=7848 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=198, tool_use=0, calls=0
+[trace:6ad7629100000000] iter=0 tool=(none) latency=3490ms llm=ok backend=0
+[trace:6ad7629100000000] END status=ok iters=1 tools=0 llm_ms=3490 tool_ms=0 elapsed_ms=3520 backend=0
+[agent] Dispatching response → cli:console
+
+[Agent]: 我�[agent] [Agent]: 我是运行在 Vela 嵌入式设备上的 AI Agent，具备时间查询、文件读写、系统命令执行和嘯运行在 Vela��� �数据读取等能力，致力于为您提供高效简洁的智能助手服务。
+嵌入式设备上的 AI Agent，具备时间查询、文件读写、系统命令执行和实时数据读取等能力，致力于为您提供高效简洁的智能助手服务。
+vela> vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgtime: sync failed (servers unreachable)
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+quit
+Exiting agent...
+[cli] CLI thread exiting
+nsh> [Kvgnet: no CONNACK via posix
+

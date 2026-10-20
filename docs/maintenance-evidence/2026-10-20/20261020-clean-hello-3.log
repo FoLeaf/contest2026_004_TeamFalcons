@@ -1,0 +1,48 @@
+﻿vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+ai_agent --daemon &
+ai_agent [53:100]
+nsh> [Kai_agent
+[agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+vela> ask 你好，请用一句话介绍你自己
+[netmgr] Found iface eth0 addr 192.168.137.238
+Ask queued; a[agent] ask: 你好，请用一句话介绍你自己
+gent_loop starting in background...
+Sent to agent: 你好，请用一句话�[�agent] Processing message from cli:console
+绍你自己
+vela> vgnet: no CONNACK via posix
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad763b46a3059af] BEGIN chat=console chan=cli
+[agent] Cache hit, skipping LLM call
+[trace:6ad763b46a3059af] iter=0 tool=(none) latency=0ms llm=ok backend=0
+[trace:6ad763b46a3059af] END status=ok iters=1 tools=0 llm_ms=0 tool_ms=0 elapsed_ms=200 backend=0
+[agent] Dispatching response → cli:console
+
+[Agent]: 我�[agent] [Agent]: 我�运行在 Vela 嵘���运��行�在 �设备上的Vela A 嵌入式设备上的 AI Agent，具备时间查询、文件读写、系统命令执行和实时数据读取等能力，致力于为您提供高效简洁I Agent，�的智能助手服务。�
+�备时间查询、文件读写、系统命令执行和实时数据读取等能力，致力于为您提供高效简洁的智能助手服务。
+vela> vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+quit
+Exiting agent...
+[cli] CLI thread exiting
+nsh> [Kvgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+

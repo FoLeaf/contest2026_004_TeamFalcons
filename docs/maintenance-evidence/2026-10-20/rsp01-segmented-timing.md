@@ -75,18 +75,24 @@
 - 主机回归 `packages/ai_agent/tests/test_agent_timing.c`：覆盖未测阶段报
   `na`、合并阶段标签、短缓冲拒绝、敏感字段不出现、32 位毫秒回绕。
 - 竞赛仓主机套件 `make -C app/velaguard/host_tests test`：全部通过。
-- `bash scripts/build.sh`：固件编译通过，烧录与真机采集未执行。
+- `bash scripts/build.sh`：固件编译通过。
+- 真机：已烧录并采集首轮基线，见
+  [板端分段基线](rsp01-board-baseline.md)。计时行在真实链路上输出正常，
+  工具与 LLM 耗时已分开；失败路径与时延分辨率问题仍待处理。
 
-真机分段基线需要按计划 RSP-02 的方法采集，本轮不宣称已有性能数据。
+真机数据暴露了两个实现层面的限制：全部时长被 10ms tick 量化，
+`build` 修复前的读数恒为 0。
 
 ## 构建环境备注
 
-主仓 `nuttx/staging/libapps.a` 曾混入 65 个来自
+主仓 `apps/libapps.a` 和 `nuttx/staging/libapps.a` 曾混入来自
 `.vg-maintenance-closeout` 工作树的陈旧目标文件，导致链接时
 `vg_agent_round.c` 重复定义。原因是用该工作树构建过固件、之后链接指回
-主仓，旧成员没有被替换。清理方式：
+主仓，而 `ar` 增量归档不会替换旧成员。第二次构建时这些成员又回来了，
+说明 `apps/libapps.a` 本身也需要清理，只清 `staging` 不够。清理方式：
 
 ```bash
+cd ../apps && ar d libapps.a $(ar t libapps.a | grep vg-maintenance-closeout)
 cd ../nuttx/staging && ar d libapps.a $(ar t libapps.a | grep vg-maintenance-closeout)
 ```
 
