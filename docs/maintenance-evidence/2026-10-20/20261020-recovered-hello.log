@@ -1,0 +1,235 @@
+﻿vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: manager started
+vgtime: sync started
+eMMC mounted at /mnt/emmc
+Symlink /data -> /mnt/emmc/data
+
+NuttShell (NSH)
+nsh> [Kvgtime: restore 2026-10-20 14:59:17
+vgcfg: OK seq=6 name=vgpoint
+vgnet: join 19y failed
+[tools] Registered tool provider: vg
+vghmi: autostart ok
+[User]	(2.880, +2880)	 check_stack_size: tid: 9, Stack size : 49104 lv_nuttx_entry.c:283
+[User]	(2.890, +10)	 lv_nuttx_fbdev_set_file: The framebuffer device was opened successfully lv_nuttx_fbdev.c:104
+[User]	(2.890, +0)	 lv_nuttx_fbdev_set_file: VideoInfo: lv_nuttx_fbdev.c:112
+[User]	(2.890, +0)	 lv_nuttx_fbdev_set_file:       fmt: 11 lv_nuttx_fbdev.c:113
+[User]	(2.890, +0)	 lv_nuttx_fbdev_set_file:      xres: 480 lv_nuttx_fbdev.c:114
+[User]	(2.900, +10)	 lv_nuttx_fbdev_set_file:      yres: 272 lv_nuttx_fbdev.c:115
+[User]	(2.910, +10)	 lv_nuttx_fbdev_set_file:   nplanes: 1 lv_nuttx_fbdev.c:116
+[User]	(2.910, +0)	 fbdev_get_pinfo: PlaneInfo (plane 0): lv_nuttx_fbdev.c:278
+[User]	(2.920, +10)	 fbdev_get_pinfo:     mem: 0xd0000000 lv_nuttx_fbdev.c:279
+[User]	(2.930, +10)	 fbdev_get_pinfo:     fblen: 522240 lv_nuttx_fbdev.c:280
+[User]	(2.930, +0)	 fbdev_get_pinfo:    stride: 960 lv_nuttx_fbdev.c:281
+[User]	(2.940, +10)	 fbdev_get_pinfo:   display: 0 lv_nuttx_fbdev.c:282
+[User]	(2.950, +10)	 fbdev_get_pinfo:       bpp: 16 lv_nuttx_fbdev.c:283
+[User]	(2.950, +0)	 fbdev_get_pinfo: PlaneInfo (plane 0): lv_nuttx_fbdev.c:278
+[User]	(2.960, +10)	 fbdev_get_pinfo:     mem: 0xd0000000 lv_nuttx_fbdev.c:279
+[User]	(2.970, +10)	 fbdev_get_pinfo:     fblen: 522240 lv_nuttx_fbdev.c:280
+[User]	(2.970, +0)	 fbdev_get_pinfo:    stride: 960 lv_nuttx_fbdev.c:281
+[User]	(2.980, +10)	 fbdev_get_pinfo:   display: 0 lv_nuttx_fbdev.c:282
+[User]	(2.990, +10)	 fbdev_get_pinfo:       bpp: 16 lv_nuttx_fbdev.c:283
+[User]	(2.990, +0)	 fbdev_get_pinfo: PlaneInfo (plane 0): lv_nuttx_fbdev.c:278
+[User]	(3.000, +10)	 fbdev_get_pinfo:     mem: 0xd0000000 lv_nuttx_fbdev.c:279
+[User]	(3.010, +10)	 fbdev_get_pinfo:     fblen: 522240 lv_nuttx_fbdev.c:280
+[User]	(3.010, +0)	 fbdev_get_pinfo:    stride: 960 lv_nuttx_fbdev.c:281
+[User]	(3.020, +10)	 fbdev_get_pinfo:   display: 0 lv_nuttx_fbdev.c:282
+[User]	(3.030, +10)	 fbdev_get_pinfo:       bpp: 16 lv_nuttx_fbdev.c:283
+[User]	(3.030, +0)	 fbdev_init_mem2: Use of consecutive mem2 = 0xd003fc00, yoffset = 272 lv_nuttx_fbdev.c:347
+[User]	(3.040, +10)	 lv_nuttx_fbdev_set_file: Resolution is set to 480x272 at 130dpi lv_nuttx_fbdev.c:162
+[User]	(3.050, +10)	 lv_nuttx_touchscreen_create: touchscreen /dev/input0 opening lv_nuttx_touchscreen.c:79
+[User]	(3.060, +10)	 lv_nuttx_touchscreen_create: touchscreen /dev/input0 open success, maxpoint 1 lv_nuttx_touchscreen.c:98
+vghmi: pointer indev read=10ms n=1
+vghmi: home fleet n=14
+vghmi: acq start ok points=14
+vgnet: join 19y failed
+vgagent: ai_agent autostart ok (stac[agent] AI Agent - Vela AI Agent starting (build: 2026-10-19 19:37:00)
+k=3276[agent] [boot +10ms] P0: timezone set
+8)
+LED num: 3
+Hello from openvela contest 2026 team 004!
+[agent] [boot +170ms] P0: storage ready
+[cfgstore] Config store ready at /data/agent/config/config.json
+[agent] [boot +250ms] P1: config_store_init (rc=0)
+[bus] Message bus initialized (depth 16)
+[agent] [boot +260ms] P1: message_bus_init (rc=0)
+[memory] Initializing memory store at /data/agent
+[memory] Memory store initialized successfully
+[agent] [boot +670ms] P1: memory_store_init (rc=0)
+[session] Session manager initialized at /data/agent/sessions
+[agent] [boot +680ms] P1: session_mgr_init (rc=0)
+[proxy] Loading proxy config...
+[proxy] No proxy (direct connection)
+[agent] [boot +810ms] P2: http_proxy_init (rc=0)
+[llm] LLM proxy initialized (model: mimo-v2.5, host: token-plan-cn.xiaomimimo.com)
+[agent] [boot +1290ms] P3: llm_proxy_init (rc=0)
+[llm_router] Loaded backend 0: token-plan-cn.xiaomimimo.com (model: mimo-v2.5, tier: 1)
+[llm_router] Router initialized: 1 backends, profile=0
+[agent] [boot +1700ms] P3: llm_router_init (rc=0)
+vgnet: no CONNACK via posix
+[web_search] No search key. Use: set_tavily_key / set_search_key
+[tools] Product policy hides tool: web_search
+[tools] Product policy hides tool: news_search
+[tools] Product policy hides tool: get_weather
+[tools] Registered tool: get_current_time
+[tools] Registered tool: read_file
+[tools] Registered tool: write_file
+[tools] Product policy hides tool: edit_file
+[tools] Product policy hides tool: list_dir
+[tools] Product policy hides tool: cron_add
+[tools] Product policy hides tool: cron_list
+[tools] Product policy hides tool: cron_remove
+[tools] Product policy hides tool: fetch_url
+[tools] Product policy hides tool: analyze_image
+[tools] Registered tool: run_shell
+[tools] Product policy hides tool: get_battery
+[tools] Product policy hides tool: get_wear_state
+[tools] Product policy hides tool: get_screen_state
+[tools] Product policy hides tool: get_heartrate
+[tools] Product policy hides tool: get_steps
+[tools] Product policy hides tool: vibrate
+[tools] Product policy hides tool: feishu_doc_create
+[tools] Product policy hides tool: feishu_doc_write
+[tools] Product policy hides tool: feishu_doc_read
+[tools] Product policy hides tool: feishu_doc_list
+[tools] Product policy hides tool: feishu_chat_members
+[tools] Product policy hides tool: feishu_send_mention
+[tools] Product policy hides tool: music_search
+[tools] Product policy hides tool: music_play
+[tools] Product policy hides tool: music_pause
+[tools] Product policy hides tool: music_resume
+[tools] Product policy hides tool: music_stop
+[tools] Product policy hides tool: music_seek
+[tools] Product policy hides tool: music_set_volume
+[tools] Product policy hides tool: music_status
+[tools] Product policy hides tool: launch_quickapp
+[tools] Product policy hides tool: exit_quickapp
+[tools] Tools JSON built (4 builtin + 1 providers)
+[tools] Tool registry initialized
+[agent] [boot +2280ms] P3: tool_registry_init (rc=0)
+[guard] Tool guard initialized (max_input=32768, rate_window=60s, rate_max=10)
+[agent] [boot +2290ms] P3: tool_guard_init (rc=0)
+[skills] Initializing skills system
+[skills] Skill exists: /data/agent/skills/weather.md
+[skills] Skill exists: /data/agent/skills/daily-briefing.md
+[skills] Skill exists: /data/agent/skills/skill-creator.md
+[skills] Skill exists: /data/agent/skills/system-health.md
+[skills] Skill exists: /data/agent/skills/reminder.md
+[skills] Skill exists: /data/agent/skills/note-taker.md
+[skills] Skill exists: /data/agent/skills/translate.md
+[skills] Skill exists: /data/agent/skills/news-digest.md
+[skills] Skill exists: /data/agent/skills/feishu-test.md
+[skills] Skill exists: /data/agent/skills/task-manager.md
+[skills] Skills system ready (10 built-in)
+[agent] [boot +2850ms] P3: skill_loader_init (rc=0)
+[agent] Agent loop initialized
+[agent] [boot +2860ms] P3: agent_loop_init (rc=0)
+[cron] No cron file, starting fresh
+[agent] [boot +2870ms] P3: cron_service_init (rc=0)
+[heartbeat] Heartbeat service initialized (file: /data/agent/HEARTBEAT.md, interval: 180s)
+[agent] [boot +2880ms] P3: heartbeat_init (rc=0)
+[agent] [boot +2890ms] P3: voice_channel_init (rc=0)
+NSH commands registered
+[agent] [boot +2900ms] P4: nsh_commands_init (rc=0)
+[agent] [boot +2900ms] P5: outbound dispatch thread started
+[heartbeat] Heartbeat started (every 3 min)
+[agent] [boot +2910ms] P5: heartbeat started, cron skipped (HMI SRAM save)
+[agent] [boot +2920ms] P5: network_watch thread started (async)
+[agent] [boot +2920ms] P6: nsh_commands skipped (daemon mode)
+[agent] [boot +2930ms] AI Agent ready. Type 'help' in NSH for commands.
+[agent] Outbound dispatch started
+[agent] Network watcher started
+[netmgr] No saved WiFi credentials. Use CLI: set_wifi <ssid> <pass>
+[netmg
+vgnet: no CONNACK via posix
+vghmi: live ok=0/14 a1=0.0
+ai_agent --daemon &
+ai_agent [15:100]
+nsh> [Kai_agent
+[agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+vela> ask 你好，请用一句话介绍你自己
+[netmgr] Found iface eth0 addr 192.168.137.117
+Ask queued; a[agent] ask: 你好，请用一句话介绍你自己
+gent_loop starting i[agent] Agent lon backgrounop started (HMI fixed buffers)
+d.[agent] Buffers: ctx=.4096 hist=4096 tool=4096
+.[agent] Tool output pool: 2 x 8192 bytes
+
+S[agent] Tools JSON loaded: 1769 bytes
+en[agent] Processing message from cli:console
+t to agent: 你好，请用一句话介绍�[agent] agent_loop start��自己
+ed ve(lazla> y ask)
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad781e500000000] BEGIN chat=console chan=cli
+[llm] OpenAI API with tools (model: mimo-v2.5, 9126 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792508389
+[agent] Dispatching response → cli:console
+
+[Agent]: 让[agent] [Agent]: 让我查一下...
+我查一下...
+vela> [vela_tls] Handshake OK: TLSv1.2 / TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[llm] Response: 173 bytes text, 0 tool calls, finish=end_turn
+[trace:6ad781e500000000] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=0 tls=450 send=240 ttfb=8040 body=140 pool=0 build=0 parse=0 http=8930 backoff=0 total=8940 req=9126 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=173, tool_use=0, calls=0
+[trace:6ad781e500000000] iter=0 tool=(none) latency=8950ms llm=ok backend=0
+[trace:6ad781e500000000] END status=ok iters=1 tools=0 llm_ms=8950 tool_ms=0 elapsed_ms=8990 backend=0
+[agent] Dispatching response → cli:console
+
+[Agent]: 我是 AI Agent�[agent] [Agent]: 我是 AI Agent，运行在 Vela 嵌入式设备上的智能助手，可以帮你�运查 Modbus 实时数据、解读告警、跑运行日报、设提醒和处理日常任务。
+行在 Vela 嵌入式设备上的智能助手，可以帮你查 Modbus 实时数据、解读告警、跑运行日报、设提醒和处理日常任务。
+vela> vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: join 19y failed
+vgnet: esp reset
+vgtime: sync failed (servers unreachable)
+vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[vgadvice] asked for 8 alarms req=1
+[tap] registered tap for channel 'local_client'
+[velaclaw_client] client opened: velaguard
+[vgagent] local agent client ready
+[vgagent] round submitted: 1301 bytes
+[agent] Processing message from local_client:velaguard:1
+vgnet: no CONNACK via posix
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+vgnet: no CONNACK via posix
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad7822935c3b13a] BEGIN chat=velaguard:1 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 6995 bytes)
+[agent] Dispatching response → local_client:velaguard:1
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: no CONNACK via posix
+[llm] Response: 0 bytes text, 1 tool calls, finish=tool_calls
+[trace:6ad7822935c3b13a] http iter=0 attempt=1 reused=1 proxy=0 dns_tcp=na(fused) setup=na tls=na send=200 ttfb=2140 body=0 pool=0 build=0 parse=0 http=2590 backoff=0 total=2600 req=6995 rc=0 status=200 parse_ok=1
+[agent] LLM resp: text=0, tool_use=1, calls=1
+[agent] Tool iter 1: 1 calls
+[trace:6ad7822935c3b13a] iter=0 tool=read_file latency=2610ms llm=ok backend=0
+[agent] Tool call: read_file args={"path": "/data/agent/skills/alarm_interpretation.md"}
+[tools] Executing tool: read_file
+vgnet: no CONNACK via posix
+[tool_files] read_file: /data/agent/skills/alarm_interpretation.md (1874 bytes)
+[agent] Tool read_file result: 1874 bytes, 1420 ms
+[trace:6ad7822935c3b13a] tool_iter=0 tool=read_file tool_ms=1420 out=1874 ok=1
+[agent] Instruction file read — no shortcut, LLM will process
+[llm] OpenAI API with tools (model: mimo-v2.5, 9190 bytes)
+[vela_tls] Reusing pooled connection to token-plan-cn.xiaomimimo.com:443
+vgnet: no CONNACK via posix
+quit
+Exiting agent...
+[cli] CLI thread exiting
+nsh> [Kvgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+

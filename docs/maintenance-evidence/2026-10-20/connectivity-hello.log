@@ -1,0 +1,8 @@
+﻿vgtime: sync failed (servers unreachable)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgtime: sync failed (servers unreachable)
+vgtime: sync failed (servers unreachable)
+[vgadvice] asked for 8 alarms req=11
+[vgagent] round submitted: 1326 bytes
+[agent] Processing message from local_client:velaguard:11
+

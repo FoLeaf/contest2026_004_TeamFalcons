@@ -1,0 +1,10 @@
+########## boot settle len=43 ##########
+vgtime: sync failed (servers unreachable)
+
+
+########## ping -c 3 192.168.137.1 ########## len=0
+
+
+########## ping -c 3 10.16.0.1 ########## len=43
+vgtime: sync failed (servers unreachable)
+

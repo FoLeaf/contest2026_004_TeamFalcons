@@ -1,0 +1,28 @@
+########## boot settle len=0 ##########
+
+
+########## arp -a 192.168.137.1 ########## len=100
+arp -a 192.168.137.1
+HWaddr: 54:6c:50:33:4b:81
+nsh> [Kvgtime: sync failed (servers unreachable)
+
+
+########## ping -c 2 192.168.137.1 ########## len=120
+ping -c 2 192.168.137.1
+PING 192.168.137.1 56 bytes of data
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
+
+########## ping -c 2 8.8.8.8 ########## len=826
+[vela_tls] net_connect token-plan-cn.xiaomimimo.com:443 ret=0x52
+[trace:6ad77ad034a9cc0d] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=na(fused) setup=10 tls=na send=na ttfb=na body=na pool=0 build=10 parse=na http=90100 backoff=0 total=90110 req=7021 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 2 (backoff 2)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad77ad034a9cc0d] iter=0 tool=(none) latency=90110ms llm=fail backend=0
+[trace:6ad77ad034a9cc0d] END status=fail iters=1 tools=0 llm_ms=90110 tool_ms=0 elapsed_ms=90160 backend=0
+[agent] Dispatching response → local_client:velaguard:10
+[vgagent] round finished: reply
+[vgadvice] advice from another boot: file=30c1ccb6 board=30c1d776
+

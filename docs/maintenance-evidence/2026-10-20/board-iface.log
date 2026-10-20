@@ -1,0 +1,30 @@
+########## boot settle len=0 ##########
+
+
+########## ifconfig ########## len=201
+ifconfig
+eth0	Link encap:Ethernet HWaddr 06:01:f5:3c:d6:7a at RUNNING mtu 1486
+	inet addr:192.168.137.64 DRaddr:192.168.137.1 Mask:255.255.255.0
+
+nsh> [Kvgtime: sync failed (servers unreachable)
+
+
+########## arp -a ########## len=644
+arp -a
+nsh: arp: missing required argument(s)
+nsh> [K[vgadvice] asked for 8 alarms req=10
+[vgagent] round submitted: 1326 bytes
+[agent] Processing message from local_client:velaguard:10
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad77ad034a9cc0d] BEGIN chat=velaguard:10 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7021 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792506576
+[agent] Dispatching response → local_client:velaguard:10
+
+
+########## route ########## len=46
+route
+nsh: route: command not found
+nsh> [K

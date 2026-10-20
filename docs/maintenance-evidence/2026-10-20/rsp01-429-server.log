@@ -1,0 +1,16 @@
+[server429] listening on 127.0.0.1:9444
+[server429] #1 /429-then-ok
+[server429] #2 /429-then-ok (+2.00s)
+[server429] #3 /429-then-ok (+4.00s)
+[server429] #4 /429-always (+11.12s)
+[server429] #5 /429-always (+2.00s)
+[server429] #6 /429-always (+4.00s)
+[server429] #7 /429-always (+8.00s)
+[server429] timeline
+  #1 /429-then-ok
+  #2 /429-then-ok (+2.001s)
+  #3 /429-then-ok (+4.001s)
+  #4 /429-always (+11.125s)
+  #5 /429-always (+2.001s)
+  #6 /429-always (+4.001s)
+  #7 /429-always (+8.001s)

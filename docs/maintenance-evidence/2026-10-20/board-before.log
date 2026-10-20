@@ -1,0 +1,126 @@
+########## boot settle len=7399 ##########
+vgnet: join 19y failed
+WARNING: Ignoring ICMP reply with ID 36.  Expected 26
+10 packets transmitted, 0 received, 100% packet loss, time 258540 ms
+nsh> [Kvgnet status
+state=down egress=none tcp=none mqtt=down reason=egress=none
+rj45 link=1 ip=192.168.137.64 gw=192.168.137.1 ping_ok=0 fail_streak=10
+wifi ssid=19y assoc=0 ip=-
+nsh[> agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+[Kai_agent --daemon &
+ai_agent [52:100]
+nsh> [K[netmgr] Found iface eth0 addr a192.168.137.64
+i_agent
+v[agent] ask: 你好，请用一句话介绍你自己
+ela> ask 你好[cli] CLI thread exiting
+，请用一句话介绍你自己
+Ask queued;[ agent] Processing message from cli:console
+agent_loop starting in background...
+Sent to agent: 你好，请用一句话介绍你自己
+vela> quit
+Exiting agent...
+nsh> [K[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[vgadvice] asked for 8 alarms req=2
+[vgagent] round submitted: 1317 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad76f077c9701b3] BEGIN chat=console chan=cli
+[llm] OpenAI API with tools (model: mimo-v2.5, 9126 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792503559
+[agent] Dispatching response → cli:console
+
+[Agent]: 正在分析...
+[agent] [Agent]: 正在分析...
+vela> [vela_tls] ssl_handshake ret=-0x004e: NET - Sending information through the socket failed
+[trace:6ad76f077c9701b3] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=40(fused) setup=10 tls=na send=na ttfb=na body=na pool=0 build=10 parse=na http=70 backoff=0 total=80 req=9126 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 3 (backoff 4)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad76f077c9701b3] iter=0 tool=(none) latency=80ms llm=fail backend=0
+[trace:6ad76f077c9701b3] END status=fail iters=1 tools=0 llm_ms=80 tool_ms=0 elapsed_ms=120 backend=0
+[agent] Processing message from local_client:velaguard:2
+[agent] Dispatching response → cli:console
+
+[Agent]: So[agent] [Agent]: Sorry, I encountered an error.
+rry, I encountered an error.
+vela> [skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm_router] No healthy backend, retrying host 0 anyway
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad76f1003cd357a] BEGIN chat=velaguard:2 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7011 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792503568
+[agent] Dispatching response → local_client:velaguard:2
+[vela_tls] ssl_handshake ret=-0x004e: NET - Sending information through the socket failed
+[trace:6ad76f1003cd357a] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=0 tls=na send=na ttfb=na body=na pool=0 build=0 parse=na http=60 backoff=0 total=70 req=7011 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 4 (backoff 8)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad76f1003cd357a] iter=0 tool=(none) latency=70ms llm=fail backend=0
+[trace:6ad76f1003cd357a] END status=fail iters=1 tools=0 llm_ms=70 tool_ms=0 elapsed_ms=130 backend=0
+[agent] Dispatching response → local_client:velaguard:2
+[vgagent] round finished: reply
+[vgadvice] advice from another boot: file=30c1ccb6 board=30c1d776
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vgadvice] asked for 8 alarms req=3
+[vgagent] round submitted: 1317 bytes
+[agent] Processing message from local_client:velaguard:3
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm_router] Auto-recovering backend 0 after 300s
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad770462746feb7] BEGIN chat=velaguard:3 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7011 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792503878
+[agent] Dispatching response → local_client:velaguard:3
+[vela_tls] ssl_handshake ret=-0x004e: NET - Sending information through the socket failed
+[trace:6ad770462746feb7] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=50(fused) setup=180 tls=na send=na ttfb=na body=na pool=0 build=0 parse=na http=250 backoff=0 total=260 req=7011 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 1 (backoff 0)
+[agent] LLM call failed (iter 0)
+[trace:6ad770462746feb7] iter=0 tool=(none) latency=260ms llm=fail backend=0
+[trace:6ad770462746feb7] END status=fail iters=1 tools=0 llm_ms=260 tool_ms=0 elapsed_ms=310 backend=0
+[agent] Dispatching response → local_client:velaguard:3
+[vgagent] round finished: reply
+[vgadvice] advice from another boot: file=30c1ccb6 board=30c1d776
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vgadvice] asked for 8 alarms req=4
+[vgagent] round submitted: 1317 bytes
+[agent] Processing message from local_client:velaguard:4
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad7717b0830f44a] BEGIN chat=velaguard:4 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 7011 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792504187
+[agent] Dispatching response → local_client:velaguard:4
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vela_tls] net_connect token-plan-cn.xiaomimimo.com:443 ret=0x52
+[trace:6ad7717b0830f44a] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=na(fused) setup=10 tls=na send=na ttfb=na body=na pool=0 build=0 parse=na http=90070 backoff=0 total=90080 req=7011 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 2 (backoff 2)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad7717b0830f44a] iter=0 tool=(none) latency=90080ms llm=fail backend=0
+[trace:6ad7717b0830f44a] END status=fail iters=1 tools=0 llm_ms=90080 tool_ms=0 elapsed_ms=90130 backend=0
+[agent] Dispatching response → local_client:velaguard:4
+[vgagent] round finished: reply
+[vgadvice] advice from another boot: file=30c1ccb6 board=30c1d776
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vgadvice] asked for 8 alarms req=5
+[vgagent] round submitted: 1325 bytes
+[agent] Processing message from local_client:velaguard:5
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm] LLM config updated atomically: token-plan-cn.xiaomimimo.com/v1/chat/completions (model: mimo-v2.5)
+[trace:6ad7730973b6c3ea] BEGIN chat=velaguard:5 chan=local_client
+[llm] OpenAI API with tools (model: mimo-v2.5, 10807 bytes)
+[vela_tls] Handshake start: Host=token-plan-cn.xiaomimimo.com, UNIX=1792504585
+[agent] Dispatching response → local_client:velaguard:5
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+[vela_tls] net_connect token-plan-cn.xiaomimimo.com:443 ret=0x52
+[trace:6ad7730973b6c3e
