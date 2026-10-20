@@ -1,0 +1,67 @@
+﻿vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+ai_agent --daemon &
+ai_agent [61:100]
+nsh> [Kai_agent
+[agent] Attaching CLI to daemon agent
+[cli] NSH CLI started. Type 'help' for commands.
+vela> ask 你好，请用一句话介绍你自己
+[netmgr] Found iface eth0 addr 192.168.137.224
+Ask queued; a[agent] ask: ge你好，请用一句话介绍你自己
+nt_loop starting in background...
+Sent to agent: 你好，请用一句话介绍你自己
+vela> vgnet: join 19y failed
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[vela_tls] ssl_handshake ret=-0x7280: SSL - The connection indicated an EOF
+[trace:6ad76c950830f44a] http iter=0 attempt=1 reused=0 proxy=0 dns_tcp=20(fused) setup=10 tls=na send=na ttfb=na body=na pool=0 build=0 parse=na http=81380 backoff=0 total=81390 req=9111 rc=-1 status=0 parse_ok=0
+[agent] LLM call failed on backend 0, trying failover
+[llm_router] Backend 0 failure count: 3 (backoff 4)
+[llm_router] All backends backed off, using fallback 0
+[agent] LLM call failed (iter 0)
+[trace:6ad76c950830f44a] iter=0 tool=(none) latency=81390ms llm=fail backend=0
+[trace:6ad76c950830f44a] END status=fail iters=1 tools=0 llm_ms=81390 tool_ms=0 elapsed_ms=81450 backend=0
+[agent] Processing message from local_client:velaguard:2
+[agent] Dispatching response → cli:console
+
+[Agent]: Sorr[agent] [Agent]: Sorry, I encountered an error.
+y, I encountered an error.
+vela> vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[skills] Skills summary: 1086 bytes
+[context] System prompt built: 3127 bytes
+[llm_router] No healthy backend, retrying host 0 anyway
+vgnet: no CONNACK via posix
+[llm] LLM config updated atomically: 192.0.2.1/v1/chat/completions (model: test-model)
+[trace:6ad76cf073b6c3ea] BEGIN chat=velaguard:2 chan=local_client
+[llm] OpenAI API with tools (model: test-model, 7000 bytes)
+[vela_tls] Handshake start: Host=192.0.2.1, UNIX=1792503024
+[agent] Dispatching response → local_client:velaguard:2
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+vgnet: no CONNACK via posix
+quit
+Exiting agent...
+[cli] CLI thread exiting
+nsh> [Kvgnet: no CONNACK via posix
+

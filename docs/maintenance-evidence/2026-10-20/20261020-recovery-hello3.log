@@ -1,0 +1,10 @@
+﻿WARNING: Ignoring ICMP reply with ID 31.  Expected 26
+WARNING: Ignoring ICMP reply with ID 32.  Expected 26
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+WARNING: Ignoring ICMP reply with ID 33.  Expected 26
+vgnet: join 19y failed
+WARNING: Ignoring ICMP reply with ID 34.  Expected 26
+vgnet: join 19y failed
+WARNING: Ignoring ICMP reply with ID 35.  Expected 26
+[heartbeat] skip LLM (HMI, no ReAct from heartbeat/poke)
+
