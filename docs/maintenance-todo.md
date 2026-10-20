@@ -49,10 +49,24 @@
 | CFG-01 | P1 / 通道已选择，协议草案，待实现 | 用户2026-10-18选择MQTT候选传输，异常与恢复由开发助手设计；按最新更正，手机接入不试读，板端配置校验后弹出二次确认，人工确认后直接添加，全部远程配置状态仅在手机显示。[ADR 0007](adr/0007-mqtt-candidate-import-with-local-confirmation.md)及[协议草案](velaguard-candidate-mqtt-protocol.md)已同步。手机PDF+从机地址上传、云侧解析、绑定鉴权、TLS/ACL、候选接收、配置状态、板端人工确认与NSH互斥均待实现及验收；添加成功与正常采集成功分别取证，不影响正在进行的板测固件。 |
 | VOICE-01 | P1 / 已纳入目标，待设计与实现 | 手机主动录音/播放、云侧ASR/TTS、板载Agent只读查询；不经MQTT传AI请求或音频，不赋予配置及确认权限。 |
 | OUT-01 | 不实施 | 旧MQTT AI Bridge、波特率矩阵、板端音频及语音改配置。不恢复废止架构。 |
+| RSP-03 | P2 / **已量化，开关默认关闭，待用户决定是否启用** | 单点查数捷径：`vg_point_read` 单独解析到一个新鲜点位、且问题只问当前值时，直接用工具输出作答，省掉第二次模型往返。板端 12 对交替 A/B：命中轮固定 1 次请求，off 臂 2-4 次；整轮中位 10.68 s → 5.82 s，逐对中位差 6.83 s、10/11 对更快；11 个命中轮的点名、数值、单位、采样时间、在线状态全部与从站设定值一致。解释类、判断类、对比类、报告类、多点、歧义、离线、过期八类均正确回到完整流程。已改为默认关闭，`point_shortcut on` 启用；切换开关会清空回复缓存，否则两臂互相命中缓存。证据见 [rsp03-shortcut-ab.md](maintenance-evidence/2026-10-20/rsp03-shortcut-ab.md)。关闭条件：用户决定启用或删除该路径。 |
 
 ## 验收记录
 
-最新板端记录见 [2026-10-18 目录](maintenance-evidence/2026-10-18/)：`board-baseline.md`（新固件基线）、`defects.md`（D-01/D-02 两个缺陷）、`old-soak-verdict.md`（旧长测失败归档）。上一轮复核见 [review.md](maintenance-evidence/2026-10-17-review/review.md)。
+最新板端记录见 [2026-10-20 目录](maintenance-evidence/2026-10-20/)：
+`rsp03-shortcut-ab.md`（单点查数捷径的 12 对 A/B、负例与正确性核对）。
+更早的 [2026-10-18 目录](maintenance-evidence/2026-10-18/) 含新固件基线、
+D-01/D-02 缺陷与旧长测失败归档。上一轮复核见
+[review.md](maintenance-evidence/2026-10-17-review/review.md)。
+
+- 单点查数捷径改动后重新构建并烧录，在板固件为 `1b5e71d2f87-dirty`，构建
+  2026-10-20 19:04:41（增量，1 处既有告警 `agent_loop.c:784` 的
+  `-Wformat-truncation`，位于 `/remind` 路径，与本次改动无关）。
+  `nuttx.hex` SHA256 `01d7f9cb...d7c1`，两段烧录均 `Download verified successfully`。
+- 测量前提按设备身份确认串口：COM3 = ST-LINK 虚拟串口，COM7 = USB-SERIAL
+  CH340。主机侧未运行主站程序，从站 58,324 请求全部应答、`crc_scan=0`。
+- A/B 期间板端对外 TCP 建连中断两次（19:30、20:39），SWD 复位后恢复。失败
+  轮次全部按 `status=fail` 剔除并单独标注，未计入收益统计。
 
 - `make -C app/velaguard/host_tests clean test`：30个目标全部通过。
 - HMI重新构建，CTest 5/5。
