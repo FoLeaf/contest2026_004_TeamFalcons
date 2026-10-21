@@ -82,6 +82,11 @@ MAINSRC  += vgptt.c
 CSRCS    += vg_ptt.c vg_ptt_board.c
 endif
 
+ifeq ($(CONFIG_VG_PDM_DUMP),y)
+PROGNAME += vgpdmdump
+MAINSRC  += vgpdmdump.c
+endif
+
 ifeq ($(CONFIG_VG_BUS_DISCOVER),y)
 PROGNAME += vgdiscover vgpoint vgstoretest
 MAINSRC  += vgdiscover.c vgpoint.c vgstoretest.c
