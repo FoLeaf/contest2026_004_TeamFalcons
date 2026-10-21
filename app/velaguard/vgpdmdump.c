@@ -49,6 +49,12 @@
  */
 
 #define VG_PDM_MINBYTES   (64)
+
+/* 单次 DMA 传输的上限。DMA 的传输计数寄存器只有 16 位，计数值最大 65535，
+ * 而 PDM 按 8 位传输，所以单次最多 65535 字节。取 32768（约半秒）留足余量：
+ * 这个值同时是 2 的幂，按任何位宽对齐都不会踩到计数上限。
+ */
+
 #define VG_PDM_MAXBYTES   (32768)
 
 /* 进内存的字节率，换算成 bit/s 供显示用。PLL2P 49.143 MHz 经 MCKDIV 12
@@ -72,6 +78,13 @@
  * Private Types
  ****************************************************************************/
 
+/* 分块长度，单位字节。PDM 每帧向内存交出一个字节，帧率 128 kHz，所以
+ * 128 字节正好是 1 ms。声音包络的起伏在 10~100 ms 量级，1 ms 的分辨率
+ * 足够看清它。
+ */
+
+#define VG_PDM_BLOCK_BYTES  (128)
+
 /* 一次采集的统计量。只做只读统计，不含结论性判断。
  */
 
@@ -88,7 +101,20 @@ struct vg_pdm_stats
   uint8_t  minbyte;
   uint8_t  maxbyte;
   uint32_t hist[16];      /* 高 4 位直方图，16 个桶 */
+
+  /* 以下按 1 ms 分块统计。PDM 把信号幅度编码成本地密度偏离 0.5 的幅度，
+   * 所以块内密度偏离量就是该毫秒的瞬时电平。整段平均会因为静音段被稀释，
+   * 而声音的包络变化只能在这个尺度上看到。
+   */
+
+  size_t   nblocks;       /* 完整的块数 */
+  double   dc;            /* 整段的置位密度，作为信号零点 */
+  double   level_rms;     /* 各块密度减去直流分量后的均方根 */
+  double   level_peak;    /* 最大的单块偏离绝对值 */
+  double   blk_min;       /* 最小的单块置位密度 */
+  double   blk_max;       /* 最大的单块置位密度 */
 };
+
 
 /****************************************************************************
  * Private Data
@@ -107,11 +133,13 @@ static int       g_result;
 
 static void vg_pdm_usage(void)
 {
-  printf("usage: vgpdmdump [-n bytes] [-f path] [-q] [-x count]\n"
-         "  -n bytes  capture length, %d..%d, default 16384\n"
-         "  -f path   output file, default /data/pdm.raw\n"
-         "  -q        do not write a file, statistics only\n"
-         "  -x count  also hex dump the first count bytes (max 256)\n",
+  printf("usage: vgpdmdump [-n bytes] [-f path] [-q] [-x count] [-r rounds]\n"
+         "  -n bytes   capture length, %d..%d, default 16384\n"
+         "  -f path    output file, default /data/pdm.raw\n"
+         "  -q         do not write a file, statistics only\n"
+         "  -x count   also hex dump the first count bytes (max 256)\n"
+         "  -r rounds  repeat: one line per round showing the level, no file\n"
+         "             each round is about a quarter second (32768 bytes)\n",
          VG_PDM_MINBYTES, VG_PDM_MAXBYTES);
 }
 
@@ -240,6 +268,78 @@ static void vg_pdm_stats(FAR const uint8_t *buf, size_t nbytes,
           st->halfword_dups++;
         }
     }
+
+  /* 按毫秒分块求瞬时电平。PDM 的输出密度等于模拟输入归一化到 [0,1]，
+   * 所以一块内“1”的占比就是这一毫秒的瞬时电平。
+   *
+   * 偏离量必须相对整段的均值算，不能相对 0.5：麦克风有固定的直流偏置，
+   * 这块板实测静音时密度落在 0.48 而不是 0.5。相对 0.5 算会把偏置当成
+   * 信号，静音基线被抬高一个量级。
+   *
+   * 用偏离的均方根而不是峰峰值：峰值对单个异常块太敏感。
+   */
+
+  st->blk_min = 1.0;
+  st->blk_max = 0.0;
+
+  {
+    size_t nblocks = nbytes / VG_PDM_BLOCK_BYTES;
+    double sumsq = 0.0;
+    double dc;
+    size_t b;
+
+    /* 直流分量用整段的置位密度，与判据里读到的 ones 是同一个量 */
+
+    dc = (double)st->nbits / ((double)nbytes * 8.0);
+    st->dc = dc;
+
+    for (b = 0; b < nblocks; b++)
+      {
+        const uint8_t *p = &buf[b * VG_PDM_BLOCK_BYTES];
+        size_t ones = 0;
+        double dens;
+        double dev;
+        size_t k;
+
+        for (k = 0; k < VG_PDM_BLOCK_BYTES; k++)
+          {
+            ones += (size_t)__builtin_popcount(p[k]);
+          }
+
+        dens = (double)ones /
+               ((double)VG_PDM_BLOCK_BYTES * 8.0);
+        dev  = dens - dc;
+
+        sumsq += dev * dev;
+
+        if (dev < 0.0)
+          {
+            dev = -dev;
+          }
+
+        if (dev > st->level_peak)
+          {
+            st->level_peak = dev;
+          }
+
+        if (dens < st->blk_min)
+          {
+            st->blk_min = dens;
+          }
+
+        if (dens > st->blk_max)
+          {
+            st->blk_max = dens;
+          }
+      }
+
+    st->nblocks = nblocks;
+
+    if (nblocks > 0)
+      {
+        st->level_rms = sqrt(sumsq / (double)nblocks);
+      }
+  }
 }
 
 /****************************************************************************
@@ -251,6 +351,15 @@ static void vg_pdm_report(FAR const struct vg_pdm_stats *st)
   int i;
 
   printf("vgpdmdump: %zu bytes\n", st->nbytes);
+
+  /* 电平行放在最前面：这是唯一能区分声音有无的量，其余都是数据完整性检查。
+   */
+
+  printf("  level: rms=%.4f peak=%.4f  dc=%.3f blk min=%.3f max=%.3f "
+         "(%zu blocks)\n",
+         st->level_rms, st->level_peak, st->dc,
+         st->blk_min, st->blk_max, st->nblocks);
+
   printf("  zero=%.1f%% ones=%.3f entropy=%.3f bit/byte\n",
          (st->nbytes > 0) ?
            (100.0 * (double)st->nzero / (double)st->nbytes) : 0.0,
@@ -301,122 +410,32 @@ static void vg_pdm_callback(FAR struct i2s_dev_s *dev,
 }
 
 /****************************************************************************
- * Public Functions
- ****************************************************************************/
-
-/****************************************************************************
- * Name: vgpdmdump_main
+ * Name: vg_pdm_capture
  *
  * Description:
- *   NSH 入口。打开采集设备，投递一次定长接收，等回调完成后统计并落盘。
+ *   投递一次接收并等待完成，把结果统计到 st 里。缓冲区由调用者提供，
+ *   以便 -r 模式复用同一块内存而不反复分配。
+ *
+ * Returned Value:
+ *   0 成功；负的 errno 失败。
  *
  ****************************************************************************/
 
-int main(int argc, FAR char *argv[])
+static int vg_pdm_capture(FAR struct i2s_dev_s *i2s,
+                          FAR struct ap_buffer_s *apb,
+                          size_t nbytes,
+                          FAR struct vg_pdm_stats *st,
+                          FAR double *elapsed_ms)
 {
-  FAR const char *path = "/data/pdm.raw";
-  size_t nbytes = 16384;
-  bool quiet = false;
-  size_t dumpbytes = 0;
-  struct vg_pdm_stats stats;
-  struct audio_buf_desc_s bufdesc;
-  FAR struct ap_buffer_s *apb;
-  FAR struct i2s_dev_s *i2s;
   struct timespec t0;
   struct timespec t1;
-  uint32_t bitrate;
   int ret;
-  int i;
-  int out;
-
-  for (i = 1; i < argc; i++)
-    {
-      if (strcmp(argv[i], "-n") == 0 && i + 1 < argc)
-        {
-          long v = strtol(argv[++i], NULL, 0);
-
-          if (v < VG_PDM_MINBYTES || v > VG_PDM_MAXBYTES)
-            {
-              fprintf(stderr, "vgpdmdump: -n out of range\n");
-              return EXIT_FAILURE;
-            }
-
-          nbytes = (size_t)v;
-        }
-      else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc)
-        {
-          path = argv[++i];
-        }
-      else if (strcmp(argv[i], "-q") == 0)
-        {
-          quiet = true;
-        }
-      else if (strcmp(argv[i], "-x") == 0 && i + 1 < argc)
-        {
-          long v = strtol(argv[++i], NULL, 0);
-
-          if (v < 0 || v > 256)
-            {
-              fprintf(stderr, "vgpdmdump: -x out of range\n");
-              return EXIT_FAILURE;
-            }
-
-          dumpbytes = (size_t)v;
-        }
-      else
-        {
-          vg_pdm_usage();
-          return EXIT_FAILURE;
-        }
-    }
-
-  /* 长度取整到 16 位传输单位的整数倍，避免最后一拍被截掉。
-   */
-
-  nbytes &= ~(size_t)1;
-
-  i2s = stm32_sai_pdm_device();
-  if (i2s == NULL)
-    {
-      fprintf(stderr, "vgpdmdump: PDM capture is not available\n");
-      return EXIT_FAILURE;
-    }
-
-  /* 设置采样率与位宽。sai_samplerate 会重新计算主时钟分频，
-   * sai_datawidth 会设置数据宽度；两者都在接收前生效。
-   */
-
-  bitrate = I2S_RXSAMPLERATE(i2s, 16000);
-  I2S_RXDATAWIDTH(i2s, 16);
-
-  printf("vgpdmdump: RX bitrate %lu\n", (unsigned long)bitrate);
-
-  memset(&bufdesc, 0, sizeof(bufdesc));
-  bufdesc.numbytes  = nbytes;
-  bufdesc.u.pbuffer = &apb;
-  ret = apb_alloc(&bufdesc);
-  if (ret < 0)
-    {
-      fprintf(stderr, "vgpdmdump: apb_alloc failed: %d\n", ret);
-      return EXIT_FAILURE;
-    }
-
-  /* apb_alloc 按 cache 行对齐分配样本区，驱动的 cache 维护因此总是完整的
-   * 行。这里再确认一次，避免依赖分配器的实现细节。
-   */
-
-  if (((uintptr_t)apb->samp & (up_get_dcache_linesize() - 1)) != 0)
-    {
-      fprintf(stderr, "vgpdmdump: buffer is not cache line aligned\n");
-      apb_free(apb);
-      return EXIT_FAILURE;
-    }
 
   nxsem_init(&g_done, 0, 0);
   g_result = -EBUSY;
 
-  /* 计时从投递开始到回调返回，用来核对实际时长与按位率折算的期望值是否
-   * 一致。两者偏差过大时，缓冲区内容就不是连续采集的。
+  /* 计时从投递开始到回调返回。与按字节率折算的时长对照，用来判断缓冲区
+   * 内容是否连续。
    */
 
   clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -426,8 +445,7 @@ int main(int argc, FAR char *argv[])
     {
       fprintf(stderr, "vgpdmdump: I2S_RECEIVE failed: %d\n", ret);
       nxsem_destroy(&g_done);
-      apb_free(apb);
-      return EXIT_FAILURE;
+      return ret;
     }
 
   ret = nxsem_wait(&g_done);
@@ -435,12 +453,10 @@ int main(int argc, FAR char *argv[])
     {
       fprintf(stderr, "vgpdmdump: wait failed: %d\n", ret);
       nxsem_destroy(&g_done);
-      apb_free(apb);
-      return EXIT_FAILURE;
+      return ret;
     }
 
   clock_gettime(CLOCK_MONOTONIC, &t1);
-
   nxsem_destroy(&g_done);
 
   if (g_result < 0)
@@ -470,26 +486,204 @@ int main(int argc, FAR char *argv[])
                   (unsigned long)regs[10]);
         }
 
+      return g_result;
+    }
+
+  /* 回调返回后驱动已做过 cache 失效，这里读的就是外设写入内存的内容。
+   */
+
+  vg_pdm_stats(apb->samp, nbytes, st);
+
+  *elapsed_ms = (double)(t1.tv_sec - t0.tv_sec) * 1000.0 +
+                (double)(t1.tv_nsec - t0.tv_nsec) / 1.0e6;
+
+  return 0;
+}
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Name: vgpdmdump_main
+ *
+ * Description:
+ *   NSH 入口。打开采集设备，投递一次定长接收，等回调完成后统计并落盘。
+ *
+ ****************************************************************************/
+
+int main(int argc, FAR char *argv[])
+{
+  FAR const char *path = "/data/pdm.raw";
+  size_t nbytes = 16384;
+  bool nsize_given = false;
+  bool quiet = false;
+  size_t dumpbytes = 0;
+  int rounds = 0;
+  double elapsed_ms = 0.0;
+  struct vg_pdm_stats stats;
+  struct audio_buf_desc_s bufdesc;
+  FAR struct ap_buffer_s *apb = NULL;
+  FAR struct i2s_dev_s *i2s;
+  uint32_t bitrate;
+  int ret;
+  int i;
+  int out;
+
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp(argv[i], "-n") == 0 && i + 1 < argc)
+        {
+          long v = strtol(argv[++i], NULL, 0);
+
+          if (v < VG_PDM_MINBYTES || v > VG_PDM_MAXBYTES)
+            {
+              fprintf(stderr, "vgpdmdump: -n out of range\n");
+              return EXIT_FAILURE;
+            }
+
+          nbytes = (size_t)v;
+          nsize_given = true;
+        }
+      else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc)
+        {
+          path = argv[++i];
+        }
+      else if (strcmp(argv[i], "-q") == 0)
+        {
+          quiet = true;
+        }
+      else if (strcmp(argv[i], "-x") == 0 && i + 1 < argc)
+        {
+          long v = strtol(argv[++i], NULL, 0);
+
+          if (v < 0 || v > 256)
+            {
+              fprintf(stderr, "vgpdmdump: -x out of range\n");
+              return EXIT_FAILURE;
+            }
+
+          dumpbytes = (size_t)v;
+        }
+      else if (strcmp(argv[i], "-r") == 0 && i + 1 < argc)
+        {
+          long v = strtol(argv[++i], NULL, 0);
+
+          if (v < 1 || v > 600)
+            {
+              fprintf(stderr, "vgpdmdump: -r out of range\n");
+              return EXIT_FAILURE;
+            }
+
+          rounds = (int)v;
+        }
+      else
+        {
+          vg_pdm_usage();
+          return EXIT_FAILURE;
+        }
+    }
+
+  /* 长度取整到 16 位传输单位的整数倍，避免最后一拍被截掉。
+   */
+
+  nbytes &= ~(size_t)1;
+
+  i2s = stm32_sai_pdm_device();
+  if (i2s == NULL)
+    {
+      fprintf(stderr, "vgpdmdump: PDM capture is not available\n");
+      return EXIT_FAILURE;
+    }
+
+  /* 设置采样率与位宽。sai_samplerate 会重新计算主时钟分频，
+   * sai_datawidth 会设置数据宽度；两者都在接收前生效。
+   */
+
+  bitrate = I2S_RXSAMPLERATE(i2s, 16000);
+  I2S_RXDATAWIDTH(i2s, 16);
+
+  printf("vgpdmdump: RX bitrate %lu\n", (unsigned long)bitrate);
+
+  /* -r 模式：连续采集，每轮只打一行电平。用来在板子上直观看到说话时电平
+   * 抬升，不必反复敲命令。不写文件，免得反复擦写 eMMC。
+   */
+
+  if (rounds > 0)
+    {
+      int r;
+
+      /* 用户没有显式给 -n 时，每轮用单次传输的上限（约 256 ms）。默认的
+       * 16384 字节只有约 128 ms，一轮太短，看不出声音的包络。
+       */
+
+      if (!nsize_given)
+        {
+          nbytes = VG_PDM_MAXBYTES;
+        }
+
+      memset(&bufdesc, 0, sizeof(bufdesc));
+      bufdesc.numbytes  = nbytes;
+      bufdesc.u.pbuffer = &apb;
+      ret = apb_alloc(&bufdesc);
+      if (ret < 0)
+        {
+          fprintf(stderr, "vgpdmdump: apb_alloc failed: %d\n", ret);
+          return EXIT_FAILURE;
+        }
+
+      printf("vgpdmdump: %d rounds, %zu bytes each\n", rounds, nbytes);
+      printf("  round  level_rms  peak   ones\n");
+
+      for (r = 0; r < rounds; r++)
+        {
+          double el;
+
+          if (vg_pdm_capture(i2s, apb, nbytes, &stats, &el) < 0)
+            {
+              apb_free(apb);
+              return EXIT_FAILURE;
+            }
+
+          printf("  %5d  %.4f     %.4f %.3f\n",
+                 r, stats.level_rms, stats.level_peak, stats.ones_ratio);
+        }
+
+      apb_free(apb);
+      return EXIT_SUCCESS;
+    }
+
+  memset(&bufdesc, 0, sizeof(bufdesc));
+  bufdesc.numbytes  = nbytes;
+  bufdesc.u.pbuffer = &apb;
+  ret = apb_alloc(&bufdesc);
+  if (ret < 0)
+    {
+      fprintf(stderr, "vgpdmdump: apb_alloc failed: %d\n", ret);
+      return EXIT_FAILURE;
+    }
+
+  /* apb_alloc 按 cache 行对齐分配样本区，驱动的 cache 维护因此总是完整的
+   * 行。这里再确认一次，避免依赖分配器的实现细节。
+   */
+
+  if (((uintptr_t)apb->samp & (up_get_dcache_linesize() - 1)) != 0)
+    {
+      fprintf(stderr, "vgpdmdump: buffer is not cache line aligned\n");
       apb_free(apb);
       return EXIT_FAILURE;
     }
 
-  /* 回调返回后驱动已做过 cache 失效，这里读的就是外设写入内存的内容。
-   * 长度以驱动实际填写的字节数为准。
-   */
+  if (vg_pdm_capture(i2s, apb, nbytes, &stats, &elapsed_ms) < 0)
+    {
+      apb_free(apb);
+      return EXIT_FAILURE;
+    }
 
-  vg_pdm_stats(apb->samp, nbytes, &stats);
   vg_pdm_report(&stats);
 
-  /* 换算成时长。位率按实测链路计算：PLL2P 49.143 MHz 经 MCKDIV 12 得到
-   * 4.095 MHz 位时钟，32 位帧里只取 16 位，所以单麦克风每秒进 2.048 Mbit，
-   * 即 256 KB/s。用实测耗时与这个折算值对照，可以看出缓冲区是否连续。
-   */
-
   {
-    double elapsed_ms = (double)(t1.tv_sec - t0.tv_sec) * 1000.0 +
-                        (double)(t1.tv_nsec - t0.tv_nsec) / 1.0e6;
-    double stream_ms  = (double)nbytes * 8.0 * 1000.0 / VG_PDM_BITRATE;
+    double stream_ms = (double)nbytes * 8.0 * 1000.0 / VG_PDM_BITRATE;
 
     printf("  elapsed=%.1f ms  stream=%.1f ms  rate=%.1f KB/s\n",
            elapsed_ms, stream_ms,
