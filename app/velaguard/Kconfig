@@ -158,6 +158,56 @@ config VG_AGENT_OPS
 		HEARTBEAT.md; run a background alarm detector writing
 		/data/velaguard/pending_alarm.txt for Agent pickup.
 
+config VG_PTT
+	bool "VelaGuard USER1 push-to-talk event thread (vgptt)"
+	default n
+	depends on VG_BRINGUP_TOOLS && INPUT_BUTTONS && ARCH_IRQBUTTONS
+	---help---
+		Watch the board USER1 button through /dev/buttons and turn
+		press/release into record start and submit events: debounce,
+		the 15 second cap, and the release gate before accepting the
+		next press.  Exposes the NSH command vgptt for start/stop/
+		status/reset.
+
+		This task is the event layer only.  It records no audio and
+		makes no network request; the default handler prints one line
+		per event until BVO-03/05 supply a recording backend.
+
+		Requires the board button support (STM32H750B_DK_BUTTONS plus
+		ARCH_BUTTONS, ARCH_IRQBUTTONS, INPUT_BUTTONS and
+		INPUT_BUTTONS_LOWER).
+
+if VG_PTT
+
+config VG_PTT_DEVPATH
+	string "Button device path"
+	default "/dev/buttons"
+
+config VG_PTT_PRIORITY
+	int "vgptt thread priority"
+	default 90
+	---help---
+		Above the HMI (100 in the default preset) so a button edge is
+		handled promptly, below the high-priority work queue (224).
+
+config VG_PTT_STACKSIZE
+	int "vgptt thread stack size"
+	default 4096
+	---help---
+		The thread only runs poll(), one read() per wake-up and the
+		event callback.  The callback is responsible for its own stack
+		use when it is replaced by the recording layer.
+
+config VG_PTT_AUTOSTART
+	bool "Auto-start vgptt from velaguard_app_main"
+	default y
+	depends on VG_PTT
+	---help---
+		Spawn the button thread at boot so the USER1 button works
+		without typing "vgptt start" on NSH.
+
+endif # VG_PTT
+
 config VG_HEAP_WATCH
 	bool "DEBUG: watch SDRAM heap region first node (corruption hunt)"
 	default n

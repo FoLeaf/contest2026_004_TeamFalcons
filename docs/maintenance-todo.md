@@ -50,12 +50,13 @@
 | VOICE-01 | P1 / 已纳入目标，待设计与实现 | 手机主动录音/播放、云侧ASR/TTS、板载Agent只读查询；不经MQTT传AI请求或音频，不赋予配置及确认权限。 |
 | OUT-01 | 不实施 | 旧MQTT AI Bridge、波特率矩阵、板端音频及语音改配置。不恢复废止架构。 |
 | BVO-01 | P1 / **方案定稿，硬件已实测** | 板端按键语音的硬件与资源方案。交付 [hardware-and-resource-plan.md](voice-evidence/2026-10-21/bvo-01/hardware-and-resource-plan.md) 与 [pre-measurement-checklist.md](voice-evidence/2026-10-21/bvo-01/pre-measurement-checklist.md)。7 项硬件核对已于 2026-10-21 全部实测：麦克风 MP34DT01TR 的 CLK→PE5、DOUT→PE4，走 SAI4 PDM 直连**不经 WM8994**（推翻初稿的 WM8994 路线）；绿色插座由 HPOUT1 驱动，而 SPKOUT 经 `SPKOUTLN-LP`、`SPKOUTRN-RP` 两处跳线并联到同一插座，需软件保持 `spk_out` 关闭；蓝色插座接 IN1LN/IN1RN；PC13 按下为高；MICBIAS1 不需软件使能；板卡为 B-01。另核实 NuttX 无 STM32H7 SAI 驱动，故新增 BVO-03a；`board.h:527` 注释误写 PI11，待 BVO-02 修正。未编译、未烧录。 |
+| BVO-02 | P1 / **代码完成，主机与板端按放实测通过** | USER1 按键事件层。nuttx 板级新增 `stm32_buttons.c`、`GPIO_BTN_USER`（PC13 下拉、上升沿）与 `STM32H750B_DK_BUTTONS`，bringup 注册 `/dev/buttons`，并修正 `board.h` 里误写 NUCLEO 的 PI11。竞赛仓新增 `vg_ptt.c`（纯逻辑状态机，主机可测）、`vg_ptt_board.c`（设备适配，按键任务用 `task_create`）、`vgptt` 诊断命令，`CONFIG_VG_PTT` 开机自启。主机 `test_ptt` 与 `test_ptt_cycles` 覆盖去抖、15 秒上限、释放门控、上限与松手同刻不重复提交、时钟回绕，以及 30/10/10 三组按放数量精确匹配。板端实测：单次按放 `begins=5 submits=5 last_ms=1100`；连续 43 次按放 `begins=43 submits=43 timeouts=0`；长按 18 秒 `timeouts=1 last_ms=15000`，松手不追加；空闲 20 秒采样约 1.5 Hz、`events=0`。唤醒统计 `samples=270` 与 `timeouts_wake=260` 的差 10 正好对应 5 次按下加 5 次松开，证明由按键中断触发。证据见 [bvo-02](voice-evidence/2026-10-21/bvo-02/README.md)。本轮只做事件层，不含录音、播放与联网。 |
 | BVO-03a | P1 / 新增，待实现 | STM32H7 SAI 驱动移植。范围限 `../nuttx/arch/arm/src/stm32h7`：以 `arch/arm/src/stm32f7/stm32_sai.c` 为蓝本新增 `stm32_sai.c`/`.h` 与 `hardware/stm32_sai.h`，补 Kconfig 与 Make.defs。必须改写 RCC SAIxSEL、DMAMUX 与 `stm32_dmacfg_t` 形式的 DMA 配置，补 RX 后 dcache invalidate，并把 F7 混在 `SYNC_WITH_*` 里的主从语义拆开，另需按参考手册新增 SAI4 的 PDM 位（`CR1.PDMEN`、`CR4.MICPAIRNBR`，全树零命中）。BVO-03/04 依赖本项。先按 SAI4 + BDMA 推进（BSP 参考最充分），需先验证 `CONFIG_STM32H7_BDMA`（EXPERIMENTAL）在板上稳定、SRAM4 余量够；否则退到 SAI1（PE4/PE5 的 AF2 映射，走 DMA1/DMA2），但 SAI1 PDM 能力需先查手册确认。不单独声称音频可用。 |
 | RSP-03 | P2 / **已量化，用户决定启用，默认开启并板验通过** | 单点查数捷径：`vg_point_read` 单独解析到一个新鲜点位、且问题只问当前值时，直接用工具输出作答，省掉第二次模型往返。板端 12 对交替 A/B：命中轮固定 1 次请求，off 臂 2-4 次；整轮中位 10.68 s → 5.82 s，逐对中位差 6.83 s、10/11 对更快；11 个命中轮的点名、数值、单位、采样时间、在线状态全部与从站设定值一致。解释类、判断类、对比类、报告类、多点、歧义、离线、过期八类均正确回到完整流程。切换开关会清空回复缓存，否则两臂互相命中缓存。启用前补了两处加固：字段含空格时回退（不静默截断），问题非合法 UTF-8 时回退（否则乱码的"为什么"会被直答成数值，实测可达）。启用后板验：默认 `on`、直答 1 次请求 13.0 s 数值正确、解释类 2 次请求正确回退。`point_shortcut off` 可不烧录回退到两次请求。证据见 [rsp03-shortcut-ab.md](maintenance-evidence/2026-10-20/rsp03-shortcut-ab.md)。剩余：乱码保护只有主机用例覆盖，板上因 LLM 端点对乱码返回 400 未能触达渲染器。 |
 
 ## 验收记录
 
-板端语音方案见 [2026-10-21 BVO-01 目录](voice-evidence/2026-10-21/bvo-01/)：硬件与资源方案、待实测清单（未做板端测量）。
+板端语音证据见 [2026-10-21 目录](voice-evidence/2026-10-21/)：BVO-01 硬件与资源方案及实测清单，BVO-02 USER1 按键事件层与板端按放记录。
 
 最新板端记录见 [2026-10-20 目录](maintenance-evidence/2026-10-20/)：
 `rsp03-shortcut-ab.md`（单点查数捷径的 12 对 A/B、负例与正确性核对）。

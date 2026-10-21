@@ -137,6 +137,9 @@ expect_dev_config()
         grep -q '^CONFIG_EXAMPLES_AI_AGENT_VELA=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_STM32H7_LTDC=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_INPUT_FT5X06=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H750B_DK_BUTTONS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_INPUT_BUTTONS_LOWER=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_PTT=y' "$NUTTX_ROOT/.config" &&
         ! grep -q '^CONFIG_EXAMPLES_LVGLDEMO=y' "$NUTTX_ROOT/.config" &&
         ! grep -q '^CONFIG_VG_HMI_PERF=y' "$NUTTX_ROOT/.config"
       ;;

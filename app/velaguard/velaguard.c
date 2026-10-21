@@ -87,6 +87,10 @@ extern int vghmi_main(int argc, char *argv[]);
 #include "vg_agent_alarm.h"
 #endif
 
+#ifdef CONFIG_VG_PTT
+#include "vg_ptt_board.h"
+#endif
+
 #ifdef CONFIG_VG_CONFIG_STORE
 #include "vg_config_store.h"
 #ifndef CONFIG_VG_CONFIG_BASEDIR
@@ -225,6 +229,17 @@ int main(int argc, char *argv[])
 
 #ifdef CONFIG_VG_AGENT_OPS
     vg_agent_alarm_start();
+#endif
+
+#ifdef CONFIG_VG_PTT_AUTOSTART
+    /* USER1 push-to-talk event thread.  It only opens /dev/buttons and turns
+     * edges into record/submit events; there is no audio path yet, so the
+     * default handler prints one line per event. */
+
+    if (vg_ptt_start(NULL, NULL, NULL) != 0)
+      {
+        printf("vgptt: button thread not started\n");
+      }
 #endif
 
 #ifdef CONFIG_VG_HMI_AUTOSTART
