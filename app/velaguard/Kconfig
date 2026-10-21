@@ -223,6 +223,16 @@ config VG_PDM_DUMP
 		producing a real bitstream, or is the data line stuck. Requires the
 		board bring-up to have registered the SAI1 capture device.
 
+config VG_AUDIO_PROBE
+	bool "Audio output bring-up probe (vgaudio)"
+	default n
+	depends on VG_BRINGUP_TOOLS && AUDIO_WM8994
+	---help---
+		Reports WM8994 ID/registers on I2C4 and SAI2 TX state. Installs
+		bounded, known stereo WAV fixtures under /mnt/emmc/bvo04 and checks
+		synchronous rejection of invalid TX requests. Playback uses NxPlayer;
+		this probe never writes codec control registers directly.
+
 config VG_HEAP_WATCH
 	bool "DEBUG: watch SDRAM heap region first node (corruption hunt)"
 	default n

@@ -87,6 +87,11 @@ PROGNAME += vgpdmdump
 MAINSRC  += vgpdmdump.c
 endif
 
+ifeq ($(CONFIG_VG_AUDIO_PROBE),y)
+PROGNAME += vgaudio
+MAINSRC  += vgaudio.c
+endif
+
 ifeq ($(CONFIG_VG_BUS_DISCOVER),y)
 PROGNAME += vgdiscover vgpoint vgstoretest
 MAINSRC  += vgdiscover.c vgpoint.c vgstoretest.c
