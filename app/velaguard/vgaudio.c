@@ -54,10 +54,11 @@
 
 static void vg_audio_usage(void)
 {
-  printf("Usage: vgaudio [id|reg <hex>|sai|fixtures|txcheck]\n");
+  printf("Usage: vgaudio [id|reg <hex>|codec|sai|fixtures|txcheck]\n");
   printf("  id          read the codec ID register\n");
   printf("  reg <hex>   read one codec register, e.g. vgaudio reg 0x1c\n");
   printf("  sai         report the SAI2 block A configuration\n");
+  printf("  codec       read headphone power, clock, routing and volume\n");
 }
 
 static int vg_audio_id(void)
@@ -109,7 +110,7 @@ static void vg_audio_sai(void)
 
   if (mckdiv != 0)
     {
-      printf("vgaudio: MCLK = 49142857 / %lu = %lu Hz (target 4096000)\n",
+      printf("vgaudio: current MCLK = 49142857 / %lu = %lu Hz (inferred)\n",
              (unsigned long)mckdiv, (unsigned long)(49142857u / mckdiv));
     }
   {
@@ -182,6 +183,30 @@ int main(int argc, FAR char *argv[])
             }
 
           printf("vgaudio: fixture %s bytes=%u\n", names[i], (unsigned)off);
+        }
+
+      return EXIT_SUCCESS;
+    }
+  else if (strcmp(argv[1], "codec") == 0)
+    {
+      static const uint16_t regs[] =
+      {
+        0x0000, 0x0001, 0x0003, 0x0005, 0x001c, 0x001d,
+        0x002d, 0x002e, 0x004c, 0x0060, 0x0200, 0x0208,
+        0x0210, 0x0300, 0x0420, 0x0601, 0x0602, 0x0610, 0x0611
+      };
+      size_t i;
+      for (i = 0; i < sizeof(regs) / sizeof(regs[0]); i++)
+        {
+          uint16_t value;
+          int ret = stm32_audio_codec_readreg(regs[i], &value);
+          if (ret < 0)
+            {
+              printf("vgaudio: codec read 0x%04x failed: %d\n", regs[i], ret);
+              return EXIT_FAILURE;
+            }
+
+          printf("vgaudio: codec[0x%04x]=0x%04x\n", regs[i], value);
         }
 
       return EXIT_SUCCESS;
