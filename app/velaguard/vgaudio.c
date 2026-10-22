@@ -52,6 +52,28 @@
  * Private Functions
  ****************************************************************************/
 
+static int vg_audio_writeall(int fd, const unsigned char *data, size_t size)
+{
+  while (size > 0)
+    {
+      ssize_t n = write(fd, data, size);
+      if (n < 0 && errno == EINTR)
+        {
+          continue;
+        }
+
+      if (n <= 0)
+        {
+          return -EIO;
+        }
+
+      data += n;
+      size -= n;
+    }
+
+  return OK;
+}
+
 static void vg_audio_usage(void)
 {
   printf("Usage: vgaudio [id|reg <hex>|codec|sai|fixtures|txcheck]\n");
@@ -114,8 +136,8 @@ static void vg_audio_sai(void)
              (unsigned long)mckdiv, (unsigned long)(49142857u / mckdiv));
     }
   {
-    uint32_t r[17] = {0};
-    if (stm32_audio_tx_record(r, 17) == OK)
+    uint32_t r[20] = {0};
+    if (stm32_audio_tx_record(r, 20) == OK)
       {
         printf("vgaudio: last dma=%lx sr=%lx cr1=%lx frcr=%lx slots=%lx "
                "count=%lu addr=%lx\n", (unsigned long)r[0],
@@ -127,6 +149,9 @@ static void vg_audio_sai(void)
                (unsigned long)r[13], (unsigned long)r[14]);
         printf("vgaudio: sai_underruns=%lu clockerrors=%lu\n",
                (unsigned long)r[15], (unsigned long)r[16]);
+        printf("vgaudio: stream_ms=%lu stream_bytes=%lu tick_us=%lu\n",
+               (unsigned long)r[17], (unsigned long)r[18],
+               (unsigned long)r[19]);
       }
   }
 
@@ -177,13 +202,67 @@ int main(int argc, FAR char *argv[])
               off += n;
             }
 
-          if (fsync(fd) < 0 || close(fd) < 0)
-            {
-              return EXIT_FAILURE;
-            }
+          {
+            int sync_result = fsync(fd);
+            int close_result = close(fd);
+            if (sync_result < 0 || close_result < 0)
+              {
+                return EXIT_FAILURE;
+              }
+          }
 
           printf("vgaudio: fixture %s bytes=%u\n", names[i], (unsigned)off);
         }
+
+      /* Five copies of the generated 1 kHz PCM, with updated WAV lengths.
+       * This gives stop testing a clear margin before natural completion.
+       */
+
+      {
+        unsigned char header[44];
+        uint32_t length = 5 * (sizeof(vg_audio_tone) - sizeof(header));
+        int ret;
+        int fd;
+
+        memcpy(header, vg_audio_tone, sizeof(header));
+        for (i = 0; i < 4; i++)
+          {
+            header[4 + i] = (length + 36) >> (i * 8);
+            header[40 + i] = length >> (i * 8);
+          }
+
+        fd = open("/mnt/emmc/bvo04/tone-stop.wav",
+                  O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (fd < 0)
+          {
+            return EXIT_FAILURE;
+          }
+
+        ret = vg_audio_writeall(fd, header, sizeof(header));
+        for (i = 0; i < 5 && ret == OK; i++)
+          {
+            ret = vg_audio_writeall(fd, vg_audio_tone + sizeof(header),
+                                   sizeof(vg_audio_tone) - sizeof(header));
+          }
+
+        if (ret == OK && fsync(fd) < 0)
+          {
+            ret = -EIO;
+          }
+
+        if (close(fd) < 0)
+          {
+            ret = -EIO;
+          }
+
+        if (ret < 0)
+          {
+            return EXIT_FAILURE;
+          }
+
+        printf("vgaudio: fixture /mnt/emmc/bvo04/tone-stop.wav bytes=%lu\n",
+               (unsigned long)(length + sizeof(header)));
+      }
 
       return EXIT_SUCCESS;
     }
