@@ -5,8 +5,12 @@
 > RJ45 以太网 → MQTT → LWT 遗嘱消息），对应提交
 > `4954841 feat(net): stage-1 RJ45+MQTT min loop`。
 >
-> **现行规则（2026-09）：** 公共仓改动在 nuttx/apps/MQTT-C 树上直接修改，
-> **不要**再 apply 文中提到的 `scripts/openvela-*.patch`。下文 patch 文件名仅作当时溯源。
+> **现行规则（2026-09）：** 本文写作时，公共仓配置预设采用 patch + apply 脚本
+> 方式交付；该方式已废弃，仓库中不存在任何 `scripts/openvela-*.patch` 或
+> `apply-openvela-*.sh`。现行规则见 `docs/agents/BOUNDARY.md` C2：公共树
+> （nuttx/apps/MQTT-C/packages）改动在对应 git 检出上直接修改、提交 PR；
+> 配置预设经 `scripts/configs/*.defconfig` 在构建期安装到板级配置。下文
+> patch 文件名仅作当时溯源。
 >
 > 本文不打算教你"照着敲就能跑"，而是想讲清楚：每一条改动**为什么存在**、
 > 它涉及的**接口是什么**、调用时要**传什么参数**。所有结论都可以在仓库
@@ -42,8 +46,8 @@ M1 失败时问题在本地，M2 失败时问题可能在板端也可能在云�
 
 | 交付物 | 文件 | 一句话作用 |
 |---|---|---|
-| 新配置预设 | [openvela-velaguard-net-defconfig.patch](../../scripts/openvela-velaguard-net-defconfig.patch) | 把"以太网需要哪些 menuconfig 选项"固化成可重复应用的补丁 |
-| 幂等安装脚本 | [apply-openvela-velaguard-net-defconfig-patch.sh](../../scripts/apply-openvela-velaguard-net-defconfig-patch.sh) | 一个命令把配置打上去，重复执行也安全 |
+| 新配置预设 | `openvela-velaguard-net-defconfig.patch`（已废弃；现行为 [velaguard-lvgl.defconfig](../../scripts/configs/velaguard-lvgl.defconfig) 构建期安装） | 把"以太网需要哪些 menuconfig 选项"固化成可重复应用的补丁 |
+| 幂等安装脚本 | `apply-openvela-velaguard-net-defconfig-patch.sh`（已废弃；defconfig 由 `scripts/build.sh` 直接安装，无需脚本） | 一个命令把配置打上去，重复执行也安全 |
 | 新应用 | [velaguard_mqtt.c](../../app/velaguard/velaguard_mqtt.c) | `vgmqtt`：NSH 里的 MQTT 调试命令 |
 | 应用挂载 | [Makefile/CMakeLists.txt/Kconfig](../../app/velaguard/Makefile) | 让新工具进固件、进 NSH 命令表 |
 | 构建脚本 | [build.sh](../../scripts/build.sh) | 从单目标变多目标（net/min/lvgl），加防呆。现用名 `scripts/build.sh`（旧名 `build_minimal.sh`） |
@@ -137,6 +141,12 @@ Windows 构建脚本（现已删除；日常入口是 `scripts/build.sh`）里�
 "编译不过 / 内存不够 / 行为诡异"的潜在来源。
 
 ### 1.4 交付形态：patch + 幂等脚本（接口 1）
+
+> **编者注（2026-09）：** 本节描述的是阶段 1 当时的交付形态，其中
+> 零直改规则已被 `docs/agents/BOUNDARY.md` C2 取代——现行做法是在
+> nuttx/apps 等公共树检出上直接修改、走分支提交 PR；配置预设改由
+> `scripts/configs/*.defconfig` 在构建期安装。本节提到的脚本与 patch
+> 文件已从仓库移除，内容仅作历史溯源保留。
 
 #### 为什么要这样做
 
@@ -526,8 +536,9 @@ bash scripts/build_minimal.sh [TARGET] [--clean]
   链路轮询（重点看 `stm32_ifup` / `stm32_phyinit` / `stm32_link_work`）
 - [board.h](../../../nuttx/boards/arm/stm32h7/stm32h750b-dk/include/board.h)：MII 引脚表、
   `BOARD_ETH_PHY_POLL` 的定义
-- [openvela-eth-mii-stm32h750b-dk.patch](../../scripts/openvela-eth-mii-stm32h750b-dk.patch) 与
-  [openvela-netinit-carrier-poll.patch](../../scripts/openvela-netinit-carrier-poll.patch)：两个补丁全文
+- 原两个补丁全文已随 patch 工作流废弃移除；对应改动现位于 nuttx 树
+  `stm32_ethernet.c` 与 apps 树 `netinit.c`（链接见上方两条），
+  经公共树分支提交 PR 合入（见 BOUNDARY C2）
 - [velaguard-bringup-known-issues.md](../velaguard-bringup-known-issues.md) §5：实测验收记录与踩坑
 - [velaguard-mqtt-contract.md](../velaguard-mqtt-contract.md)：status/LWT 主题合同（QoS0 的依据）
 

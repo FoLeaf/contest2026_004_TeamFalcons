@@ -1,10 +1,20 @@
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 #include <unistd.h>
 
 #include "../vg_discover.h"
+
+static void remove_table(const char *path)
+{
+  char extra[256];
+  remove(path);
+  snprintf(extra, sizeof(extra), "%s.bak", path);
+  remove(extra);
+}
 
 static int expect_true(int cond, const char *msg)
 {
@@ -147,9 +157,9 @@ int main(void)
       }
 
     memset(&sum, 0, sizeof(sum));
-    fails += expect_true(vg_point_table_read(&sum, oldp) == 0, "read old");
+    fails += expect_true(vg_point_table_read(&sum, oldp) == -EINVAL, "reject legacy tag-only row");
     fails += expect_true(sum.n_points == 0, "old tag-only dropped");
-    remove(oldp);
+    remove_table(oldp);
   }
 
   {
@@ -173,7 +183,7 @@ int main(void)
     fails += expect_true(sum.points[0].cmp[0] == '\0', "id-only cmp empty");
     fails += expect_true(!sum.points[0].has_warn && !sum.points[0].has_crit,
                          "id-only no thresh");
-    remove(noidp);
+    remove_table(noidp);
   }
 
   vg_live_points_replace(&sum);
@@ -232,8 +242,8 @@ int main(void)
                           vg_live_age_ms(loaded.tick_ms, now));
     fails += expect_true(strstr(line, "id=temp") != NULL &&
                          strstr(line, "ok=1") != NULL, "format from snap");
-    remove(livep);
-    remove("vgpoint_live_values.txt.tmp");
+    remove_table(livep);
+    remove_table("vgpoint_live_values.txt.tmp");
   }
 
   fails += expect_true(vg_live_snapshot_read("no-such-live-values.txt",
@@ -251,10 +261,284 @@ int main(void)
     memset(&sum, 0, sizeof(sum));
     fails += expect_true(vg_point_table_read(&sum, emptyp) == 0, "read empty");
     fails += expect_true(sum.n_points == 0, "empty n");
-    remove(emptyp);
+    remove_table(emptyp);
   }
 
-  remove(path);
+  {
+    /* The parent path exists as a regular file.  mkdir() reports EEXIST
+     * there, so the store must still surface the fopen() failure rather
+     * than trust that the directory step "succeeded".
+     */
+
+    const char *blocker = "vgpoint_blocker";
+    FILE *bfp;
+
+    memset(&sum, 0, sizeof(sum));
+    sum.baud = 9600;
+    snprintf(sum.devpath, sizeof(sum.devpath), "/dev/rs485");
+
+    bfp = fopen(blocker, "w");
+    fails += expect_true(bfp != NULL, "create blocker");
+    if (bfp != NULL)
+      {
+        fclose(bfp);
+      }
+
+    fails += expect_true(vg_point_table_write_candidate(&sum,
+                          "vgpoint_blocker/cand.json") < 0,
+                         "write under a file parent");
+    remove_table(blocker);
+  }
+
+  {
+    /* Nested path: parent created on demand, and a second write into the
+     * now-existing directory is success, not EEXIST.
+     */
+
+    const char *nested = "vgpoint_nested_dir/cand.json";
+    const char *trunc = "vgpoint_nested_dir/truncated.json";
+    FILE *tfp;
+
+    memset(&sum, 0, sizeof(sum));
+    sum.baud = 9600;
+    snprintf(sum.devpath, sizeof(sum.devpath), "/dev/rs485");
+
+    fails += expect_true(vg_point_table_write_candidate(&sum, nested) == 0,
+                         "write nested");
+    fails += expect_true(vg_point_table_write_candidate(&sum, nested) == 0,
+                         "rewrite nested");
+    fails += expect_true(vg_point_table_read(&sum, nested) == 0, "read nested");
+    fails += expect_true(sum.n_points == 0, "nested n");
+
+    tfp = fopen(trunc, "w");
+    fails += expect_true(tfp != NULL, "create truncated");
+    if (tfp != NULL)
+      {
+        fputs("{\"schema_version\":1,\"bus\":", tfp);
+        fclose(tfp);
+      }
+
+    fails += expect_true(vg_point_table_read(&sum, trunc) == -EINVAL,
+                         "truncated is not an empty table");
+
+    remove_table(nested);
+    remove_table(trunc);
+    rmdir("vgpoint_nested_dir");
+  }
+
+  {
+    /* A medium that accepts the open but refuses the bytes must not report
+     * success, and must not leave the truncated table behind.  RLIMIT_FSIZE
+     * makes the write fail with EFBIG inside this directory; the limit is
+     * restored before the verdict is printed so a failure is still visible.
+     */
+
+    const char *shortp = "vgpoint_short_write.json";
+    struct rlimit old_rl;
+    struct rlimit tiny_rl;
+    int wrote;
+    int left;
+    int limited = 0;
+
+    memset(&sum, 0, sizeof(sum));
+    sum.baud = 9600;
+    snprintf(sum.devpath, sizeof(sum.devpath), "/dev/rs485");
+
+    signal(SIGXFSZ, SIG_IGN);
+    if (getrlimit(RLIMIT_FSIZE, &old_rl) == 0)
+      {
+        /* Only the soft limit is lowered: lowering the hard limit too would
+         * make the restore below fail and silently truncate this test's own
+         * output for the rest of the run.
+         */
+
+        tiny_rl.rlim_max = old_rl.rlim_max;
+        tiny_rl.rlim_cur = (old_rl.rlim_max == RLIM_INFINITY ||
+                            old_rl.rlim_max > 16) ? 16 : old_rl.rlim_max;
+        limited = (setrlimit(RLIMIT_FSIZE, &tiny_rl) == 0);
+      }
+
+    if (limited)
+      {
+        wrote = vg_point_table_write_candidate(&sum, shortp);
+        left = (access(shortp, F_OK) == 0);
+        (void)setrlimit(RLIMIT_FSIZE, &old_rl);
+        fails += expect_true(wrote < 0, "short write is not success");
+        fails += expect_true(!left, "no truncated file left");
+        remove_table(shortp);
+      }
+  }
+
+  fails += expect_true(strcmp(vg_point_table_err_token(-ENOENT), "enoent") == 0,
+                       "token enoent");
+  fails += expect_true(strcmp(vg_point_table_err_token(-EROFS), "erofs") == 0,
+                       "token erofs");
+  fails += expect_true(strcmp(vg_point_table_err_token(-ENOSPC), "enospc") == 0,
+                       "token enospc");
+  fails += expect_true(strcmp(vg_point_table_err_token(-ENOMEM), "enomem") == 0,
+                       "token enomem");
+  fails += expect_true(strcmp(vg_point_table_err_token(-EACCES), "eacces") == 0,
+                       "token eacces");
+  fails += expect_true(strcmp(vg_point_table_err_token(-EFBIG), "efbig") == 0,
+                       "token efbig");
+  fails += expect_true(strcmp(vg_point_table_err_token(-EIO), "eio") == 0,
+                       "token eio");
+  fails += expect_true(strcmp(vg_point_table_err_token(0), "eio") == 0,
+                       "token default");
+  fails += expect_true(strcmp(vg_point_table_err_token(-ENODEV), "enodev") == 0,
+                       "token enodev");
+  fails += expect_true(strcmp(vg_point_table_err_token(-ENOTDIR),
+                              "enotdir") == 0,
+                       "token enotdir");
+
+  {
+    /* An absent path component answers ENOTDIR on NuttX: with no
+     * /data/velaguard/discover directory, opening the candidate table
+     * inside it failed that way, so list -c reported eio and
+     * ensure_candidate returned before it could recreate the directory.
+     * One lost directory therefore killed the whole point table with an
+     * error that named neither.  The host libc answers ENOENT in that
+     * situation, so the regular-file-in-the-path form below is what
+     * produces ENOTDIR here; it is the same errno the board returns.
+     */
+
+    const char *blocker = "vgpoint_enotdir_blocker";
+    const char *under_file = "vgpoint_enotdir_blocker/cand.json";
+    FILE *bfp = fopen(blocker, "w");
+
+    fails += expect_true(bfp != NULL, "create enotdir blocker");
+    if (bfp != NULL)
+      {
+        fclose(bfp);
+      }
+
+    memset(&sum, 0, sizeof(sum));
+    fails += expect_true(vg_point_table_read(&sum, under_file) == -ENOENT,
+                         "ENOTDIR from a path component reads as no table");
+    fails += expect_true(vg_point_table_err_token(
+                          vg_point_table_read(&sum, under_file)) == NULL ||
+                         strcmp(vg_point_table_err_token(-ENOTDIR),
+                                "enotdir") == 0,
+                         "ENOTDIR has its own token, not a bare eio");
+
+    remove_table(blocker);
+  }
+
+  {
+    /* A directory the store lost is rebuilt by the next write, so a single
+     * missing level is not a permanent failure.  This half is what keeps
+     * the board's add working after the tree is damaged: the read says "no
+     * table", the write puts the tree back.
+     */
+
+    const char *deep = "vgpoint_lost_dir/deeper/cand.json";
+
+    memset(&sum, 0, sizeof(sum));
+    fails += expect_true(vg_point_table_read(&sum, deep) == -ENOENT,
+                         "absent parent dir reads as no table");
+    fails += expect_true(vg_point_table_write_candidate(&sum, deep) == 0,
+                         "write recreates the missing tree");
+    fails += expect_true(vg_point_table_read(&sum, deep) == 0,
+                         "read back after recreate");
+
+    remove_table(deep);
+    rmdir("vgpoint_lost_dir/deeper");
+    rmdir("vgpoint_lost_dir");
+  }
+
+  {
+    /* ensure_candidate seeds from the committed table, and that seeding
+     * used to stop at the same ENOTDIR: the candidate's directory was
+     * missing, so the fallback to the committed table never ran and add
+     * reported a bare I/O error.  With both paths missing it must still
+     * leave a usable empty candidate behind.
+     */
+
+    const char *cand = "vgpoint_seed_dir/cand.json";
+    const char *comm = "vgpoint_seed_dir/deeper/points.json";
+
+    memset(&sum, 0, sizeof(sum));
+    fails += expect_true(vg_point_table_ensure_candidate(&sum, cand, comm) == 0,
+                         "ensure_candidate with absent dirs");
+    fails += expect_true(vg_point_table_read(&sum, cand) == 0,
+                         "candidate usable after ensure");
+
+    remove_table(cand);
+    rmdir("vgpoint_seed_dir");
+  }
+
+  {
+    /* The store root probe separates "no table yet" from "the store is
+     * gone".  A path that does not exist is unreachable, a plain directory
+     * is a real store, and a RAM-backed filesystem is not a store at all.
+     */
+
+    fails += expect_true(vg_point_store_root_ok(NULL) == -EINVAL,
+                         "null store root");
+    fails += expect_true(vg_point_store_root_ok("") == -EINVAL,
+                         "empty store root");
+    fails += expect_true(vg_point_store_root_ok("vgpoint_no_such_root") < 0,
+                         "missing store root");
+    fails += expect_true(vg_point_store_root_ok(".") == 0, "plain dir");
+
+    /* /proc is the only RAM-backed filesystem a desktop reliably offers;
+     * assert the magic check only where it exists.
+     */
+
+    if (access("/proc", F_OK) == 0)
+      {
+        fails += expect_true(vg_point_store_root_ok("/proc") == -ENODEV,
+                             "ram-backed store root");
+      }
+  }
+
+  {
+    /* ensure_candidate must not read "cannot parse" as "nothing there":
+     * seeding a fresh empty candidate lets the next apply --confirm write
+     * zero points over the committed table.
+     */
+
+    const char *cand = "vgpoint_ens/cand.json";
+    const char *comm = "vgpoint_ens/comm.json";
+    FILE *cfp;
+
+    memset(&sum, 0, sizeof(sum));
+    sum.baud = 9600;
+    snprintf(sum.devpath, sizeof(sum.devpath), "/dev/rs485");
+    fails += expect_true(vg_point_table_write_candidate(&sum, cand) == 0,
+                         "seed ens dir");
+
+    cfp = fopen(cand, "w");
+    fails += expect_true(cfp != NULL, "corrupt candidate");
+    if (cfp != NULL)
+      {
+        fputs("{\"schema_version\":1,\"bus\":{\"baud\":9600}}\n", cfp);
+        fclose(cfp);
+      }
+
+    memset(&sum, 0, sizeof(sum));
+    fails += expect_true(vg_point_table_ensure_candidate(&sum, cand, comm)
+                         == -EINVAL,
+                         "corrupt candidate is not an empty one");
+    fails += expect_true(access(comm, F_OK) != 0, "committed path untouched");
+
+    /* Both files absent is still the documented empty start. */
+
+    memset(&sum, 0, sizeof(sum));
+    fails += expect_true(vg_point_table_ensure_candidate(
+                           &sum, "vgpoint_ens2/cand.json",
+                           "vgpoint_ens2/comm.json") == 0,
+                         "empty start when both missing");
+    fails += expect_true(access("vgpoint_ens2/cand.json", F_OK) == 0,
+                         "empty candidate written");
+
+    remove_table(cand);
+    remove_table("vgpoint_ens2/cand.json");
+    rmdir("vgpoint_ens");
+    rmdir("vgpoint_ens2");
+  }
+
+  remove_table(path);
   if (fails == 0)
     {
       printf("test_vgpoint: OK\n");

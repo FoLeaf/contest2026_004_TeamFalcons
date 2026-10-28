@@ -1,0 +1,548 @@
+/****************************************************************************
+ * app/velaguard/vg_agent_round.c
+ ****************************************************************************/
+
+#include <nuttx/config.h>
+
+#ifdef CONFIG_EXAMPLES_AI_AGENT_VELA
+
+#include <errno.h>
+#include <pthread.h>
+#include <string.h>
+#include <syslog.h>
+#include <time.h>
+
+#include <velaclaw/client.h>
+
+#include "vg_agent_round.h"
+
+#define TAG "vgagent"
+
+#define VG_ROUND_REQ_MAX   1536
+/* The voice operations assistant composes the whole display answer plus the
+ * spoken-summary line; 192 bytes (the old diagnostic truncation) could not
+ * carry it.  Static storage, so the larger bound costs BSS only. */
+#define VG_ROUND_REPLY_MAX 2048
+
+static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static velaclaw_client_t          *g_client;
+static enum vg_agent_round_state   g_state = VG_AGENT_ROUND_IDLE;
+static uint32_t                    g_started_ms;
+static uint32_t                    g_deadline_ms;
+static uint32_t                    g_generation;
+static uint32_t                    g_request_serial;
+static bool                        g_reply_seen;
+static bool                        g_reply_ok;
+static bool                        g_submitting;
+static enum vg_agent_round_owner   g_owner;
+static uint32_t                    g_finished_ms;
+
+static char g_req[VG_ROUND_REQ_MAX];
+static char g_reply[VG_ROUND_REPLY_MAX];
+static bool g_suspended;
+static bool g_voice_foreground;
+static enum vg_agent_round_owner g_suspended_owner;
+static char g_suspended_req[VG_ROUND_REQ_MAX];
+
+/* 语音可挂起一条后台请求，先取消后台传输，播报结束后再以原请求排队。 */
+static void restore_background_locked(void)
+{
+  if (!g_suspended || g_voice_foreground)
+    {
+      return;
+    }
+  if (++g_request_serial == 0) ++g_request_serial;
+  memcpy(g_req, g_suspended_req, sizeof(g_req));
+  memset(g_suspended_req, 0, sizeof(g_suspended_req));
+  g_owner = g_suspended_owner;
+  syslog(LOG_INFO,"[%s] resumed background owner=%u\n",TAG,(unsigned)g_owner);
+  g_suspended = false;
+  g_deadline_ms = 0;
+  g_state = VG_AGENT_ROUND_QUEUED;
+  g_started_ms = vg_agent_round_now_ms();
+  g_finished_ms = 0;
+  g_reply_seen = false;
+  g_reply_ok = false;
+  g_reply[0] = '\0';
+}
+
+uint32_t vg_agent_round_now_ms(void)
+{
+  struct timespec ts;
+
+  (void)clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (uint32_t)((uint64_t)ts.tv_sec * 1000u
+                    + (uint64_t)ts.tv_nsec / 1000000u);
+}
+
+/* Runs on the agent's outbound dispatch thread, so it only records the
+ * outcome and never blocks on anything but this mutex. */
+
+static void round_reply(int status, const char *text, void *cookie)
+{
+  pthread_mutex_lock(&g_lock);
+  if ((uint32_t)(uintptr_t)cookie != g_request_serial ||
+      (g_state != VG_AGENT_ROUND_QUEUED && g_state != VG_AGENT_ROUND_RUNNING))
+    { pthread_mutex_unlock(&g_lock); return; }
+  g_reply_seen = true;
+  g_reply_ok = (status == 0);
+
+  if (text != NULL)
+    {
+      strncpy(g_reply, text, sizeof(g_reply) - 1);
+      g_reply[sizeof(g_reply) - 1] = '\0';
+    }
+  else
+    {
+      g_reply[0] = '\0';
+    }
+
+  pthread_mutex_unlock(&g_lock);
+}
+
+int vg_agent_round_init(void)
+{
+  int rc = 0;
+
+  pthread_mutex_lock(&g_lock);
+
+  if (g_client == NULL)
+    {
+      /* Fails while the agent's message bus is still coming up; the worker
+       * retries on later ticks until VG_AGENT_ROUND_QUEUE_TIMEOUT_MS. */
+
+      g_client = velaclaw_client_open("velaguard");
+      if (g_client != NULL)
+        {
+          syslog(LOG_INFO, "[%s] local agent client ready\n", TAG);
+        }
+    }
+
+  if (g_client == NULL)
+    {
+      rc = -ENODEV;
+    }
+
+  pthread_mutex_unlock(&g_lock);
+  return rc;
+}
+
+int vg_agent_round_queue(const char *text)
+{
+  return vg_agent_round_queue_owned(text, VG_AGENT_ROUND_OWNER_NONE);
+}
+
+static int round_queue(const char *text,
+                       enum vg_agent_round_owner owner, uint32_t deadline_ms)
+{
+  size_t len;
+
+  if (text == NULL)
+    {
+      return -EINVAL;
+    }
+
+  len = strlen(text);
+  if (len == 0)
+    {
+      return -EINVAL;
+    }
+
+  if (len >= VG_ROUND_REQ_MAX)
+    {
+      return -E2BIG;
+    }
+
+  pthread_mutex_lock(&g_lock);
+
+  /* A finished result that its owner has not read yet is not free: letting
+   * another flow overwrite it would discard an artifact that is already on
+   * eMMC.  Both consumers clear their own result within a tick, so this only
+   * ever costs the new request one worker iteration. */
+
+  if (owner != VG_AGENT_ROUND_OWNER_VOICE && g_voice_foreground)
+    { pthread_mutex_unlock(&g_lock); return -EBUSY; }
+
+  if (g_state != VG_AGENT_ROUND_IDLE)
+    {
+      if (owner == VG_AGENT_ROUND_OWNER_VOICE &&
+          (g_state == VG_AGENT_ROUND_QUEUED || g_state == VG_AGENT_ROUND_RUNNING) &&
+          !g_submitting && !g_suspended &&
+          (g_owner == VG_AGENT_ROUND_OWNER_ADVICE ||
+           g_owner == VG_AGENT_ROUND_OWNER_DAILY))
+        {
+          memcpy(g_suspended_req, g_req, sizeof(g_req));
+          g_suspended_owner = g_owner;
+          g_suspended = true;
+          syslog(LOG_INFO,"[%s] paused background owner=%u for voice\n",TAG,(unsigned)g_owner);
+          if (g_state == VG_AGENT_ROUND_RUNNING && g_client != NULL)
+            velaclaw_client_abandon(g_client);
+        }
+      else
+        {
+          pthread_mutex_unlock(&g_lock);
+          return -EBUSY;
+        }
+    }
+
+  if (++g_request_serial == 0) ++g_request_serial;
+  memcpy(g_req, text, len + 1);
+  g_owner = owner;
+  if (owner == VG_AGENT_ROUND_OWNER_VOICE) g_voice_foreground = true;
+  g_deadline_ms = deadline_ms;
+  g_state = VG_AGENT_ROUND_QUEUED;
+  g_started_ms = vg_agent_round_now_ms();
+  g_reply_seen = false;
+  g_reply_ok = false;
+  g_reply[0] = '\0';
+
+  pthread_mutex_unlock(&g_lock);
+  return 0;
+}
+
+int vg_agent_round_queue_owned(const char *text,
+                               enum vg_agent_round_owner owner)
+{
+  return round_queue(text, owner, 0);
+}
+
+int vg_agent_round_queue_voice(const char *text, uint32_t deadline_ms)
+{
+  if (deadline_ms == 0 ||
+      (int32_t)(deadline_ms - vg_agent_round_now_ms()) <= 0)
+    {
+      return -ETIMEDOUT;
+    }
+  return round_queue(text, VG_AGENT_ROUND_OWNER_VOICE, deadline_ms);
+}
+
+uint32_t vg_agent_round_voice_serial(void)
+{
+  pthread_mutex_lock(&g_lock);
+  uint32_t serial = g_owner == VG_AGENT_ROUND_OWNER_VOICE &&
+                    (g_state == VG_AGENT_ROUND_QUEUED ||
+                     g_state == VG_AGENT_ROUND_RUNNING) ? g_request_serial : 0;
+  pthread_mutex_unlock(&g_lock);
+  return serial;
+}
+
+/* ASR 也占用前台预算；先暂停后台，避免识别上传与后台模型争用网络。 */
+int vg_agent_round_voice_reserve(void)
+{
+  pthread_mutex_lock(&g_lock);
+  if (g_state != VG_AGENT_ROUND_IDLE)
+    {
+      if ((g_state != VG_AGENT_ROUND_QUEUED && g_state != VG_AGENT_ROUND_RUNNING) ||
+          g_submitting || g_suspended ||
+          (g_owner != VG_AGENT_ROUND_OWNER_ADVICE && g_owner != VG_AGENT_ROUND_OWNER_DAILY))
+        { pthread_mutex_unlock(&g_lock); return -EBUSY; }
+      memcpy(g_suspended_req, g_req, sizeof(g_req));
+      g_suspended_owner = g_owner;
+      g_suspended = true;
+      if (g_state == VG_AGENT_ROUND_RUNNING && g_client != NULL)
+        velaclaw_client_abandon(g_client);
+      if (++g_request_serial == 0) ++g_request_serial;
+      syslog(LOG_INFO,"[%s] paused background owner=%u before ASR\n",TAG,(unsigned)g_owner);
+      g_state = VG_AGENT_ROUND_IDLE;
+      g_owner = VG_AGENT_ROUND_OWNER_NONE;
+    }
+  g_voice_foreground = true;
+  pthread_mutex_unlock(&g_lock);
+  return 0;
+}
+
+void vg_agent_round_voice_release(void)
+{
+  pthread_mutex_lock(&g_lock);
+  g_voice_foreground = false;
+  if (g_state == VG_AGENT_ROUND_IDLE) restore_background_locked();
+  pthread_mutex_unlock(&g_lock);
+}
+
+static void round_submit(void)
+{
+  /* Function-local so a 1.5 KB request never lands on the worker stack, and
+   * released before the call so the reply callback can never contend with us
+   * on the same lock if a build ever dispatches replies synchronously. */
+
+  static char req[VG_ROUND_REQ_MAX];
+  velaclaw_client_t *client;
+  velaclaw_ask_req_t ask;
+  int rc;
+  uint32_t serial;
+  uint32_t deadline;
+
+  pthread_mutex_lock(&g_lock);
+  if (g_client == NULL)
+    {
+      pthread_mutex_unlock(&g_lock);
+
+      if (vg_agent_round_init() != 0)
+        {
+          return;
+        }
+
+      pthread_mutex_lock(&g_lock);
+    }
+
+  client = g_client;
+  memcpy(req, g_req, sizeof(req));
+  serial = g_request_serial;
+  deadline = g_deadline_ms;
+  pthread_mutex_unlock(&g_lock);
+
+  ask.text = req;
+  ask.timeout_ms = (int)VG_AGENT_ROUND_TIMEOUT_MS;
+
+  if (deadline != 0)
+    {
+      int32_t remaining = (int32_t)(deadline - vg_agent_round_now_ms());
+      ask.timeout_ms = remaining > 0 ? remaining : 1;
+      rc = velaclaw_ask_async_deadline(client, &ask, deadline, round_reply,
+                                      (void *)(uintptr_t)serial);
+    }
+  else
+    {
+      uint32_t background_deadline = vg_agent_round_now_ms() + VG_AGENT_ROUND_TIMEOUT_MS;
+      if (!background_deadline) background_deadline = 1;
+      rc = velaclaw_ask_async_background(client, &ask, background_deadline,
+                                        round_reply, (void *)(uintptr_t)serial);
+    }
+
+  pthread_mutex_lock(&g_lock);
+
+  if (serial != g_request_serial)
+    {
+      if (rc == 0)
+        {
+          velaclaw_client_abandon(client);
+        }
+      pthread_mutex_unlock(&g_lock);
+      return;
+    }
+
+  /* abandon() may have run while velaclaw_ask_async was in flight.  In that
+   * case the question is gone: leave the state IDLE instead of resurrecting
+   * it, or the next question is refused as busy.  The reply is dropped by
+   * its serial either way. */
+
+  if (rc == 0 && g_state == VG_AGENT_ROUND_QUEUED &&
+      serial == g_request_serial)
+    {
+      g_state = VG_AGENT_ROUND_RUNNING;
+      g_started_ms = vg_agent_round_now_ms();
+      syslog(LOG_INFO, "[%s] round submitted: %u bytes\n",
+             TAG, (unsigned)strlen(req));
+    }
+  else if (rc == 0)
+    {
+      velaclaw_client_abandon(client);
+      syslog(LOG_INFO, "[%s] round abandoned during submit\n", TAG);
+    }
+  else if (rc == -EBUSY)
+    {
+      /* The channel already carries a background round.  A user question
+       * waits behind it instead of failing on the spot: the state stays
+       * QUEUED and later ticks retry until the queue timeout. */
+
+    }
+  else
+    {
+      g_state = VG_AGENT_ROUND_ERROR;
+      g_finished_ms = vg_agent_round_now_ms();
+      syslog(LOG_WARNING, "[%s] round submit failed: %d\n", TAG, rc);
+    }
+
+  pthread_mutex_unlock(&g_lock);
+}
+
+void vg_agent_round_tick(void)
+{
+  pthread_mutex_lock(&g_lock);
+  if (g_state == VG_AGENT_ROUND_QUEUED)
+    {
+      if (g_submitting) { pthread_mutex_unlock(&g_lock); return; }
+      g_submitting = true;
+      pthread_mutex_unlock(&g_lock);
+      round_submit();
+      pthread_mutex_lock(&g_lock);
+      g_submitting = false;
+      if (g_state == VG_AGENT_ROUND_QUEUED &&
+          (int32_t)(vg_agent_round_now_ms() - g_started_ms) >=
+          (int32_t)VG_AGENT_ROUND_QUEUE_TIMEOUT_MS)
+        {
+          g_state = VG_AGENT_ROUND_ERROR;
+          g_finished_ms = vg_agent_round_now_ms();
+          syslog(LOG_WARNING, "[%s] round never reached the agent\n", TAG);
+        }
+      pthread_mutex_unlock(&g_lock);
+      return;
+    }
+  if (g_state != VG_AGENT_ROUND_RUNNING)
+    { pthread_mutex_unlock(&g_lock); return; }
+
+  uint32_t now = vg_agent_round_now_ms();
+  if (g_reply_seen)
+    {
+      bool ok = g_reply_ok;
+      g_reply_seen = false;
+      g_state = ok ? VG_AGENT_ROUND_DONE : VG_AGENT_ROUND_ERROR;
+      if (ok) g_generation++;
+      g_finished_ms = now;
+      pthread_mutex_unlock(&g_lock);
+      syslog(LOG_INFO, "[%s] round finished: %s\n", TAG, ok ? "reply" : "agent error");
+      return;
+    }
+  if ((g_deadline_ms != 0 && (int32_t)(now - g_deadline_ms) >= 0) ||
+      (int32_t)(now - g_started_ms) >= (int32_t)VG_AGENT_ROUND_TIMEOUT_MS)
+    {
+      g_state = VG_AGENT_ROUND_ERROR;
+      g_finished_ms = now;
+      velaclaw_client_abandon(g_client);
+      pthread_mutex_unlock(&g_lock);
+      syslog(LOG_WARNING, "[%s] round timed out\n", TAG);
+      return;
+    }
+  pthread_mutex_unlock(&g_lock);
+}
+
+enum vg_agent_round_state vg_agent_round_state(void)
+{
+  enum vg_agent_round_state st;
+
+  pthread_mutex_lock(&g_lock);
+  st = g_state;
+  pthread_mutex_unlock(&g_lock);
+  return st;
+}
+
+bool vg_agent_round_busy(void)
+{
+  enum vg_agent_round_state st = vg_agent_round_state();
+
+  return (st == VG_AGENT_ROUND_QUEUED || st == VG_AGENT_ROUND_RUNNING);
+}
+
+uint32_t vg_agent_round_generation(void)
+{
+  uint32_t gen;
+
+  pthread_mutex_lock(&g_lock);
+  gen = g_generation;
+  pthread_mutex_unlock(&g_lock);
+  return gen;
+}
+
+enum vg_agent_round_owner vg_agent_round_owner(void)
+{
+  enum vg_agent_round_owner owner;
+
+  pthread_mutex_lock(&g_lock);
+  owner = g_owner;
+  pthread_mutex_unlock(&g_lock);
+  return owner;
+}
+
+bool vg_agent_round_reclaim(enum vg_agent_round_owner mine, uint32_t grace_ms)
+{
+  bool released = false;
+
+  pthread_mutex_lock(&g_lock);
+
+  if ((g_state == VG_AGENT_ROUND_DONE || g_state == VG_AGENT_ROUND_ERROR) &&
+      g_owner != mine && g_finished_ms != 0 &&
+      vg_agent_round_now_ms() - g_finished_ms >= grace_ms)
+    {
+      /* Somebody else's finished round that nobody is going to read - a
+       * manual round killed half way, or a flow that went away.  Without
+       * this the strict queue would hold the channel for it forever. */
+
+      if (g_owner == VG_AGENT_ROUND_OWNER_VOICE)
+        {
+          memset(g_req, 0, sizeof(g_req));
+          memset(g_reply, 0, sizeof(g_reply));
+        }
+      g_state = VG_AGENT_ROUND_IDLE;
+      g_owner = VG_AGENT_ROUND_OWNER_NONE;
+      restore_background_locked();
+      released = true;
+    }
+
+  pthread_mutex_unlock(&g_lock);
+  return released;
+}
+
+void vg_agent_round_clear(void)
+{
+  pthread_mutex_lock(&g_lock);
+
+  if (g_state == VG_AGENT_ROUND_DONE || g_state == VG_AGENT_ROUND_ERROR)
+    {
+      if (g_owner == VG_AGENT_ROUND_OWNER_VOICE)
+        {
+          memset(g_req, 0, sizeof(g_req));
+          memset(g_reply, 0, sizeof(g_reply));
+        }
+      g_state = VG_AGENT_ROUND_IDLE;
+      g_owner = VG_AGENT_ROUND_OWNER_NONE;
+      g_finished_ms = 0;
+      restore_background_locked();
+    }
+
+  pthread_mutex_unlock(&g_lock);
+}
+
+static void round_abandon(bool check_owner, enum vg_agent_round_owner owner)
+{
+  pthread_mutex_lock(&g_lock);
+  if (check_owner && g_owner != owner)
+    {
+      pthread_mutex_unlock(&g_lock);
+      return;
+    }
+
+  if (g_state != VG_AGENT_ROUND_IDLE)
+    {
+      if (g_owner == VG_AGENT_ROUND_OWNER_VOICE)
+        {
+          memset(g_req, 0, sizeof(g_req));
+          memset(g_reply, 0, sizeof(g_reply));
+        }
+      g_state = VG_AGENT_ROUND_IDLE;
+      g_owner = VG_AGENT_ROUND_OWNER_NONE;
+      g_finished_ms = 0;
+      g_deadline_ms = 0;
+      g_reply_seen = false;
+      if (++g_request_serial == 0)
+        {
+          ++g_request_serial;
+        }
+    }
+
+  /* Keep cancellation atomic with owner/state changes.  The client releases
+   * its own mutex before invoking round_reply, so this lock order is safe. */
+  if (g_client != NULL)
+    {
+      velaclaw_client_abandon(g_client);
+    }
+  restore_background_locked();
+  pthread_mutex_unlock(&g_lock);
+}
+
+void vg_agent_round_abandon(void)
+{
+  round_abandon(false, VG_AGENT_ROUND_OWNER_NONE);
+}
+
+void vg_agent_round_abandon_owned(enum vg_agent_round_owner owner)
+{
+  round_abandon(true, owner);
+}
+
+const char *vg_agent_round_last_reply(void)
+{
+  return g_reply;
+}
+
+#endif /* CONFIG_EXAMPLES_AI_AGENT_VELA */

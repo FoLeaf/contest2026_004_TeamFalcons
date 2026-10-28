@@ -24,6 +24,27 @@ config VG_BRINGUP_TOOLS
 		velaguard-min preset can enable them independently of LVGL/LVX
 		demo symbols.
 
+config VG_NSH_STACKSIZE
+	int "VelaGuard console (NSH) thread stack size"
+	default 8192
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		Stack for the NSH console thread that velaguard_app_main spawns.
+		That thread runs the whole shell, so every filesystem command
+		executes on this stack: vgpoint, vgstoretest, cp/mv, and the vfat
+		plus SDMMC read path underneath them.
+
+		The pthread default (CONFIG_PTHREAD_STACK_DEFAULT, 2 KiB in this
+		configuration) is not enough.  On the board the stack was measured
+		reaching the very bottom of its allocation while a vfat rename ran
+		through fat_rename -> fat_dirnamewrite -> fat_putlfname ->
+		fat_findsfnentry -> fat_fscacheread -> fat_hwread -> mmcsd_read ->
+		mmcsd_eventwait -> nxsem_wait.  NuttX places struct tls_info_s at
+		the bottom of the stack allocation, so the overflow overwrote
+		tls_info_s->tl_task; the next getpid() dereferenced the wrecked
+		pointer, took a precise bus fault and the board stopped responding
+		until an SWD reset.
+
 config VG_CONFIG_STORE
 	bool "VelaGuard dual-slot config store (eMMC FAT)"
 	default n
@@ -48,8 +69,9 @@ config VG_FRAME_STATS
 	default n
 	depends on VG_BRINGUP_TOOLS
 	---help---
-		Build vg_frame_stats and NSH tool vgstats.  vgmodbus records
-		CRC/timeout/latency into a per-slave sliding window.
+		Build vg_frame_stats, NSH tools vgstats/vgruntime, and since-boot
+		runtime accounting.  HMI poll and vgmodbus record CRC/timeout/latency
+		into a per-slave sliding window plus boot cumulative counters.
 
 config VG_NET_FAILOVER
 	bool "VelaGuard TCP failover (RJ45 / ESP-01S)"
@@ -66,29 +88,55 @@ if VG_NET_FAILOVER
 
 config VG_WIFI_SSID
 	string "ESP-01S Wi-Fi SSID (hot-standby join)"
-	default "19y"
+	default ""
 	---help---
 		Default AP SSID loaded into RAM at boot. Overridable at runtime
 		via "vgnet wifi <ssid> <psk>".
 
 config VG_WIFI_PASSWORD
 	string "ESP-01S Wi-Fi password"
-	default "12345678"
+	default ""
 	---help---
 		Default AP PSK paired with VG_WIFI_SSID (test credentials).
 
 config VG_MQTT_BROKER_HOST
-	string "Failover MQTT broker host"
-	default "107.174.123.74"
+	string "Dashboard MQTT broker host"
+	default ""
 	---help---
-		Plaintext MQTT-C broker used as the first TCP client proving
-		the active egress. CONNACK marks the session online.
+		Plaintext MQTT-C broker for status/telemetry/alarm/point_table.
+		CONNACK marks the session online.
 
 config VG_MQTT_BROKER_PORT
-	int "Failover MQTT broker port"
+	int "Dashboard MQTT broker port"
 	default 1883
 	---help---
 		Broker TCP port (no TLS in this stage).
+
+config VG_MQTT_USERNAME
+	string "MQTT username (TEST)"
+	default ""
+	---help---
+		凭据由本地运行配置提供，不提交到仓库，也不得输出到日志。
+
+config VG_MQTT_PASSWORD
+	string "MQTT password (TEST)"
+	default ""
+	---help---
+		凭据由本地运行配置提供，不提交到仓库，也不得输出到日志。
+
+config VG_MQTT_KEEPALIVE
+	int "MQTT keepalive seconds"
+	default 60
+	range 10 600
+	---help---
+		CONNECT keepalive. LWT fires after about 1.5x this period.
+
+config VG_MQTT_DEVICE_ID
+	string "Override device_id / MQTT client_id"
+	default ""
+	---help---
+		Empty: vg- + STM32 96-bit UID hex. Non-empty overrides
+		(host tests / a known demo id). Runtime cannot change it.
 
 config VG_NET_PING_HOST
 	string "Ping target if DHCP gateway is empty"
@@ -108,14 +156,228 @@ config VG_AGENT_OPS
 		HEARTBEAT.md; run a background alarm detector writing
 		/data/velaguard/pending_alarm.txt for Agent pickup.
 
+config VG_PTT
+	bool "VelaGuard USER1 push-to-talk event thread (vgptt)"
+	default n
+	depends on VG_BRINGUP_TOOLS && INPUT_BUTTONS && ARCH_IRQBUTTONS
+	---help---
+		Watch the board USER1 button through /dev/buttons and turn
+		press/release into record start and submit events: debounce,
+		the 15 second cap, and the release gate before accepting the
+		next press.  Exposes the NSH command vgptt for start/stop/
+		status/reset.
+
+		This task is the event layer only.  It records no audio and
+		makes no network request; the default handler prints one line
+		per event until BVO-03/05 supply a recording backend.
+
+		Requires the board button support (STM32H750B_DK_BUTTONS plus
+		ARCH_BUTTONS, ARCH_IRQBUTTONS, INPUT_BUTTONS and
+		INPUT_BUTTONS_LOWER).
+
+if VG_PTT
+
+config VG_PTT_DEVPATH
+	string "Button device path"
+	default "/dev/buttons"
+
+config VG_PTT_PRIORITY
+	int "vgptt thread priority"
+	default 90
+	---help---
+		Above the HMI (100 in the default preset) so a button edge is
+		handled promptly, below the high-priority work queue (224).
+
+config VG_PTT_STACKSIZE
+	int "vgptt thread stack size"
+	default 4096
+	---help---
+		The thread only runs poll(), one read() per wake-up and the
+		event callback.  The callback is responsible for its own stack
+		use when it is replaced by the recording layer.
+
+config VG_PTT_AUTOSTART
+	bool "Auto-start vgptt from velaguard_app_main"
+	default y
+	depends on VG_PTT
+	---help---
+		Spawn the button thread at boot so the USER1 button works
+		without typing "vgptt start" on NSH.
+
+endif # VG_PTT
+
+config VG_VOICE_LOOPBACK
+	bool "Local record/playback loop (vgvoice)"
+	default n
+	depends on VG_BRINGUP_TOOLS && VG_PTT && AUDIO && I2S && \
+	          STM32H7_SAI_CAPTURE && STM32H7_SAI1_A && \
+	          STM32H7_SAI_PDM_MODE && SYSTEM_NXPLAYER
+	---help---
+		Press USER1 to record from the on-board PDM microphone, release
+		to stop and play the recording back through the WM8994 codec.
+
+		This is a diagnostic entry, not a product voice UI: no ASR, no
+		TTS, no network, no LVGL overlay.  It exists so the local audio
+		path can be acceptance-tested on its own, and it reuses the
+		BVO-02 button event layer and the BVO-04 standard NxPlayer path.
+
+		Recording runs a circular DMA over a fixed ring, decimates the
+		PDM bitstream to 16 kHz mono PCM with filter state carried across
+		DMA halves (so the stream stays continuous), and keeps at most one
+		15-second recording in RAM.  Recording and playback are mutually
+		exclusive.  Every round removes its temporary WAV.
+
+if VG_VOICE_LOOPBACK
+
+config VG_VOICE_PRIORITY
+	int "vgvoice record task priority"
+	default 110
+	---help---
+		Priority of the resident task that decimates queued blocks while a
+		recording is in progress.  It must sit above the HMI so half-ring
+		handovers are consumed well within their 64 ms arrival interval,
+		and below the high-priority work queue (224) so DMA completion
+		callbacks are never delayed by it.
+
+config VG_VOICE_STACKSIZE
+	int "vgvoice record task stack size"
+	default 4096
+	---help---
+		The task runs decimation, bounded WAV writes and NxPlayer control.
+
+config VG_VOICE_TLS_CACHE
+	bool "Experimental TLS session cache for voice"
+	default n
+	depends on EXAMPLES_AI_AGENT_VELA
+	---help---
+		诊断用会话恢复缓存。出现完整握手签名校验失败后默认关闭，
+		待独立验证长期生命周期后再启用。
+
+config VG_VOICE_TTS_STREAM
+	bool "TTS streaming playback (bounded ring + direct ioctl player)"
+	default n
+	depends on EXAMPLES_AI_AGENT_VELA
+	---help---
+		P1: 播报不等收齐。TTS 的 SSE 块解码后立即进有界环形缓冲，
+		由直接驱动 /dev/audio/pcm0p 的队列播放器消费（格式仍为
+		16 kHz 立体声 16 bit）。播放器启动失败时该轮自动退回
+		原 WAV 文件路径。关闭则完全走原路径。
+
+config VG_VOICE_TTS_PREBUF_MS
+	int "TTS streaming prebuffer (ms)"
+	range 50 4000
+	default 2500
+	depends on VG_VOICE_TTS_STREAM
+	---help---
+		起播前缓存的音频量；运行时可用 vgvoice prebuf <ms> 调整
+		（下轮生效），并受环形缓冲容量限制。默认缓存 2.5 秒音频。
+
+config VG_VOICE_TTS_RING_BYTES
+	int "TTS streaming ring size (bytes, power of two)"
+	default 131072
+	depends on VG_VOICE_TTS_STREAM
+	---help---
+		环形缓冲容量（16 kHz 单声道，131072 字节约 4.1 秒音频）。
+		必须为 2 的幂。
+
+config VG_VOICE_TEST_FIXTURE
+	bool "Local voice fault fixture (diagnostic image only)"
+	default n
+	depends on EXAMPLES_AI_AGENT_VELA
+	---help---
+		仅用于无人值守的整轮故障验收。NSH 显式选择固定夹具场景后，
+		ASR/TTS 只连接固定本地主机，并使用无效测试凭据。
+		不修改 provision，不注册为设备端 Agent 工具。发布预设关闭此项。
+
+config VG_VOICE_ASR_MODEL
+	string "ASR model name"
+	default "mimo-v2.5-asr"
+	---help---
+		Model name sent with a recognition request.  It must exist on the
+		same endpoint and be covered by the configured key; the Base URL
+		and the key are a pair and are not chosen here.
+
+config VG_VOICE_TTS_MODEL
+	string "TTS model name"
+	default "mimo-v2.5-tts"
+	---help---
+		Model name sent with a synthesis request.
+
+config VG_VOICE_TTS_VOICE
+	string "TTS voice name"
+	default "冰糖"
+	---help---
+		Voice used for synthesis.  The name is passed through as UTF-8.
+
+endif # VG_VOICE_LOOPBACK
+
+config VG_PDM_DUMP
+	bool "Raw PDM capture probe (vgpdmdump)"
+	default n
+	depends on VG_BRINGUP_TOOLS && AUDIO && I2S && STM32H7_SAI1_A
+	---help---
+		Bring-up instrument for the on-board PDM microphone. Captures a
+		fixed-length raw PDM bitstream from SAI1 block A, prints duty
+		cycle, entropy and a nibble histogram, and optionally writes the
+		bytes to a file for off-board analysis.
+
+		This does no PDM-to-PCM decimation and is not part of the product
+		audio path. It is meant to answer one question: is the microphone
+		producing a real bitstream, or is the data line stuck. Requires the
+		board bring-up to have registered the SAI1 capture device.
+
+config VG_AUDIO_PROBE
+	bool "Audio output bring-up probe (vgaudio)"
+	default n
+	depends on VG_BRINGUP_TOOLS && AUDIO_WM8994
+	---help---
+		Reports WM8994 ID/registers on I2C4 and SAI2 TX state. Installs
+		bounded, known stereo WAV fixtures under /mnt/emmc/bvo04 and checks
+		synchronous rejection of invalid TX requests. Playback uses NxPlayer;
+		this probe never writes codec control registers directly.
+
+config VG_HEAP_WATCH
+	bool "DEBUG: watch SDRAM heap region first node (corruption hunt)"
+	default n
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		Temporary debug aid. Spawns a thread polling the first heap
+		node of the SDRAM region (0xd0100000) and dumping context
+		bytes on change. Do not enable in release builds.
+
+config VG_TIME_SYNC
+	bool "VelaGuard wall-time persist + SNTP sync (Beijing)"
+	default n
+	depends on VG_BRINGUP_TOOLS
+	---help---
+		No battery RTC on the DK board: restore wall time from eMMC
+		clock.txt at boot, persist it every 3 minutes (tmp + rename),
+		and SNTP-sync to Beijing time (UTC+8 wall clock) whenever the
+		RJ45 egress has an IP. With VG_NET_FAILOVER off the thread only
+		restores/persists; SNTP requires the failover manager.
+
+if VG_TIME_SYNC
+
+config VG_TIME_SYNC_PATH
+	string "Wall-time persistence file"
+	default "/data/velaguard/clock.txt"
+	---help---
+		eMMC file holding the last known wall time (seconds since
+		epoch, Beijing wall clock). tmp + rename for power-fail safety.
+
+endif
+
 if VG_AGENT_OPS
 
 config VG_AGENT_AUTOSTART
 	bool "Auto-start ai_agent task at boot"
 	default y
 	---help---
-		Spawn ai_agent in a background task so cron/heartbeat can run
-		without manual "ai_agent &". NSH remains on the console thread.
+		Spawn ai_agent --daemon in a background task so heartbeat/cron
+		(e.g. daily report, pending alarm pickup) run without manual
+		"ai_agent &". With VG_HMI_AUTOSTART on, the agent starts after
+		the HMI task with a 3s settle delay. NSH remains on the console
+		thread; "ai_agent" without --daemon attaches an interactive CLI.
 
 config VG_AGENT_ALARM_SLAVE
 	int "Alarm monitor Modbus slave address"
@@ -140,6 +402,7 @@ config VG_AGENT_ALARM_OFFLINE_PCT
 endif
 
 config VG_BUS_DISCOVER
+	select NETUTILS_CJSON
 	bool "Modbus bus discover (vgdiscover @9600)"
 	default n
 	depends on VG_BRINGUP_TOOLS && VG_CONFIG_STORE
@@ -202,6 +465,17 @@ config VG_HMI
 
 if VG_HMI
 
+config VG_HMI_PERF
+	bool "VelaGuard HMI performance stats (measurement builds only)"
+	default n
+	---help---
+		Build the bounded six-metric HMI performance counters
+		(vg_hmi_perf) and the read-only "vghmi perf" diagnostic.
+		Measurement builds only: the shipping defconfig keeps this off
+		and the default build rejects a leftover =y. Observation adds
+		no business behavior change and stays under an 8 KiB static
+		budget.
+
 config VG_HMI_PRIORITY
 	int "vghmi task priority"
 	default 100
@@ -218,11 +492,39 @@ config VG_HMI_AUTOSTART
 		Spawn vghmi after /dev/fb0 appears so the demo firmware
 		does not require typing "vghmi &" on NSH.
 
+config VG_LLM_HEALTH
+	bool "LLM link health monitor for the status bar MiMo chip"
+	default y
+	---help---
+		Resident thread probes the configured LLM endpoint every
+		VG_LLM_HEALTH_INTERVAL_MS with a fixed invalid test credential
+		(agent_http_probe); the real API key is never read or sent.
+		The verdict drives the status bar MiMo chip; a finished
+		ask/advice round also proves the link and marks it healthy,
+		a failed round only triggers an out-of-cycle probe.
+
+if VG_LLM_HEALTH
+
+config VG_LLM_HEALTH_INTERVAL_MS
+	int "LLM health probe interval (ms)"
+	default 30000
+
+config VG_LLM_HEALTH_STACKSIZE
+	int "LLM health monitor thread stack size"
+	default 16384
+	---help---
+		Must hold a full TLS handshake (X.509 parse + RSA verify, ~12 KB
+		peak measured by overflow on the 2026-10-24 board test); 8 KB
+		overflows and corrupts adjacent SDRAM.
+
+endif
+
 config VG_HMI_INPUT_DEVPATH
 	string "Touchscreen device path"
 	default "/dev/input0"
 
 config VG_HMI_DISCOVER
+	select NETUTILS_CJSON
 	bool "HMI Modbus bus discover (9600 scan via work queue)"
 	default y
 	---help---

@@ -35,6 +35,14 @@
           "/data/velaguard/discover/point_table_candidate.json"
 #endif
 
+/* Root of the point-table store.  Probed to tell "no table yet" apart from
+ * "the store is gone".  /data is a symlink to the eMMC volume.
+ */
+
+#ifndef CONFIG_VG_STORE_ROOT
+#  define CONFIG_VG_STORE_ROOT "/data"
+#endif
+
 #ifndef CONFIG_VG_DISCOVER_POINTS_PATH
 #  define CONFIG_VG_DISCOVER_POINTS_PATH "/data/velaguard/config/points.json"
 #endif
@@ -454,9 +462,24 @@ static int cmd_list(int argc, char *argv[])
     }
 
   ret = vg_point_table_read(&sum, path);
+  if (ret == -ENOENT)
+    {
+      /* A missing table counts as a legitimately empty one only while the
+       * store is really there.  A dangling /data symlink, or a store that
+       * fell back to RAM, also answers "no such file" - and a table that
+       * does not survive a reboot is a failure, not zero points.
+       */
+
+      ret = vg_point_store_root_ok(CONFIG_VG_STORE_ROOT);
+      if (ret == 0)
+        {
+          memset(&sum, 0, sizeof(sum));
+        }
+    }
+
   if (ret != 0)
     {
-      memset(&sum, 0, sizeof(sum));
+      return reply_err("list", "io", vg_point_table_err_token(ret));
     }
 
   for (i = 0; i < sum.n_points; i++)
@@ -487,7 +510,7 @@ static int cmd_add(int argc, char *argv[])
                                        CONFIG_VG_DISCOVER_POINTS_PATH);
   if (rc != 0)
     {
-      return reply_err("add", "io", "candidate_io");
+      return reply_err("add", "io", vg_point_table_err_token(rc));
     }
 
   if (vg_point_table_find_id(&sum, id) >= 0)
@@ -560,7 +583,7 @@ static int cmd_set(int argc, char *argv[])
                                        CONFIG_VG_DISCOVER_POINTS_PATH);
   if (rc != 0)
     {
-      return reply_err("set", "io", "candidate_io");
+      return reply_err("set", "io", vg_point_table_err_token(rc));
     }
 
   idx = vg_point_table_find_id(&sum, id);
@@ -603,7 +626,7 @@ static int cmd_del(int argc, char *argv[])
                                        CONFIG_VG_DISCOVER_POINTS_PATH);
   if (rc != 0)
     {
-      return reply_err("del", "io", "candidate_io");
+      return reply_err("del", "io", vg_point_table_err_token(rc));
     }
 
   idx = vg_point_table_find_id(&sum, id);
@@ -674,7 +697,8 @@ static int cmd_test(int argc, char *argv[])
   printf("vgpoint: test bus=%s\n", dev);
 
   rc = vg_discover_poll_points(dev, CONFIG_VG_DISCOVER_BAUD,
-                               sum.points, sum.n_points,
+                               idx >= 0 ? &sum.points[idx] : sum.points,
+                               idx >= 0 ? 1 : sum.n_points,
                                raw, oks, CONFIG_VG_DISCOVER_INTER_MS);
   vg_bus_unlock();
   if (rc != 0)
@@ -682,6 +706,7 @@ static int cmd_test(int argc, char *argv[])
       return reply_err("test", "io", "read_fail");
     }
 
+  if (idx > 0) { raw[idx] = raw[0]; oks[idx] = oks[0]; }
   for (i = 0; i < sum.n_points; i++)
     {
       FAR const struct vg_point_entry *p = &sum.points[i];
@@ -739,9 +764,22 @@ static int cmd_get(int argc, char *argv[])
     }
 
   rc = vg_point_table_read(&committed, CONFIG_VG_DISCOVER_POINTS_PATH);
+  if (rc == -ENOENT)
+    {
+      /* Same rule as list: an absent table is empty only if the store is
+       * still there.  See cmd_list.
+       */
+
+      rc = vg_point_store_root_ok(CONFIG_VG_STORE_ROOT);
+      if (rc == 0)
+        {
+          memset(&committed, 0, sizeof(committed));
+        }
+    }
+
   if (rc != 0)
     {
-      memset(&committed, 0, sizeof(committed));
+      return reply_err("get", "io", vg_point_table_err_token(rc));
     }
 
   if (committed.n_points <= 0)
@@ -826,28 +864,10 @@ static int cmd_apply(int argc, char *argv[])
       return reply_err("apply", "no_candidate", "missing");
     }
 
-  if (vg_point_table_write_candidate(&sum,
-                                     CONFIG_VG_DISCOVER_POINTS_PATH) != 0)
+  if (vg_point_table_commit(&sum, CONFIG_VG_DISCOVER_POINTS_PATH) != 0)
     {
       return reply_err("apply", "io", "write_points");
     }
-
-#ifdef CONFIG_VG_CONFIG_STORE
-  {
-    struct vg_config cfg;
-
-    vg_config_set_basedir(CONFIG_VG_CONFIG_BASEDIR);
-    vg_config_factory_default(&cfg);
-    snprintf(cfg.device_name, sizeof(cfg.device_name), "vgpoint");
-    rc = vg_config_commit(&cfg);
-    if (rc != 0)
-      {
-        return reply_err("apply", "io", "commit_fail");
-      }
-  }
-#endif
-
-  (void)vg_live_points_replace(&sum);
   reply_ok("apply", "committed", sum.n_points);
   return 0;
 }

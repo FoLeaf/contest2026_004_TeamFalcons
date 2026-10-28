@@ -48,7 +48,8 @@ static int mock_discover_apply_status(void)
     return 2;
 }
 
-static int mock_read_report(char *body, size_t body_sz, char *path, size_t path_sz)
+static int mock_read_report(char *body, size_t body_sz, char *path,
+                            size_t path_sz, bool *from_agent)
 {
     static const char *mock_body =
         "2026-08-30 08:00 运营日报\n"
@@ -63,7 +64,114 @@ static int mock_read_report(char *body, size_t body_sz, char *path, size_t path_
     if(body != NULL && body_sz > 0) {
         lv_snprintf(body, body_sz, "%s", mock_body);
     }
+    if(from_agent != NULL) {
+        *from_agent = true;
+    }
     return 0;
+}
+
+static bool mock_request_daily_report(void)
+{
+    /* PC sim has no on-device agent to poke. */
+    return false;
+}
+
+/* PC sim: no agent, so advice is whatever a headless check put here.
+ * This file is filtered out of the board build, so the setter below never
+ * exists in firmware. */
+
+static vg_ai_advice_entry_t s_mock_advice[VG_AI_ADV_MAX];
+static int s_mock_advice_n;
+static bool s_mock_advice_ready;
+static vg_ui_advice_state_t s_mock_advice_state = VG_UI_ADV_IDLE;
+
+void vg_ui_backend_mock_set_advice(const vg_ai_advice_entry_t *entries, int n)
+{
+    if(entries == NULL || n <= 0) {
+        s_mock_advice_n = 0;
+        s_mock_advice_ready = false;
+        s_mock_advice_state = VG_UI_ADV_IDLE;
+        return;
+    }
+
+    if(n > VG_AI_ADV_MAX) {
+        n = VG_AI_ADV_MAX;
+    }
+
+    memcpy(s_mock_advice, entries, sizeof(s_mock_advice[0]) * (size_t)n);
+    s_mock_advice_n = n;
+    s_mock_advice_ready = true;
+    s_mock_advice_state = VG_UI_ADV_READY;
+}
+
+void vg_ui_backend_mock_set_advice_state(vg_ui_advice_state_t state)
+{
+    /* Headless only: the board's round state reaches ERROR, and the page has
+     * to be exercised in that state too.  The PC backend used to report only
+     * READY or IDLE, so the fallback headings were never rendered here. */
+    s_mock_advice_state = state;
+}
+
+void vg_ui_alarm_advice_request(void)
+{
+}
+
+vg_ui_advice_state_t vg_ui_alarm_advice_state(void)
+{
+    return s_mock_advice_state;
+}
+
+bool vg_ui_alarm_advice_get(const char *sensor_id, uint32_t al_epoch,
+                            vg_ai_advice_entry_t *out)
+{
+    int i;
+
+    /* Same rule as the board: a match is what puts AI text on screen, and the
+     * round state only chooses the wording when there is no match. */
+
+    if(sensor_id == NULL || out == NULL) {
+        return false;
+    }
+
+    for(i = 0; i < s_mock_advice_n; i++) {
+        if(s_mock_advice[i].epoch == al_epoch &&
+           strcmp(s_mock_advice[i].id, sensor_id) == 0) {
+            *out = s_mock_advice[i];
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static int mock_report_request(bool allow_generate, uint32_t *request_id)
+{
+    static uint32_t s_req_id = 1;
+    (void)allow_generate;
+    if(request_id) {
+        *request_id = s_req_id++;
+    }
+    return 0;
+}
+
+static bool mock_report_snapshot(vg_ui_report_snapshot_t *out)
+{
+    if(out == NULL) return false;
+    memset(out, 0, sizeof(*out));
+    out->request_id = 1;
+    out->version = 1;
+    out->status = VG_UI_REPORT_READY;
+    /* The sim exercises the AI label so the source line is visible while
+     * working on the page without a board. */
+    out->from_agent = true;
+    lv_snprintf(out->path, sizeof(out->path), "/data/velaguard/reports/daily-20260830.md");
+    lv_snprintf(out->body, sizeof(out->body),
+                "2026-08-30 08:00 运营日报\n"
+                "\n"
+                "告警: 2 (WARNING 1 / OFFLINE 1)\n"
+                "RS485: 14/32 从站在线 (mock)\n"
+                "最高温: 82.4 C @ 从站 3\n");
+    return true;
 }
 
 static const vg_ui_backend_t s_mock_backend = {
@@ -73,11 +181,32 @@ static const vg_ui_backend_t s_mock_backend = {
     .discover_apply_status = mock_discover_apply_status,
     .get_slaves           = mock_get_slaves,
     .read_latest_report   = mock_read_report,
+    .request_daily_report = mock_request_daily_report,
+    .report_request       = mock_report_request,
+    .report_snapshot      = mock_report_snapshot,
 };
 
 const vg_ui_backend_t *vg_ui_backend_get(void)
 {
     return &s_mock_backend;
+}
+
+int vg_ui_report_request(bool allow_generate, uint32_t *request_id)
+{
+    const vg_ui_backend_t *be = vg_ui_backend_get();
+    if(be && be->report_request) {
+        return be->report_request(allow_generate, request_id);
+    }
+    return -1;
+}
+
+bool vg_ui_report_snapshot(vg_ui_report_snapshot_t *out)
+{
+    const vg_ui_backend_t *be = vg_ui_backend_get();
+    if(be && be->report_snapshot) {
+        return be->report_snapshot(out);
+    }
+    return false;
 }
 
 int vg_ui_backend_scan_last_result(void)
@@ -111,4 +240,11 @@ bool vg_ui_backend_apply_live(void)
 
 void vg_ui_backend_boot_points(void)
 {
+}
+
+bool vg_ui_backend_poll_net(vg_ui_net_live_t *out)
+{
+    (void)out;
+    /* PC sim: status bar stays scenario-driven (keys 1-6) */
+    return false;
 }

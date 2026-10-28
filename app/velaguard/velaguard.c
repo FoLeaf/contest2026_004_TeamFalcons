@@ -10,6 +10,8 @@
  *   若开启 CONFIG_VG_NET_FAILOVER：在 NSH 之后调用 vg_net_mgr_start()，
  *   由独立线程做 RJ45/ESP TCP 故障转移；不依赖敲 NSH。
  *   若开启 CONFIG_VG_HMI_AUTOSTART：等待 /dev/fb0 后 task_create vghmi。
+ *   若开启 CONFIG_VG_AGENT_AUTOSTART：在 HMI 之后拉起 ai_agent --daemon，
+ *   心跳/日报无需手动启动；ai_agent（不带参数）只附着交互 CLI。
  *
  * velaguard.c 的 main 经 Makefile -Dmain 重命名为 velaguard_app_main，
  * 并注册为 NSH 命令 velaguard_app；若在 shell 里重复启动，防重护栏
@@ -25,6 +27,31 @@
 
 #include <nshlib/nshlib.h>
 #include <pthread.h>
+
+/* The system entry task uses CONFIG_INIT_STACKSIZE, not the builtin app's
+ * STACKSIZE. Boot now performs verified FAT writes when refreshing Skills;
+ * the former 2 KiB init stack overflows inside open()/getumask(). */
+#if defined(CONFIG_VG_HMI_AUTOSTART) && CONFIG_INIT_STACKSIZE < 8192
+#  error "VelaGuard boot storage path requires CONFIG_INIT_STACKSIZE >= 8192"
+#endif
+
+/* The console thread runs the whole shell, so every filesystem command runs
+ * on this stack: vgpoint, vgstoretest, cp/mv, and the vfat plus SDMMC read
+ * path underneath them.  The pthread default (CONFIG_PTHREAD_STACK_DEFAULT,
+ * 2 KiB here) is not enough.  Measured on the board: during a vfat rename the
+ * stack reached the very bottom of its allocation, and NuttX keeps
+ * struct tls_info_s there, so the overflow overwrote tls_info_s->tl_task.
+ * The next getpid() dereferenced the wrecked pointer and the board took a
+ * HardFault and stopped responding.  Keep this in step with the matching
+ * CONFIG_VG_NSH_STACKSIZE range in Kconfig. */
+
+#ifndef CONFIG_VG_NSH_STACKSIZE
+#  define CONFIG_VG_NSH_STACKSIZE 8192
+#endif
+
+#if CONFIG_VG_NSH_STACKSIZE < 8192
+#  error "VelaGuard console shell requires CONFIG_VG_NSH_STACKSIZE >= 8192"
+#endif
 
 #if defined(CONFIG_VG_AGENT_AUTOSTART) || defined(CONFIG_VG_HMI_AUTOSTART)
 #include <nuttx/sched.h>
@@ -42,13 +69,32 @@ extern int vghmi_main(int argc, char *argv[]);
 #include "vg_net_mgr.h"
 #endif
 
+#ifdef CONFIG_VG_TIME_SYNC
+#include "vg_time_sync.h"
+#endif
+
+#ifdef CONFIG_VG_HEAP_WATCH
+#include "vg_heapwatch.h"
+#endif
+
 #ifdef CONFIG_EXAMPLES_AI_AGENT_VELA
 #include "vg_agent_seed.h"
+#include "vg_agent_tools.h"
 #include "vg_provision.h"
 #endif
 
 #ifdef CONFIG_VG_AGENT_OPS
 #include "vg_agent_alarm.h"
+#endif
+
+#if defined(CONFIG_VG_PTT) || defined(CONFIG_VG_VOICE_LOOPBACK)
+#include "vg_ptt_board.h"
+#endif
+
+#ifdef CONFIG_VG_VOICE_LOOPBACK
+#include "vg_voice_ptt.h"
+#include "vg_voice_round.h"
+#include "vg_voice_pref.h"
 #endif
 
 #ifdef CONFIG_VG_CONFIG_STORE
@@ -99,10 +145,28 @@ int main(int argc, char *argv[])
 
     g_app_running = 1;
 
-    /* Spawn console shell on a side thread */
+    /* Spawn console shell on a side thread.  It gets an explicit stack rather
+     * than the pthread default: the shell owns the deep vfat/SDMMC call paths
+     * described above. */
 
     pthread_t tid;
-    pthread_create(&tid, NULL, nsh_thread, NULL);
+    pthread_attr_t attr;
+
+    if (pthread_attr_init(&attr) == 0)
+      {
+        pthread_attr_setstacksize(&attr, CONFIG_VG_NSH_STACKSIZE);
+        if (pthread_create(&tid, &attr, nsh_thread, NULL) != 0)
+          {
+            printf("vg: console thread not started\n");
+          }
+
+        pthread_attr_destroy(&attr);
+      }
+    else
+      {
+        printf("vg: console attr init failed, using default stack\n");
+        pthread_create(&tid, NULL, nsh_thread, NULL);
+      }
 
 #ifdef CONFIG_VG_NET_FAILOVER
     /* Start RJ45/ESP TCP failover manager (independent of NSH) */
@@ -111,6 +175,16 @@ int main(int argc, char *argv[])
       {
         printf("vgnet: failover manager not started\n");
       }
+#endif
+
+#ifdef CONFIG_VG_TIME_SYNC
+    /* Wall-time persist + SNTP sync (waits for eMMC mount internally) */
+
+    vg_time_sync_start();
+#endif
+
+#ifdef CONFIG_VG_HEAP_WATCH
+    vg_heapwatch_start();
 #endif
 
 #ifdef CONFIG_VG_CONFIG_STORE
@@ -151,6 +225,11 @@ int main(int argc, char *argv[])
 
 #ifdef CONFIG_EXAMPLES_AI_AGENT_VELA
     vg_agent_seed_content();
+    /* Hand the read-only data tools to ai_agent before its daemon starts, so
+     * the first round already sees them.  Registration only appends to the
+     * registry's static provider array; the daemon does the same from its own
+     * task in the flat build, so this is the same registry. */
+    vg_agent_tools_register();
     vg_provision_boot_apply_if_needed();
 #endif
 
@@ -158,32 +237,48 @@ int main(int argc, char *argv[])
     vg_agent_alarm_start();
 #endif
 
-#ifdef CONFIG_VG_AGENT_AUTOSTART
-#ifndef CONFIG_VG_HMI
+#if defined(CONFIG_VG_VOICE_LOOPBACK) && defined(CONFIG_EXAMPLES_AI_AGENT_VELA)
+    /* USER1 -> record -> ASR -> on-board agent -> TTS -> Line Out.  The round
+     * worker owns the button task, so the handler is fixed before any edge is
+     * delivered.  Stale audio from a crash is removed first, and the stored
+     * speech preference is applied before the first round can run. */
+
     {
-      char *ai_argv[] = { "ai_agent", "--daemon", NULL };
-      int astack = 16384;
+      bool muted = false;
+      bool have_pref;
 
-#ifdef CONFIG_EXAMPLES_AI_AGENT_VELA_STACKSIZE
-      astack = CONFIG_EXAMPLES_AI_AGENT_VELA_STACKSIZE;
-#endif
+      vg_voice_pref_sweep();
+      have_pref = (vg_voice_pref_load(&muted) == 0);
 
-      /* Let eMMC/net settle before TLS-heavy agent (boot race → assert). */
-      sleep(3);
-
-      if (task_create("ai_agent", SCHED_PRIORITY_DEFAULT,
-                      astack, ai_agent_main, ai_argv) < 0)
+      if (vg_voice_round_start() != 0)
         {
-          printf("vgagent: ai_agent autostart failed\n");
+          printf("vgvoice: round not started\n");
         }
-      else
+      else if (have_pref)
         {
-          printf("vgagent: ai_agent autostart ok (stack=%d)\n", astack);
+          /* start() initialises the session, so the stored value is applied
+           * after it, not before. */
+          vg_voice_round_set_muted(muted);
         }
     }
-#else
-    printf("vgagent: skip autostart with HMI (run \"ai_agent &\" after UI is up)\n");
-#endif
+#elif defined(CONFIG_VG_VOICE_LOOPBACK)
+    /* USER1 -> local record/playback loop.  This starts the button task too,
+     * with the recording handler already registered; starting the button task
+     * with the default handler first would fix the print-only callback and the
+     * recording path would never be reached. */
+
+    if (vg_voice_ptt_start() != 0)
+      {
+        printf("vgvoice: loopback not started\n");
+      }
+#elif defined(CONFIG_VG_PTT_AUTOSTART)
+    /* USER1 push-to-talk event thread without an audio backend: it only opens
+     * /dev/buttons and turns edges into record/submit events. */
+
+    if (vg_ptt_start(NULL, NULL, NULL) != 0)
+      {
+        printf("vgptt: button thread not started\n");
+      }
 #endif
 
 #ifdef CONFIG_VG_HMI_AUTOSTART
@@ -218,6 +313,34 @@ int main(int argc, char *argv[])
       else
         {
           printf("vghmi: autostart ok\n");
+        }
+    }
+#endif
+
+#ifdef CONFIG_VG_AGENT_AUTOSTART
+    {
+      char *ai_argv[] = { "ai_agent", "--daemon", NULL };
+      /* Default 32 KiB: 16 KiB overflowed into heap on HMI builds (see
+       * packages/ai_agent agent_config.h CONFIG_VG_HMI note / wedge task). */
+      int astack = 32768;
+
+#ifdef CONFIG_EXAMPLES_AI_AGENT_VELA_STACKSIZE
+      astack = CONFIG_EXAMPLES_AI_AGENT_VELA_STACKSIZE;
+#endif
+
+      /* UI task up first; settle eMMC/net before the TLS-heavy agent
+       * (boot race → assert). The agent loop retries network on its own. */
+
+      sleep(3);
+
+      if (task_create("ai_agent", SCHED_PRIORITY_DEFAULT,
+                      astack, ai_agent_main, ai_argv) < 0)
+        {
+          printf("vgagent: ai_agent autostart failed\n");
+        }
+      else
+        {
+          printf("vgagent: ai_agent autostart ok (stack=%d)\n", astack);
         }
     }
 #endif

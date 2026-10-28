@@ -13,6 +13,9 @@
 #     bash scripts/build.sh --clean       # Rebuild 复位到 velaguard-lvgl 发布配置
 #     bash scripts/build.sh emmc --clean  # eMMC bring-up 预设
 #     bash scripts/build.sh --clean --debug
+#     bash scripts/build.sh --no-llm-health  # P0 计时矩阵：关 30s 健康探测（不进发布配置）
+#     bash scripts/build.sh --tls-forensics  # 诊断镜像：TLS 握手失败取证（不进发布配置）
+#     bash scripts/build.sh --tls-pool       # 诊断镜像：mbedTLS 静态池 A/B 实验（不进发布配置）
 #
 # 产物：
 #   nuttx/nuttx.hex、nuttx/nuttx.bin
@@ -33,6 +36,11 @@ TARGET="velaguard-lvgl"
 MODE="build"
 DEBUG=0
 SYNC_UPSTREAM=0
+HMI_PERF=0
+VOICE_FIXTURE=0
+TLS_FORENSICS=0
+TLS_POOL=0
+NO_LLM_HEALTH=0
 
 # shellcheck source=vg_mainline_target.sh
 . "$(cd "$(dirname "$0")" && pwd)/vg_mainline_target.sh"
@@ -48,6 +56,21 @@ for arg in "$@"; do
     --sync-upstream)
       SYNC_UPSTREAM=1
       ;;
+    --hmi-perf)
+      HMI_PERF=1
+      ;;
+    --voice-fixture)
+      VOICE_FIXTURE=1
+      ;;
+    --tls-forensics)
+      TLS_FORENSICS=1
+      ;;
+    --no-llm-health)
+      NO_LLM_HEALTH=1
+      ;;
+    --tls-pool)
+      TLS_POOL=1
+      ;;
     net|min|lvgl|velaguard|velaguard-lvgl|ai-probe|emmc)
       TARGET="$(vg_normalize_build_target "$arg")"
       ;;
@@ -59,6 +82,16 @@ for arg in "$@"; do
 done
 
 TARGET="$(vg_normalize_build_target "$TARGET")"
+
+if [ "$VOICE_FIXTURE" = 1 ] && [ "$TARGET" != "velaguard-lvgl" ]; then
+  echo "error: --voice-fixture 仅适用于作品主线" >&2
+  exit 1
+fi
+
+if [ "$HMI_PERF" = 1 ] && [ "$TARGET" != "velaguard-lvgl" ]; then
+  echo "error: --hmi-perf 仅适用于作品主线 velaguard-lvgl，不适用于 $TARGET" >&2
+  exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONTEST_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -117,6 +150,11 @@ expect_dev_config()
     velaguard-lvgl)
       grep -q '^CONFIG_GRAPHICS_LVGL=y' "$NUTTX_ROOT/.config" &&
         grep -q 'CONFIG_INIT_ENTRYPOINT="velaguard_app_main"' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_INIT_STACKSIZE=8192$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STACK_COLORATION=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_NET_STATISTICS=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_NET_SOLINGER=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_SCHED_CHILD_STATUS=y$' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_VG_HMI=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_VG_HMI_AUTOSTART=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_STM32H750B_DK_QSPI_BOOT=y' "$NUTTX_ROOT/.config" &&
@@ -126,7 +164,25 @@ expect_dev_config()
         grep -q '^CONFIG_EXAMPLES_AI_AGENT_VELA=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_STM32H7_LTDC=y' "$NUTTX_ROOT/.config" &&
         grep -q '^CONFIG_INPUT_FT5X06=y' "$NUTTX_ROOT/.config" &&
-        ! grep -q '^CONFIG_EXAMPLES_LVGLDEMO=y' "$NUTTX_ROOT/.config"
+        grep -q '^CONFIG_STM32H750B_DK_BUTTONS=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_INPUT_BUTTONS_LOWER=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_PTT=y' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_AUDIO_DRIVER_SPECIFIC_BUFFERS=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_AUDIO_WM8994=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_WM8994_INITVOLUME=10$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H7_SAI2_A=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_STM32H7_SAI_CAPTURE=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_VOICE_LOOPBACK=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_VOICE_TTS_STREAM=y$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_VOICE_TTS_PREBUF_MS=2500$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_VG_VOICE_TTS_RING_BYTES=131072$' "$NUTTX_ROOT/.config" &&
+        grep -q '^CONFIG_AI_AGENT_VOICE_CONN_SLOT=y$' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_VG_VOICE_DIRECT_TOOL=y$' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_VG_VOICE_TLS_CACHE=y$' "$NUTTX_ROOT/.config" &&
+        { [ "$VOICE_FIXTURE" = 1 ] || ! grep -q '^CONFIG_VG_VOICE_TEST_FIXTURE=y$' "$NUTTX_ROOT/.config"; } &&
+        grep -q '^CONFIG_VG_AUDIO_PROBE=y$' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_EXAMPLES_LVGLDEMO=y' "$NUTTX_ROOT/.config" &&
+        ! grep -q '^CONFIG_VG_HMI_PERF=y' "$NUTTX_ROOT/.config"
       ;;
 
     ai-probe)
@@ -236,10 +292,73 @@ if [ "$MODE" = "--clean" ] || ! expect_dev_config; then
   "$NUTTX_ROOT/tools/configure.sh" -E -e "stm32h750b-dk:${DEFCONFIG}"
 fi
 
+if [ "$HMI_PERF" = 1 ]; then
+  echo "[build] measurement build: enabling CONFIG_VG_HMI_PERF (not saved to the defconfig)"
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --enable CONFIG_VG_HMI_PERF
+  make -C "$NUTTX_ROOT" olddefconfig
+  # App objects compile with -DVG_HMI_PERF_ENABLED; drop stale objects so
+  # the toggle cannot leave half-old binaries behind.
+  rm -rf "$SCRIPT_DIR/../build/velaguard"
+fi
+
+if [ "$VOICE_FIXTURE" = 1 ]; then
+  echo "[build] diagnostic image: enabling fixed local voice fault fixture"
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --enable CONFIG_VG_VOICE_TEST_FIXTURE
+  make -C "$NUTTX_ROOT" olddefconfig
+  grep -q '^CONFIG_VG_VOICE_TEST_FIXTURE=y$' "$NUTTX_ROOT/.config" || exit 1
+  rm -rf "$SCRIPT_DIR/../build/velaguard"
+fi
+
+if [ "$NO_LLM_HEALTH" = 1 ]; then
+  # P0 计时矩阵固件：30s 健康探测只与 agent 轮互斥，不覆盖语音轮的
+  # 录音/ASR/TTS/播放阶段，探测可能在被测阶段并发握手。测量期关闭，
+  # 保持与 2026-10-23 基线可比；发布配置不受影响。
+  echo "[build] timing-matrix image: disabling CONFIG_VG_LLM_HEALTH"
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --disable CONFIG_VG_LLM_HEALTH
+  make -C "$NUTTX_ROOT" olddefconfig
+  grep -q '^# CONFIG_VG_LLM_HEALTH is not set$' "$NUTTX_ROOT/.config" || exit 1
+  rm -rf "$SCRIPT_DIR/../build/velaguard"
+fi
+
+if [ "$TLS_FORENSICS" = 1 ]; then
+  echo "[build] diagnostic image: enabling TLS handshake forensics capture"
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --enable CONFIG_AI_AGENT_TLS_FORENSICS
+  # 健康探测每 30s 产生一次后台 TLS，会与被测握手争用唯一捕获槽；取证
+  # 镜像期间关闭，避免失败样本静默丢失。
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --disable CONFIG_VG_LLM_HEALTH
+  make -C "$NUTTX_ROOT" olddefconfig
+  grep -q '^CONFIG_AI_AGENT_TLS_FORENSICS=y$' "$NUTTX_ROOT/.config" || exit 1
+  rm -rf "$SCRIPT_DIR/../build/velaguard"
+fi
+
+if [ "$TLS_POOL" = 1 ]; then
+  echo "[build] diagnostic image: enabling dedicated TLS allocation pool"
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --enable CONFIG_AI_AGENT_TLS_POOL
+  # 16KB content buffers need ~73KB per concurrent pair and overflow the
+  # 100KB static pool during advice+probe concurrency; 8KB keeps the full
+  # MiMo chain (4.3KB) and HTTP chunked streaming intact for the A/B.
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --set-val CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN 8192
+  kconfig-tweak --file "$NUTTX_ROOT/.config" --set-val CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN 8192
+  make -C "$NUTTX_ROOT" olddefconfig
+  grep -q '^CONFIG_AI_AGENT_TLS_POOL=y$' "$NUTTX_ROOT/.config" || exit 1
+  grep -q '^CONFIG_MBEDTLS_PLATFORM_MEMORY=y$' "$NUTTX_ROOT/.config" || exit 1
+  # MBEDTLS_PLATFORM_MEMORY 改变 mbedtls 库本身的编译内容；不清旧对象会
+  # 链接不到 mbedtls_platform_set_calloc_free。ai_agent 的对象同样依赖
+  # Kconfig 宏（平铺构建不自动重编包对象），一并清理。
+  find "$OPENVELA_ROOT/apps/crypto/mbedtls/mbedtls/library" -name '*.o' -delete 2>/dev/null
+  find "$OPENVELA_ROOT/packages/ai_agent" -name '*.o' -delete 2>/dev/null
+  rm -rf "$SCRIPT_DIR/../build/velaguard"
+fi
+
 need_clean=0
 if ! compiler_mode_ok; then
   apply_compiler_mode
   need_clean=1
+fi
+
+if ! expect_dev_config; then
+  echo "[build] ERROR: Kconfig 未保留本预设的必需配置，停止构建。" >&2
+  exit 1
 fi
 
 cd "$NUTTX_ROOT"

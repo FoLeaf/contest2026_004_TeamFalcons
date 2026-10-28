@@ -183,13 +183,18 @@ nuttx 侧交付物（在树上，不走 patch）：
 
 ### 5.3 vgmqtt 用法与验收
 
+2026-09-14 起常驻会话默认 Broker 为 `8.148.67.174:1883`（测试用户 `velaguard`，`client_id` = 芯片 UID）。下面是阶段 1 当时的匿名联调记录，只作历史。
+
 ```bash
-# M2 现场（Broker=107.174.123.74:1883 匿名明文；DEVID 默认 vg-test-01）
+# 现行（默认已指向看板 Broker；也可显式给出）
+vgmqtt -w 30
+
+# 历史 M2（Broker=107.174.123.74:1883 匿名明文；DEVID 曾默认 vg-test-01）
 vgmqtt -h 107.174.123.74 -p 1883 -w 30
 ```
 
-- 默认 QoS0 + retained（`docs/velaguard-mqtt-contract.md` §3：status 用 QoS0；
-  alarm/ai/request 等 QoS1 由 `-q` 覆盖，供阶段 3 用）；
+- 默认 QoS0 + retained（`docs/velaguard-mqtt-contract.md` v2：status 用 QoS0；
+  alarm / point_table 由常驻会话发 QoS1）；
 - `-w <secs>` 发布后保持连接（LWT 演示窗口）；正常退出发 DISCONNECT，拔线才触发 LWT；
 - 确认语义：`connected`=CONNACK 收到，`published`=PUBLISH 完成
   （`mqtt_mq_find` 查状态：QoS0 发出即完成、QoS1 等 PUBACK）。
@@ -226,7 +231,7 @@ vgmqtt -h 107.174.123.74 -p 1883 -w 30
 |---|---|
 | 判定 | 只 ping `eth0`（DHCP 网关；空则 `CONFIG_VG_NET_PING_HOST`）。连续 3 次失败才判 RJ45 挂 |
 | 切什么 | POSIX TCP ↔ ESP-01S `lesp_*` TCP。同时只一条活动出口 |
-| Wi-Fi | 上电即 join，与 RJ45 是否健康无关（热备）。测试 AP：SSID `xxx` / PSK `1472583690` |
+| Wi-Fi | 上电即 join，与 RJ45 是否健康无关（热备）。测试 AP 凭据以 `scripts/configs/velaguard-lvgl.defconfig` 的 `CONFIG_VG_WIFI_SSID/PASSWORD` 为准，或运行期 `vgnet wifi` 覆盖 |
 | 模组 | 仍是 ESP-01S，USART2 `/dev/ttyS1`，AT 1.7.4。不换 ESP32 |
 | 自动运行 | `velaguard_app_main` 拉 `net_mgr` 线程。不需要敲 NSH |
 | `vgnet` | 只观察/注入：`status`、`inject rj45\|wifi down\|up\|auto`、`wifi <ssid> <psk>` |

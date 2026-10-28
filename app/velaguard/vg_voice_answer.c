@@ -1,0 +1,1076 @@
+/****************************************************************************
+ * app/velaguard/vg_voice_answer.c
+ *
+ * BVO-10: render one validated snapshot as display text and speech text.
+ *
+ * Both strings come from the same struct vg_voice_facts, so a number that is
+ * spoken also appears in the list the user can scroll.  The display text may
+ * be the whole anomaly set; the speech text is a short summary of the same
+ * set, worst first.
+ *
+ * Every number printed here is a field of the snapshot.  That is what makes
+ * vg_va_text_facts_consistent() usable as an admission check for a
+ * model-written answer: the check accepts a number only when the snapshot
+ * contains it, so an invented reading is rejected instead of shown.
+ ****************************************************************************/
+
+#include "vg_voice_answer.h"
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "vg_agent_query.h"   /* VG_AGENT_QUERY_STALE_MS */
+
+#define VA_LINE_MAX 192
+
+/* ── small formatting helpers ───────────────────────────────────── */
+
+static int va_append(char *buf, size_t cap, size_t *off, const char *fmt, ...)
+{
+  va_list ap;
+  int n;
+
+  if (buf == NULL || cap == 0 || off == NULL || *off >= cap - 1)
+    {
+      return 0;
+    }
+
+  va_start(ap, fmt);
+  n = vsnprintf(buf + *off, cap - *off, fmt, ap);
+  va_end(ap);
+
+  if (n < 0)
+    {
+      return 0;
+    }
+
+  if ((size_t)n >= cap - *off)
+    {
+      /* The buffer filled up.  The caller keeps what fits; the display is
+       * still a prefix of a correct list, never a different list. */
+
+      *off = cap - 1;
+      return (int)(cap - 1 - *off);
+    }
+
+  *off += (size_t)n;
+  return n;
+}
+
+/* One decimal, no trailing .0: 45 -> "45", 45.25 -> "45.3". */
+
+static void va_num(char *out, size_t cap, float v)
+{
+  long whole = (long)v;
+
+  if ((float)whole == v && whole > -1000000L && whole < 1000000L)
+    {
+      snprintf(out, cap, "%ld", whole);
+    }
+  else
+    {
+      snprintf(out, cap, "%.1f", v);
+    }
+}
+
+/* Seconds, rounded to nearest.  Printed as an integer so the value can be
+ * matched against the snapshot by the consistency check. */
+
+static uint32_t va_secs(uint32_t ms)
+{
+  return (ms + 500u) / 1000u;
+}
+
+/* A speech buffer that filled up is cut back to the last sentence or clause
+ * boundary.  A cut in the middle of a number would be spoken as a different
+ * number, which is the one thing a summary must not do. */
+
+static void va_trim_speech(char *s, size_t cap)
+{
+  static const char *const delims[] = { "。", "，", "；", "\n", NULL };
+  size_t n;
+  size_t best = 0;
+  int i;
+
+  if (s == NULL || cap == 0)
+    {
+      return;
+    }
+
+  n = strlen(s);
+  if (n + 1 < cap)
+    {
+      return;
+    }
+
+  for (i = 0; delims[i] != NULL; i++)
+    {
+      size_t dl = strlen(delims[i]);
+      const char *p = s;
+
+      while ((p = strstr(p, delims[i])) != NULL)
+        {
+          size_t end = (size_t)(p - s) + dl;
+
+          if (end <= n && end > best)
+            {
+              best = end;
+            }
+
+          p += dl;
+        }
+    }
+
+  if (best > 0)
+    {
+      s[best] = '\0';
+    }
+}
+
+const char *vg_va_rank_label(unsigned rank)
+{
+  switch (rank)
+    {
+      case 0: return "严重";
+      case 1: return "警告";
+      case 2: return "离线";
+      case 3: return "过期";
+      default: return "异常";
+    }
+}
+
+static const char *va_kind_label(enum vg_runtime_kind kind)
+{
+  switch (kind)
+    {
+      case VG_RUNTIME_KIND_THRESHOLD: return "阈值";
+      case VG_RUNTIME_KIND_OFFLINE:   return "离线";
+      default:                        return "状态";
+    }
+}
+
+static const char *va_cmp_symbol(const char *cmp)
+{
+  if (cmp == NULL || cmp[0] == '\0')
+    {
+      return "超过";
+    }
+
+  if (strcmp(cmp, "ge") == 0)
+    {
+      return "≥";
+    }
+
+  if (strcmp(cmp, "le") == 0)
+    {
+      return "≤";
+    }
+
+  if (strcmp(cmp, "eq") == 0)
+    {
+      return "=";
+    }
+
+  return "超过";
+}
+
+/* ── point ──────────────────────────────────────────────────────── */
+
+int vg_va_render_point(const struct vg_voice_facts *f,
+                       char *display, size_t dcap,
+                       char *speech, size_t scap)
+{
+  char value[24];
+  char warn[24];
+  char crit[24];
+  size_t d = 0;
+  size_t s = 0;
+  bool stale;
+
+  if (f == NULL || display == NULL || dcap == 0 || speech == NULL || scap == 0)
+    {
+      return -1;
+    }
+
+  display[0] = '\0';
+  speech[0] = '\0';
+
+  if (!f->has_point)
+    {
+      return -1;
+    }
+
+  va_num(value, sizeof(value), f->point_value);
+  stale = f->point_age_ms > VG_AGENT_QUERY_STALE_MS;
+
+  /* Display: identity, reading, freshness, thresholds. */
+
+  if (f->point_online && f->point_has_value)
+    {
+      va_append(display, dcap, &d, "%s %s：%s %s", f->point_id,
+                f->point_name, value, f->point_unit);
+    }
+  else if (f->point_online)
+    {
+      va_append(display, dcap, &d, "%s %s：在线，本次快照没有数值",
+                f->point_id, f->point_name);
+    }
+  else
+    {
+      va_append(display, dcap, &d, "%s %s：离线，没有当前读数",
+                f->point_id, f->point_name);
+    }
+
+  va_append(display, dcap, &d, "\n采样 %u 秒前%s\n", va_secs(f->point_age_ms),
+            stale ? "，已超过新鲜度上限" : "");
+
+  if (f->point_has_warn || f->point_has_crit)
+    {
+      va_append(display, dcap, &d, "阈值：");
+
+      if (f->point_has_warn)
+        {
+          va_num(warn, sizeof(warn), f->point_warn);
+          va_append(display, dcap, &d, "警告 %s %s %s", va_cmp_symbol(f->point_cmp),
+                    warn, f->point_unit);
+        }
+
+      if (f->point_has_crit)
+        {
+          va_num(crit, sizeof(crit), f->point_crit);
+          va_append(display, dcap, &d, "%s严重 %s %s %s",
+                    f->point_has_warn ? "，" : "",
+                    va_cmp_symbol(f->point_cmp), crit, f->point_unit);
+        }
+
+      va_append(display, dcap, &d, "\n");
+    }
+
+  if (f->config_version != 0)
+    {
+      va_append(display, dcap, &d, "数据来自已确认点表，配置版本 %u",
+                f->config_version);
+    }
+  else
+    {
+      va_append(display, dcap, &d, "数据来自已确认点表");
+    }
+
+  /* Speech: same facts, shorter. */
+
+  /* Speech: the reading itself.  The display keeps the state and the
+   * age of the sample; every extra clause is synthesis time the user
+   * waits for. */
+
+  if (!f->point_online)
+    {
+      va_append(speech, scap, &s, "%s 离线。", f->point_name);
+    }
+  else if (!f->point_has_value)
+    {
+      va_append(speech, scap, &s, "%s 暂无数值。", f->point_name);
+    }
+  else if (f->point_unit[0] != '\0')
+    {
+      va_append(speech, scap, &s, "%s %s %s%s。", f->point_name, value,
+                f->point_unit, stale ? "，数据过期" : "");
+    }
+  else
+    {
+      va_append(speech, scap, &s, "%s %s%s。", f->point_name, value,
+                stale ? "，数据过期" : "");
+    }
+
+  va_trim_speech(speech, scap);
+  return (int)d;
+}
+
+/* ── anomalies ──────────────────────────────────────────────────── */
+
+static void va_anomaly_line(char *buf, size_t cap, int index,
+                            const struct vg_runtime_anomaly *a)
+{
+  char value[24];
+  char threshold[24];
+  size_t off = 0;
+
+  buf[0] = '\0';
+  va_num(value, sizeof(value), a->value);
+  va_num(threshold, sizeof(threshold), a->threshold);
+
+  va_append(buf, cap, &off, "%d. [%s] %s", index, vg_va_rank_label(a->rank),
+            a->id);
+
+  if ((a->flags & VG_RUNTIME_ANOMALY_F_THRESHOLD) != 0)
+    {
+      if (a->has_value)
+        {
+          va_append(buf, cap, &off, " %s", value);
+        }
+
+      va_append(buf, cap, &off, "，阈值 %s %s", va_cmp_symbol(a->cmp),
+                threshold);
+    }
+
+  if ((a->flags & VG_RUNTIME_ANOMALY_F_OFFLINE) != 0)
+    {
+      va_append(buf, cap, &off, "，离线，最近成功采样 %u 秒前",
+                va_secs(a->age_ms));
+    }
+
+  if ((a->flags & VG_RUNTIME_ANOMALY_F_STALE) != 0)
+    {
+      va_append(buf, cap, &off, "，数据 %u 秒未更新", va_secs(a->age_ms));
+    }
+
+  if (a->since_ms > 0)
+    {
+      va_append(buf, cap, &off, "，已持续 %u 秒", va_secs(a->since_ms));
+    }
+}
+
+int vg_va_render_anomalies(const struct vg_voice_facts *f,
+                           char *display, size_t dcap,
+                           char *speech, size_t scap)
+{
+  char line[VA_LINE_MAX];
+  char value[24];
+  size_t d = 0;
+  size_t s = 0;
+  int i;
+  int listed;
+
+  if (f == NULL || display == NULL || dcap == 0 || speech == NULL || scap == 0)
+    {
+      return -1;
+    }
+
+  display[0] = '\0';
+  speech[0] = '\0';
+
+  listed = f->anomaly_n;
+
+  /* No point has been sampled yet, so an empty list is "unknown", not
+   * "healthy".  This happens for the first acquisition cycle after boot. */
+
+  if (f->anomaly_seen <= 0)
+    {
+      va_append(display, dcap, &d, "采集尚未完成，暂时无法确认异常。");
+      va_append(speech, scap, &s, "采集尚未完成，暂时无法确认异常。");
+      return (int)d;
+    }
+
+  if (f->anomaly_total <= 0)
+    {
+      va_append(display, dcap, &d, "当前没有异常点位。");
+      va_append(speech, scap, &s, "当前没有异常点位。");
+      return (int)d;
+    }
+
+  va_append(display, dcap, &d, "当前异常 %d 个点位（最旧采样 %u 秒前）\n",
+            f->anomaly_total, va_secs(f->data_age_ms));
+
+  for (i = 0; i < listed; i++)
+    {
+      va_anomaly_line(line, sizeof(line), i + 1, &f->anomalies[i]);
+      va_append(display, dcap, &d, "%s\n", line);
+    }
+
+  if (f->anomaly_total > listed)
+    {
+      va_append(display, dcap, &d, "其余 %d 个未列出\n",
+                f->anomaly_total - listed);
+    }
+
+  /* Snapshot order is severity first. Always retain the first three items. */
+
+  va_append(speech, scap, &s, "共 %d 个异常。", f->anomaly_total);
+
+  {
+    int top = listed < 3 ? listed : 3;
+
+    for (i = 0; i < top; i++)
+      {
+        const struct vg_runtime_anomaly *a = &f->anomalies[i];
+
+        if ((a->flags & VG_RUNTIME_ANOMALY_F_THRESHOLD) != 0)
+          {
+            if (a->flags & VG_RUNTIME_ANOMALY_F_OFFLINE)
+              va_append(speech, scap, &s, "%s %s，离线。", a->id,
+                        vg_va_rank_label(a->rank));
+            else if (a->flags & VG_RUNTIME_ANOMALY_F_STALE)
+              va_append(speech, scap, &s, "%s %s，数据过期。", a->id,
+                        vg_va_rank_label(a->rank));
+            else if (a->has_value)
+              {
+                va_num(value, sizeof(value), a->value);
+                va_append(speech, scap, &s, "%s %s %s。", a->id, value,
+                          vg_va_rank_label(a->rank));
+              }
+            else
+              va_append(speech, scap, &s, "%s %s，暂无数值。", a->id,
+                        vg_va_rank_label(a->rank));
+          }
+        else if ((a->flags & VG_RUNTIME_ANOMALY_F_OFFLINE) != 0)
+          {
+            va_append(speech, scap, &s, "%s 离线。", a->id);
+          }
+        else
+          {
+            va_append(speech, scap, &s, "%s 数据过期。", a->id);
+          }
+      }
+  }
+
+  va_trim_speech(speech, scap);
+  return (int)d;
+}
+
+/* ── recovery ───────────────────────────────────────────────────── */
+
+int vg_va_render_recovery(const struct vg_voice_facts *f,
+                          char *display, size_t dcap,
+                          char *speech, size_t scap)
+{
+  char value[24];
+  char threshold[24];
+  size_t d = 0;
+  size_t s = 0;
+  const struct vg_runtime_recovery *r;
+
+  if (f == NULL || display == NULL || dcap == 0 || speech == NULL || scap == 0)
+    {
+      return -1;
+    }
+
+  display[0] = '\0';
+  speech[0] = '\0';
+
+  if (!f->has_recovery)
+    {
+      return -1;
+    }
+
+  r = &f->recovery;
+  va_num(value, sizeof(value), r->value);
+  va_num(threshold, sizeof(threshold), r->threshold);
+
+  char id_spoken[32];
+  size_t id_len = strlen(r->id);
+  if (id_len >= sizeof(id_spoken)) id_len = sizeof(id_spoken) - 1;
+  memcpy(id_spoken, r->id, id_len);
+  id_spoken[id_len] = '\0';
+  for (size_t k = 0; k < id_len; k++)
+    {
+      if (id_spoken[k] == '_') id_spoken[k] = ' ';
+    }
+
+  switch (r->state)
+    {
+      case VG_RUNTIME_RECOVERY_ACTIVE:
+        va_append(display, dcap, &d, "%s 的%s告警仍在进行中（本次启动）",
+                  r->id, va_kind_label(r->kind));
+        if (r->history_complete)
+          {
+            if (r->kind == VG_RUNTIME_KIND_THRESHOLD)
+              va_append(display, dcap, &d, "\n触发值 %s，阈值 %s %s",
+                        value, va_cmp_symbol(r->cmp), threshold);
+            va_append(display, dcap, &d, "\n触发于本次启动第 %u 秒",
+                      va_secs(r->raise_ms));
+          }
+        va_append(speech, scap, &s, "%s 告警仍在。", id_spoken);
+        break;
+
+      case VG_RUNTIME_RECOVERY_RECOVERED:
+        va_append(display, dcap, &d,
+                  "%s 的%s告警已恢复（本次启动）\n"
+                  "触发于本次启动第 %u 秒，恢复于第 %u 秒，持续 %u 秒\n"
+                  "事件记录完整，触发与恢复属于同一实例 %u",
+                  r->id, va_kind_label(r->kind), va_secs(r->raise_ms),
+                  va_secs(r->clear_ms), va_secs(r->duration_ms), r->episode);
+        va_append(speech, scap, &s, "%s 告警已恢复。", id_spoken);
+        break;
+
+      case VG_RUNTIME_RECOVERY_RECOVERED_PARTIAL:
+        va_append(display, dcap, &d,
+                  "%s 的%s告警有恢复记录（本次启动）\n"
+                  "触发记录已被事件环覆盖，无法给出持续时长\n"
+                  "恢复事件实例 %u",
+                  r->id, va_kind_label(r->kind), r->episode);
+        va_append(speech, scap, &s, "%s 有恢复记录，起点丢失。", id_spoken);
+        break;
+
+      case VG_RUNTIME_RECOVERY_UNKNOWN:
+      default:
+        va_append(display, dcap, &d,
+                  "无法确认 %s 的%s告警恢复情况\n"
+                  "本次启动没有保留相关事件，当前正常不能证明告警曾经恢复",
+                  r->id, va_kind_label(r->kind));
+        va_append(speech, scap, &s, "%s 恢复无法确认。", id_spoken);
+        break;
+    }
+
+  if (!r->history_complete &&
+      r->state != VG_RUNTIME_RECOVERY_RECOVERED_PARTIAL &&
+      r->state != VG_RUNTIME_RECOVERY_UNKNOWN)
+    {
+      va_append(display, dcap, &d, "\n事件环已覆盖部分历史，结论仅基于保留记录");
+    }
+
+  va_trim_speech(speech, scap);
+  return (int)d;
+}
+
+/* ── consistency check ──────────────────────────────────────────── */
+
+/* A number in a model answer is accepted when the snapshot contains the same
+ * value.  The set is small and fixed, so a linear scan is cheaper than a
+ * table and leaves no state behind. */
+
+#define VA_NUM_MAX 96
+
+struct va_numbers
+{
+  double v[VA_NUM_MAX];
+  int    n;
+};
+
+static void va_add(struct va_numbers *set, double v)
+{
+  if (set->n < VA_NUM_MAX)
+    {
+      set->v[set->n++] = v;
+    }
+}
+
+static void va_add_ms(struct va_numbers *set, uint32_t ms)
+{
+  va_add(set, (double)va_secs(ms));
+}
+
+static void va_collect(const struct vg_voice_facts *f, struct va_numbers *set)
+{
+  int i;
+
+  memset(set, 0, sizeof(*set));
+
+  va_add(set, (double)f->anomaly_total);
+  va_add(set, (double)f->anomaly_n);
+  va_add(set, (double)f->config_version);
+  va_add_ms(set, f->data_age_ms);
+
+  for (i = 0; i < f->anomaly_n; i++)
+    {
+      const struct vg_runtime_anomaly *a = &f->anomalies[i];
+
+      va_add(set, (double)(i + 1));      /* list index */
+      va_add(set, (double)a->value);
+      va_add(set, (double)a->threshold);
+      va_add_ms(set, a->age_ms);
+      va_add_ms(set, a->since_ms);
+      va_add(set, (double)a->slave);
+    }
+
+  if (f->has_point)
+    {
+      va_add(set, (double)f->point_value);
+      va_add(set, (double)f->point_warn);
+      va_add(set, (double)f->point_crit);
+      va_add_ms(set, f->point_age_ms);
+    }
+
+  if (f->has_recovery)
+    {
+      va_add(set, (double)f->recovery.value);
+      va_add(set, (double)f->recovery.threshold);
+      va_add_ms(set, f->recovery.raise_ms);
+      va_add_ms(set, f->recovery.clear_ms);
+      va_add_ms(set, f->recovery.duration_ms);
+      va_add(set, (double)f->recovery.episode);
+      va_add(set, (double)f->recovery.kind);
+    }
+}
+
+static bool va_known(const struct va_numbers *set, double v)
+{
+  int i;
+
+  for (i = 0; i < set->n; i++)
+    {
+      double d = set->v[i] - v;
+
+      if (d < 0)
+        {
+          d = -d;
+        }
+
+      /* Values are printed with one decimal, so a round trip differs by at
+       * most half of that.  Integers compare exactly enough at this width. */
+
+      if (d <= 0.06)
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+/* True when text[i] belongs to an identifier rather than to a quantity.
+ * A point id such as ups_2 must not be read as the number 2. */
+
+static bool va_ident_char(char c)
+{
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+         (c >= '0' && c <= '9') || c == '_';
+}
+
+bool vg_va_text_facts_consistent(const struct vg_voice_facts *f,
+                                 const char *text)
+{
+  struct va_numbers set;
+  size_t i = 0;
+
+  if (f == NULL)
+    {
+      return false;
+    }
+
+  if (text == NULL || text[0] == '\0')
+    {
+      return true;
+    }
+
+  va_collect(f, &set);
+
+  while (text[i] != '\0')
+    {
+      /* Hex: only the boot identifier is ever written this way, and it is
+       * not part of the fact set, so accept it as an identifier. */
+
+      if (text[i] == '0' && (text[i + 1] == 'x' || text[i + 1] == 'X'))
+        {
+          i += 2;
+          while ((text[i] >= '0' && text[i] <= '9') ||
+                 (text[i] >= 'a' && text[i] <= 'f') ||
+                 (text[i] >= 'A' && text[i] <= 'F'))
+            {
+              i++;
+            }
+
+          continue;
+        }
+
+      if (text[i] >= '0' && text[i] <= '9')
+        {
+          char *end = NULL;
+          double v;
+          bool ident = (i > 0 && va_ident_char(text[i - 1]));
+
+          v = strtod(text + i, &end);
+          if (end == text + i)
+            {
+              i++;
+              continue;
+            }
+
+          if (!ident && *end != '\0' && va_ident_char(*end))
+            {
+              ident = true;
+            }
+
+          if (!ident && !va_known(&set, v))
+            {
+              return false;
+            }
+
+          i = (size_t)(end - text);
+          continue;
+        }
+
+      i++;
+    }
+
+  return true;
+}
+/* ── operations-assistant reply splitting (2026-10-25) ─────────────
+ *
+ * The voice path no longer renders from a captured snapshot: the model
+ * composes both texts from the tool data it read.  The contract it is asked
+ * to keep is a final line of the form 播报：<short spoken summary>.  This
+ * splitter is the board-side schema check on that contract: it separates the
+ * display text from the spoken summary, bounds both, and derives a spoken
+ * fallback from the display when the model left the marker out.
+ */
+
+bool vg_va_numeric_present(const char *text)
+{
+  if (text == NULL)
+    {
+      return false;
+    }
+
+  while (*text != '\0')
+    {
+      if (*text >= '0' && *text <= '9')
+        {
+          return true;
+        }
+
+      text++;
+    }
+
+  return false;
+}
+
+#define VA_SPLIT_MARKER_FULL "播报："
+#define VA_SPLIT_MARKER_HALF "播报:"
+#define VA_SPEECH_FALLBACK_MAX 160u
+#define VA_SPLIT_BODY_MAX     2048u  /* matches the agent reply buffer */
+#define VA_SPLIT_TEXT_MAX      512u  /* matches the session text field */
+
+static bool va_utf8_lead(unsigned char c)
+{
+  return (c & 0xC0) != 0x80;
+}
+
+/* Copy at most cap-1 bytes without splitting a multi-byte character. */
+
+static size_t va_copy_utf8(char *dst, size_t cap, const char *src, size_t n)
+{
+  size_t take = n;
+
+  if (dst == NULL || cap == 0 || src == NULL)
+    {
+      return 0;
+    }
+
+  if (take >= cap)
+    {
+      take = cap - 1;
+    }
+
+  while (take > 0 && !va_utf8_lead((unsigned char)src[take]))
+    {
+      take--;
+    }
+
+  memcpy(dst, src, take);
+  dst[take] = '\0';
+  return take;
+}
+
+static bool va_isspace(char c)
+{
+  return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+static size_t va_line_end(const char *s, size_t i)
+{
+  while (s[i] != '\0' && s[i] != '\n')
+    {
+      i++;
+    }
+
+  return i;
+}
+
+/* Marker length when the line at [start,end) begins with one, else 0. */
+
+static size_t va_marker_len(const char *s, size_t start, size_t end)
+{
+  size_t p = start;
+  size_t full = strlen(VA_SPLIT_MARKER_FULL);
+  size_t half = strlen(VA_SPLIT_MARKER_HALF);
+
+  while (p < end && va_isspace(s[p]))
+    {
+      p++;
+    }
+
+  if (p + full <= end && strncmp(s + p, VA_SPLIT_MARKER_FULL, full) == 0)
+    {
+      return p - start + full;
+    }
+
+  if (p + half <= end && strncmp(s + p, VA_SPLIT_MARKER_HALF, half) == 0)
+    {
+      return p - start + half;
+    }
+
+  return 0;
+}
+
+static void va_trim_copy(char *dst, size_t cap, const char *src, size_t n)
+{
+  size_t start = 0;
+  size_t end;
+
+  if (dst == NULL || cap == 0)
+    {
+      return;
+    }
+
+  dst[0] = '\0';
+  if (src == NULL)
+    {
+      return;
+    }
+
+  while (start < n && va_isspace(src[start]))
+    {
+      start++;
+    }
+
+  end = n;
+  while (end > start && va_isspace(src[end - 1]))
+    {
+      end--;
+    }
+
+  (void)va_copy_utf8(dst, cap, src + start, end - start);
+}
+
+/* Spoken fallback: leading sentences of the display, newlines folded to
+ * spaces, bounded so synthesis gets one breath group. */
+
+/* Sentence enders are UTF-8 sequences, so the test is a prefix compare,
+ * never a character constant (a multi-byte constant has an
+ * implementation-defined value). */
+
+static const char *const va_sentence_enders[] =
+  { "\u3002", "\uff01", "\uff1f", "\uff1b", "!", "?", ";", NULL };
+
+static size_t va_ender_len(const char *s)
+{
+  int k;
+
+  for (k = 0; va_sentence_enders[k] != NULL; k++)
+    {
+      size_t len = strlen(va_sentence_enders[k]);
+
+      if (strncmp(s, va_sentence_enders[k], len) == 0)
+        {
+          return len;
+        }
+    }
+
+  return 0;
+}
+
+static void va_speech_fallback(char *speech, size_t scap,
+                               const char *display)
+{
+  char tmp[VA_SPEECH_FALLBACK_MAX + 1];
+  size_t i = 0;
+  size_t out = 0;
+  unsigned sentences = 0;
+  size_t limit = VA_SPEECH_FALLBACK_MAX;
+
+  if (speech == NULL || scap == 0 || display == NULL)
+    {
+      return;
+    }
+
+  speech[0] = '\0';
+  if (limit >= sizeof(tmp))
+    {
+      limit = sizeof(tmp) - 1;
+    }
+
+  while (display[i] != '\0' && out < limit && sentences < 2)
+    {
+      size_t elen = va_ender_len(display + i);
+
+      if (elen > 0)
+        {
+          if (out + elen > limit)
+            {
+              break;
+            }
+
+          memcpy(tmp + out, display + i, elen);
+          out += elen;
+          i += elen;
+          sentences++;
+          continue;
+        }
+
+      {
+        char c = display[i];
+
+        if (c == '\n' || c == '\r')
+          {
+            c = ' ';
+          }
+
+        tmp[out++] = c;
+        i++;
+      }
+    }
+
+  /* Terminate before handing tmp to the aligner: va_copy_utf8 reads
+   * src[take] to detect a cut inside a character, and an unterminated
+   * buffer would let stale stack bytes decide where the cut lands. */
+
+  tmp[out] = '\0';
+  out = va_copy_utf8(speech, scap, tmp, out);
+
+  while (out > 0 && speech[out - 1] == ' ')
+    {
+      speech[--out] = '\0';
+    }
+}
+
+bool vg_va_split_reply(const char *reply, char *display, size_t dcap,
+                       char *speech, size_t scap)
+{
+  char body[VA_SPLIT_BODY_MAX];
+  char spoken[VA_SPLIT_TEXT_MAX];
+  size_t marker_line = (size_t)-1;
+  size_t marker_len = 0;
+  size_t i = 0;
+  size_t out = 0;
+  size_t n;
+
+  if (display != NULL && dcap > 0)
+    {
+      display[0] = '\0';
+    }
+
+  if (speech != NULL && scap > 0)
+    {
+      speech[0] = '\0';
+    }
+
+  if (reply == NULL || reply[0] == '\0' || display == NULL || dcap == 0 ||
+      speech == NULL || scap == 0)
+    {
+      return false;
+    }
+
+  /* Locate the last line that carries the spoken-summary marker. */
+
+  n = strlen(reply);
+  if (n > VA_SPLIT_BODY_MAX)
+    {
+      n = VA_SPLIT_BODY_MAX;
+    }
+
+  while (i < n)
+    {
+      size_t start = i;
+      size_t end = va_line_end(reply, i);
+      size_t len;
+
+      if (end > n)
+        {
+          end = n;
+        }
+
+      len = va_marker_len(reply, start, end);
+      if (len > 0)
+        {
+          marker_line = start;
+          marker_len = len;
+        }
+
+      i = (reply[end] == '\n') ? end + 1 : end;
+    }
+
+  spoken[0] = '\0';
+  if (marker_line != (size_t)-1)
+    {
+      size_t end = va_line_end(reply, marker_line);
+
+      if (end > n)
+        {
+          end = n;
+        }
+
+      if (marker_line + marker_len <= end)
+        {
+          va_trim_copy(spoken, sizeof(spoken), reply + marker_line + marker_len,
+                       end - marker_line - marker_len);
+        }
+    }
+
+  /* Display: the reply without the marker line. */
+
+  body[0] = '\0';
+  i = 0;
+  while (i < n)
+    {
+      size_t start = i;
+      size_t end = va_line_end(reply, i);
+      size_t len;
+
+      if (end > n)
+        {
+          end = n;
+        }
+
+      if (start != marker_line)
+        {
+          len = end - start;
+          if (out + len >= sizeof(body))
+            {
+              len = sizeof(body) - 1 - out;
+            }
+
+          memcpy(body + out, reply + start, len);
+          out += len;
+        }
+
+      if (reply[end] == '\n')
+        {
+          if (out < sizeof(body) - 1)
+            {
+              body[out++] = '\n';
+            }
+
+          i = end + 1;
+        }
+      else
+        {
+          i = end;
+        }
+    }
+
+  body[out] = '\0';
+  va_trim_copy(display, dcap, body, strlen(body));
+
+  if (display[0] == '\0')
+    {
+      /* Only the marker line was sent: keep it visible rather than showing
+       * an empty panel. */
+
+      va_trim_copy(display, dcap, reply, strlen(reply));
+    }
+
+  if (spoken[0] == '\0')
+    {
+      va_speech_fallback(spoken, sizeof(spoken), display);
+    }
+
+  if (spoken[0] == '\0' && display[0] != '\0')
+    {
+      /* Display has no sentence-shaped start (a bare number, say): speak the
+       * whole bounded display text rather than nothing. */
+
+      va_trim_copy(spoken, sizeof(spoken), display, strlen(display));
+    }
+
+  if (spoken[0] == '\0')
+    {
+      return false;
+    }
+
+  /* spoken was built at the internal 512-byte bound; hand it out through
+   * the caller's cap. */
+
+  (void)va_copy_utf8(speech, scap, spoken, strlen(spoken));
+  return display[0] != '\0' && speech[0] != '\0';
+}

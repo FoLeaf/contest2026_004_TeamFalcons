@@ -23,7 +23,10 @@
 #  define CONFIG_VG_WIFI_SSID "xxx"
 #endif
 #ifndef CONFIG_VG_WIFI_PASSWORD
-#  define CONFIG_VG_WIFI_PASSWORD "1472583690"
+/* No PSK baked in: real credentials come from CONFIG_VG_WIFI_PASSWORD in
+ * the defconfig (scripts/configs/velaguard-lvgl.defconfig) or from
+ * vg_esp_set_wifi()/vgnet wifi at runtime */
+#  define CONFIG_VG_WIFI_PASSWORD "change-me"
 #endif
 
 static pthread_mutex_t g_esp_lock = PTHREAD_MUTEX_INITIALIZER;

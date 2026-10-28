@@ -14,113 +14,202 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "vg_file_store.h"
 
 static const char g_modbus_query_skill[] =
 "# Modbus 实时查数（VelaGuard）\n"
 "\n"
 "## 何时使用\n"
 "\n"
-"用户问从站寄存器、温湿度、水浸、通信质量时，用 **run_shell** 调 NSH 只读工具。\n"
+"用户问温湿度、水浸和通信质量时，用 **vg_point_read** 与 **vg_run_report** 读取快照。\n"
+"用户问已导入点位的值（例如 UPS负载、空调运行）时，用 **vg_point_read**，\n"
+"不要用 vgmodbus 去猜寄存器。\n"
 "\n"
 "## 命令\n"
 "\n"
-"- 读保持寄存器：`vgmodbus -a <addr> -r <reg> -c <count> -n 1 -i 0`\n"
+"- 点位值（推荐）：`vg_point_read`，query 填点位 id 或中文点名；留空列出全部点位\n"
+"- 不直接读取总线寄存器；未配置点位时说明需要人工配置。\n"
 "- 帧统计：`vgstats dump <addr>`\n"
+"- 运行累计：`vgruntime dump`\n"
 "- 配置摘要：`vgcfg dump`\n"
 "\n"
 "## 示例\n"
 "\n"
+"问 UPS负载 多少：\n"
+"```\n"
+"vg_point_read query=UPS负载\n"
+"```\n"
+"\n"
 "从站 1 温湿度 reg0..1：\n"
 "```\n"
-"vgmodbus -a 1 -r 0 -c 2 -n 1 -i 0\n"
+"vg_point_read query=温度\n"
 "```\n"
+"\n"
+"vg_point_read 的输出里，value 已经是按 scale 换算过的工程值，unit 是单位，\n"
+"age_ms 是采样距今毫秒数。reason=no_sample 表示还没采到该点，reason=no_table\n"
+"表示点表不可读或未导入，这两种情况都要照实说取不到数据，不要编数字。\n"
+"返回 ambiguous 时列出的是候选点位，要问清用户指哪一个，不要挑一个就算。\n"
+"reason=not_found 表示点表里没有这个点，直接说没有，不要拿相近的点凑。\n"
 "\n"
 "禁止写操作、禁止 mkfs/reboot。只读。\n"
 "禁止调用 vgpoint、vgdiscover apply、vgcfg commit。\n";
 
 static const char g_alarm_interpretation_skill[] =
-"# 告警解释（VelaGuard）\n"
+"# 告警建议（VelaGuard）\n"
 "\n"
 "## 何时使用\n"
 "\n"
-"用户问告警含义、/data/velaguard/pending_alarm.txt 有内容、或 HEARTBEAT 指派告警任务时。\n"
+"收到带 boot= 与 req= 的活动告警建议请求时，或用户问告警含义时。\n"
 "\n"
-"## 步骤\n"
+"## 步骤（两步）\n"
 "\n"
-"1. read_file /data/velaguard/pending_alarm.txt（若存在）\n"
-"2. run_shell `vgstats dump <slave>` 查通信质量\n"
-"3. run_shell `vgmodbus -a <slave> -r 0 -c 4 -n 1 -i 0` 查实时值\n"
-"4. run_shell `vgcfg dump` 了解设备名/配置\n"
-"5. 输出 JSON 风格解释：summary、evidence、suggested_attention\n"
-"6. write_file /data/velaguard/reports/last_alarm.md 保存解释\n"
+"1. 在**同一条消息**里一次发出取证命令，它们互不依赖：\n"
+"   vg_run_report（本次上电的统计与事件）\n"
+"2. write_file /data/velaguard/reports/alarm_advice.txt\n"
+"\n"
+"每条消息里的工具调用会被一次执行完。一条消息只发一个调用就要多等一整轮，\n"
+"而单次模型调用有 120 秒上限，所以取证要一次发齐、不要逐个试探。\n"
+"\n"
+"告警的点位、数值、阈值和持续时间都已经写在请求里，直接把请求当数据源，\n"
+"不要为了取告警去 read_file /data/velaguard/pending_alarm.txt。\n"
+"单独一次 read_file 会被板端当成取文件内容作答复并提前结束本轮，后面的\n"
+"write_file 就不会执行。确实需要读文件时，把 read_file 和 vg_run_report\n"
+"写在同一条消息里一起调用。\n"
+"\n"
+"## 输出格式（逐行，顺序不可变，行尾不要空格）\n"
+"\n"
+"VGADV1\n"
+"boot=<原样抄请求里的 boot>\n"
+"req=<原样抄请求里的 req>\n"
+"n=<条数>\n"
+"[1]\n"
+"id=<原样抄请求里的 id>\n"
+"epoch=<原样抄请求里的 epoch>\n"
+"sev=<原样抄请求里的 sev>\n"
+"unres=0 或 1\n"
+"sum=<一句话建议，不超过 24 个汉字>\n"
+"ev=<判断依据，不超过 60 个汉字>\n"
+"att=<建议关注，不超过 60 个汉字>\n"
+"[2]\n"
+"（第 2 条起同样 7 行格式，序号递增；id、epoch、sev 必须与请求逐条对应）\n"
+"END\n"
 "\n"
 "## 约束\n"
 "\n"
-"- 只读；禁止写寄存器、改阈值、mkfs、reboot\n"
-"- 禁止 run_shell：vgpoint、vgdiscover apply、vgcfg commit\n"
-"- 信息不足时设 unresolved=true，不要编造点位\n";
+"- 只写 /data/velaguard/reports/alarm_advice.txt，不要动 runtime-report.md\n"
+"- boot 与 req 必须原样回填，写错会让整份被板端丢弃\n"
+"- 全部使用中文常用字，不要用 Markdown、表格或代码块\n"
+"- 数字只能来自工具输出，信息不足时 unres=1 并在 sum 里说明，不要编造\n"
+"- 禁止 list_dir、ls、cat\n"
+"- 禁止 vgpoint、vgdiscover apply、vgcfg commit\n";
 
 static const char g_operations_report_skill[] =
-"# 运营日报（VelaGuard）\n"
+"# 运行日报（VelaGuard）\n"
 "\n"
 "## 何时使用\n"
 "\n"
-"用户要日报/运营报告，或 HEARTBEAT 要求生成 daily 报告时。\n"
+"两种问法要分开处理：\n"
 "\n"
-"## 步骤\n"
+"- 请求里带 `write_file /data/velaguard/reports/daily-<日期>.md`：按下面步骤写日报文件。\n"
+"- 用户只是问运行情况、要运行报告（例如「给我截止目前的运行报告」、\n"
+"  「现在运行得怎么样」）：用 **vg_run_report** 读取，把返回的三节内容\n"
+"  复述给用户，**不要写文件**。\n"
 "\n"
-"0. read_file /data/agent/skills/operations_report.md（按本 Skill 执行，勿 list_dir）\n"
-"1. get_current_time 取日期\n"
-"2. run_shell `vgstats dump 1`（及已配置从站）\n"
-"3. run_shell `vgmodbus -a 1 -r 0 -c 4 -n 1 -i 0` 采样关键寄存器\n"
-"4. run_shell `vgcfg dump`\n"
-"5. 汇总为 Markdown：告警摘要、通信质量、关键指标、建议关注\n"
-"6. write_file /data/velaguard/reports/daily-YYYYMMDD.md\n"
+"## 口头问运行报告\n"
+"\n"
+"调用 `vg_run_report`，不需要参数。它返回板上自本次上电以来的统计，\n"
+"含通信质量、点位在线、异常时间线三节。数字只能照它说，不要自己算或补。\n"
+"\n"
+"## 写日报文件（收到带路径的请求时）\n"
+"\n"
+"必做步骤（两步，工具调用不超过 4 次）\n"
+"\n"
+"1. 在**同一条消息**里一次发出这两个调用，它们互不依赖：\n"
+"   get_current_time\n"
+"   vg_run_report\n"
+"2. write_file，路径用请求里给出的那一个\n"
+"\n"
+"每条消息里的工具调用会被一次执行完，一条消息发一个调用就要多等一整轮，\n"
+"而单次模型调用有 120 秒上限。把第 1 步的两条并在一条消息里是本 Skill 的硬要求。\n"
+"\n"
+"## 文件格式（纯文本，禁止 Markdown 标记）\n"
+"\n"
+"第一行：AI-DAILY v1\n"
+"第二行：date=<YYYY-MM-DD>\n"
+"第三行：source=agent\n"
+"第四行：---\n"
+"随后固定三节，每节一行标题加两到四行正文：\n"
+"通信质量 / 点位在线 / 异常时间线\n"
+"正文总长不超过 1400 字节，全部使用中文常用字。\n"
 "\n"
 "## 约束\n"
 "\n"
-"- 指标必须来自 run_shell 输出，禁止编造\n"
-"- 只读；禁止写 Modbus/配置\n"
-"- 禁止 run_shell：vgpoint、vgdiscover apply、vgcfg commit\n";
+"- 只在收到带路径的写日报请求时写 daily-<当天日期>.md，不得写 runtime-report.md\n"
+"- 口头问运行报告只回答，不写任何文件\n"
+"- 数字只能来自工具输出，不得编造；某项取不到时该节写数据不足\n"
+"- 禁止 list_dir、ls、cat\n"
+"- 禁止 vgpoint、vgdiscover apply、vgcfg commit\n";
 
 static const char g_heartbeat_md[] =
 "# VelaGuard Heartbeat\n"
 "\n"
-"周期性主动任务（只读）：\n"
+"HMI 构建下心跳线程不再直接发起模型轮次。告警建议与日报都由板端文件\n"
+"工作线程经本地 IPC 发起，本文件只作现场说明。\n"
 "\n"
-"- [ ] 若 /data/velaguard/pending_alarm.txt 存在：按 alarm_interpretation Skill "
-"解释，写入 /data/velaguard/reports/last_alarm.md，完成后删除 pending 文件\n"
-"- [ ] 若今日 /data/velaguard/reports/daily-YYYYMMDD.md 尚不存在：按 "
-"operations_report Skill 生成日报（YYYYMMDD 用 get_current_time）\n"
+"禁止 list_dir、ls、cat。不要写 runtime-report.md（那是固件的离线兜底）。\n"
+"收到带 boot= 与 req= 的请求时按 alarm_interpretation 处理，不要主动去读\n"
+"/data/velaguard/pending_alarm.txt 找活干。\n"
 "\n"
-"工具仅限 run_shell：vgmodbus、vgstats、vgcfg dump、vgnet。\n"
+"工具仅限：vg_point_read、vg_run_report、vgstats dump、vgruntime dump、\n"
+"vgcfg dump、vgnet status、get_current_time、read_file、write_file。\n"
 "禁止 vgpoint、vgdiscover apply、vgcfg commit。\n";
 
-static int write_if_missing(const char *path, const char *body)
+static int write_seed_file(const char *path, const char *body)
 {
+  size_t len = strlen(body);
+  bool same = false;
+  struct stat st;
   int fd;
+
+  /* Refresh in place when eMMC already holds an older seed text, so
+   * firmware-side wording changes land on previously provisioned boards. */
 
   fd = open(path, O_RDONLY);
   if (fd >= 0)
     {
+      if (fstat(fd, &st) == 0 && st.st_size == (off_t)len)
+        {
+          char chunk[128];
+          size_t off;
+
+          same = true;
+          for (off = 0; off < len && same; off += sizeof(chunk))
+            {
+              size_t want = len - off;
+              ssize_t got;
+
+              if (want > sizeof(chunk))
+                {
+                  want = sizeof(chunk);
+                }
+
+              got = read(fd, chunk, want);
+              if (got != (ssize_t)want ||
+                  memcmp(chunk, body + off, want) != 0)
+                {
+                  same = false;
+                }
+            }
+        }
+
       close(fd);
-      return 0;
+      if (same)
+        {
+          return 0;
+        }
     }
 
-  fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0644);
-  if (fd < 0)
-    {
-      return -errno;
-    }
-
-  if (write(fd, body, strlen(body)) != (ssize_t)strlen(body))
-    {
-      close(fd);
-      return -EIO;
-    }
-
-  close(fd);
-  return 0;
+  return vg_file_replace(path, body, len, 0644);
 }
 
 static void wait_for_data_mount(void)
@@ -142,17 +231,17 @@ static void wait_for_data_mount(void)
 void vg_agent_seed_content(void)
 {
   wait_for_data_mount();
-  (void)write_if_missing("/data/agent/skills/modbus_query.md",
+  (void)write_seed_file("/data/agent/skills/modbus_query.md",
                           g_modbus_query_skill);
   /* LLM config: run `vgprovision apply` after encrypted provision (not at boot). */
 
 #ifdef CONFIG_VG_AGENT_OPS
   (void)mkdir("/data/velaguard/reports", 0755);
-  (void)write_if_missing("/data/agent/skills/alarm_interpretation.md",
+  (void)write_seed_file("/data/agent/skills/alarm_interpretation.md",
                           g_alarm_interpretation_skill);
-  (void)write_if_missing("/data/agent/skills/operations_report.md",
+  (void)write_seed_file("/data/agent/skills/operations_report.md",
                           g_operations_report_skill);
-  (void)write_if_missing("/data/agent/HEARTBEAT.md", g_heartbeat_md);
+  (void)write_seed_file("/data/agent/HEARTBEAT.md", g_heartbeat_md);
 #endif
 }
 

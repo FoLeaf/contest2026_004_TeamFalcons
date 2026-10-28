@@ -1,0 +1,41 @@
+# 2026-10-22 板端镜像记录
+
+- 构建脚本：`bash scripts/build.sh`（TARGET=velaguard-lvgl，发布构建）
+- 片内引导：`.debug/qspi_bootstub.hex`，SHA256 `877aa3cf6072d66582b33eac555ded7cd5603bacd5dc794915fbcba425f6119e`
+- 烧录：STM32CubeProgrammer 2.22.0，两段均 verified，末尾硬件复位
+
+## 当日镜像
+
+| 时间 | nuttx.hex SHA256 | 内容 | 板端 |
+|---|---|---|---|
+| 18:05 | `0d517611397373e5f49c32c92f90e40d452d12180fadad03e7dd101f1504dbd0` | 异常输出格式、首轮提示、恢复裸词包装 | 已烧录，BVO-08/09 证据来自此镜像 |
+| 18:15 | `58b7fee43cd75fb7445600d531efa637512991ef91c0827a6c718109f2e47b9e` | 新增 `vgvoice mute` | 已烧录，BVO-13 复位证据来自此镜像 |
+| 18:19 | `3d6cbc1c60d07124e09e95dbfdb455984c4a106342350b1d689f8e89f9039941` | `vgvoice asr` 可选预算 | 已烧录，BVO-07 截止证据来自此镜像 |
+| 18:26 | `a5a0031c443388df5710006926c25efa0e2ecb5ae0d2861f3b80293f1f4d44f8` | 会话接入点表代次 | 已烧录，启动与空闲检查通过 |
+| 18:50 | `c2100f09da3ef9d8712b923adc69e46ee0561b094da3f2375f58758543e7e043` | 浮层按钮标签崩溃修复 | 已烧录，浮层可显示 |
+| 18:53 | `346356117f6cb7fb532b078bf5b78c9a775d966d62338b00203c78dd213d0351` | 云端路径写录音文件 | 已烧录，整轮到 ASR 通过 |
+| 18:56 | `61f6e716a5092fcbeb6283accee053726bfda826140696740bd3ee1d520c9be9` | `vgagent model` 与 ai_agent 模型设置接口 | 已烧录，模型问答通过 |
+| 19:13 | `2197408cf5cfd968961168ac9202d4586275d3c3950819834bd9b95a66effc3a` | 语音等待驱动调度、忙时排队、重试预算、分段耗时 | 已烧录 |
+| 19:19 | `102d2d68738e6124b8596a92c3e0542da7525f362a1af3bc02c13031d0137a35` | ASR/TTS 日志加耗时 | 已烧录 |
+| 19:25 | `4b07cb354069dd9f0824da727e2e2c7e84c60a9a231df5237a63342226bbfb64` | 异常回答快照捷径 | 已烧录，整轮 13.4-13.8 s |
+| 19:28 | `4dc497922c016c4ba97d64a8742d4e2163843adf2ca637a4d77234ec570375df` | 语音前清除同问题缓存 | 已烧录 |
+| 19:40 | `374d3788768ebf6c5f3d706c0373d0f13c6bed9053fd04a2f333e76d82c80baa` | 采集未完成回答 | 已烧录 |
+| 19:44 | `b49f2829437fe791a480e8c6b54eef83383e9dc59c229473890d44bd3ef2f6cd` | 按意图补调工具 | 已烧录，实测补调成功 |
+| 19:49 | `3dceb518f914409c1affe9b1493725d636ef5bb8008000c513e3440444916e30` | 超时释放 Agent 槽位 | 已烧录 |
+| 19:52 | `bc4b718c7867a8207a16058cb5b8b188e680d5fb9d4db11b73e4816db667fdea` | 替换问题释放槽位 | 已烧录 |
+| 19:57 | `2a8355bea6df92e7d5477b22a103d5664801b8a1ab4ef33f4dda7c60c9d4acc7` | 录音结束等待放宽到 3 秒 | 已烧录 |
+| 19:59 | `cca03d32ca1472e131291426b52c506e091aa3799dce7f7a4dc6704e51d401be` | 重试按钮命中与滚动测量 | 已烧录 |
+| 20:03 | `749af18ea1f4b59d4f4dde8d3f9e15ecec9aa0016e6e8f895b8c005a5bbff32b` | 录音前等空闲、ASR 等待 5 秒 | 已烧录 |
+| 20:05 | `7335d4f08e371f2527cefce31bfb1ba950995dd5354f33287239f8de2672960e` | 提交与放弃的竞态保护 | 已烧录 |
+| 20:26 | `776f5f79bc0318e4d793a7106b7133623226745b37c317588f571cb7235a7578` | 工作线程栈 32 KB → 48 KB | 已烧录，24 轮压测无崩溃，当前在板 |
+
+板端自报时间：`NuttX 0.0.0 189e6d8a18d-dirty Oct 22 2026 18:06:42 arm stm32h750b-dk`（18:05 镜像）。由于镜像内含构建时间戳，同一棵源码树重复构建的 SHA256 不同；判断运行版本以板端自报的构建时间为准。
+
+## 源码版本（18:19 镜像）
+
+| 仓库 | 提交 | 分支 |
+|---|---|---|
+| 竞赛仓工作树 | 6fc96a9 之后新增 `vgvoice mute` 与 `asr` 预算，提交见 05a648d 及后续 | velaguard/maintenance-stability |
+| nuttx | 189e6d8a18d8 | velaguard/ptt-user1-stm32h750b-dk |
+| apps | 0ea954b79740 | velaguard/netinit-esp8266 |
+| packages/ai_agent | eff6626a10ab | velaguard/rsp01-response-timing |

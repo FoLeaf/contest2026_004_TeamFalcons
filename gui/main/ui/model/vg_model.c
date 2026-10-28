@@ -1,4 +1,5 @@
 #include "vg_model.h"
+#include "vg_voice_round.h"
 #include "vg_ui_backend.h"
 #include "vg_mthings_points.h"
 #include "lvgl/lvgl.h"
@@ -48,6 +49,12 @@ static lv_timer_t * s_ota_tmr;
 static vg_sys_status_t s_sys;
 static vg_home_filter_t s_home_filter = VG_HOME_FILTER_ALL;
 static char s_selected_id[VG_SENSOR_ID_MAX];
+static uint32_t s_structure_version = 1;
+
+uint32_t vg_model_structure_version(void)
+{
+    return s_structure_version;
+}
 
 static void cancel_add_timer(void);
 static void cancel_ota_timer(void);
@@ -111,6 +118,7 @@ static void fill_sensor_history(vg_sensor_t * s, float base, float amp, float no
         s->history[i] = base + amp * approx_sin(t) + n;
     }
     s->value = s->history[VG_HISTORY_LEN - 1];
+    s->history_version++;
 }
 
 static int sev_rank(vg_severity_t sev)
@@ -127,6 +135,14 @@ static int sev_rank(vg_severity_t sev)
 static void rebuild_filter(void)
 {
     uint16_t i, j;
+    uint16_t old_filt_n = s_filt_n;
+    uint16_t old_filt_idx[VG_SENSOR_MAX];
+    bool changed = false;
+
+    if(s_filt_n > 0 && s_filt_n <= VG_SENSOR_MAX) {
+        memcpy(old_filt_idx, s_filt_idx, s_filt_n * sizeof(uint16_t));
+    }
+
     s_filt_n = 0;
     for(i = 0; i < s_sensor_n; i++) {
         const vg_sensor_t * s = &s_sensors[i];
@@ -163,6 +179,16 @@ static void rebuild_filter(void)
             j--;
         }
         s_filt_idx[j] = key;
+    }
+
+    if(s_filt_n != old_filt_n) {
+        changed = true;
+    }
+    else if(s_filt_n > 0 && memcmp(old_filt_idx, s_filt_idx, s_filt_n * sizeof(uint16_t)) != 0) {
+        changed = true;
+    }
+    if(changed) {
+        s_structure_version++;
     }
 }
 
@@ -991,19 +1017,80 @@ static void seed_base_logs(void)
     vg_model_append_log(VG_LOG_SYS, VG_SEV_INFO, "配置加载完成");
 }
 
-static void set_alarm_from_sensor(vg_sensor_t * s, vg_severity_t sev, const char * title,
-                                  float thr, int32_t duration)
+static const char * alarm_kind_suffix(vg_severity_t sev)
 {
+    switch(sev) {
+        case VG_SEV_CRIT: return "严重告警";
+        case VG_SEV_WARN: return "预警";
+        case VG_SEV_OFFLINE: return "离线";
+        default: return "告警";
+    }
+}
+
+static float alarm_threshold_of(const vg_sensor_t * s)
+{
+    if(s->severity == VG_SEV_CRIT) return s->thr_crit;
+    if(s->severity == VG_SEV_WARN) return s->thr_warn;
+    return 0.0f;
+}
+
+/* Alarm view of one point, built from its episode state */
+static void fill_alarm_from_sensor(vg_alarm_t * a, const vg_sensor_t * s)
+{
+    memset(a, 0, sizeof(*a));
+    a->active = true;
+    a->severity = s->severity;
+    a->value = s->value;
+    a->threshold = alarm_threshold_of(s);
+    a->duration_sec = s->al_duration_sec;
+    a->acked = s->al_acked;
+    a->muted = s->al_muted;
+    lv_snprintf(a->title, sizeof(a->title), "%s %s", s->name,
+                alarm_kind_suffix(s->severity));
+    strncpy(a->sensor_id, s->id, sizeof(a->sensor_id) - 1);
+}
+
+/* Primary alarm = highest-rank active episode, crit > offline > warn
+ * (same ordering as vg_alarm_kind_rank). s_alarm is a derived view. */
+static void derive_primary_alarm(void)
+{
+    static const vg_severity_t order[3] = { VG_SEV_CRIT, VG_SEV_OFFLINE, VG_SEV_WARN };
+    uint16_t k, i;
+
+    for(k = 0; k < 3; k++) {
+        for(i = 0; i < s_sensor_n; i++) {
+            if(s_sensors[i].al_active && s_sensors[i].severity == order[k]) {
+                fill_alarm_from_sensor(&s_alarm, &s_sensors[i]);
+                return;
+            }
+        }
+    }
     memset(&s_alarm, 0, sizeof(s_alarm));
-    s_alarm.active = true;
-    s_alarm.severity = sev;
-    s_alarm.value = s->value;
-    s_alarm.threshold = thr;
-    s_alarm.duration_sec = duration;
-    s_alarm.acked = false;
-    s_alarm.muted = false;
-    strncpy(s_alarm.title, title, sizeof(s_alarm.title) - 1);
-    strncpy(s_alarm.sensor_id, s->id, sizeof(s_alarm.sensor_id) - 1);
+}
+
+static void sensor_alarm_begin(vg_sensor_t * s, vg_severity_t sev)
+{
+    char logbuf[96];
+
+    s->al_active = true;
+    s->al_acked = false;
+    s->al_muted = false;
+    s->al_epoch++;
+    s->al_duration_sec = 0;
+    lv_snprintf(logbuf, sizeof(logbuf), "告警触发: %s", s->name);
+    vg_model_append_log(VG_LOG_ALARM, sev, logbuf);
+}
+
+static void sensor_alarm_end(vg_sensor_t * s)
+{
+    char logbuf[96];
+
+    s->al_active = false;
+    s->al_acked = false;
+    s->al_muted = false;
+    s->al_duration_sec = 0;
+    lv_snprintf(logbuf, sizeof(logbuf), "告警恢复: %s", s->name);
+    vg_model_append_log(VG_LOG_ALARM, VG_SEV_OK, logbuf);
 }
 
 static void set_ota_offer(void)
@@ -1017,14 +1104,12 @@ static void set_ota_offer(void)
 
 static void apply_scenario(vg_scenario_t s)
 {
-    char logbuf[80];
     vg_sensor_t * primary;
 
     cancel_diag_timer();
     reset_add_state();
     reset_ota_state();
     s_scenario = s;
-    memset(&s_alarm, 0, sizeof(s_alarm));
     memset(&s_net, 0, sizeof(s_net));
     clear_diagnosis();
     seed_fleet();
@@ -1032,7 +1117,9 @@ static void apply_scenario(vg_scenario_t s)
 
 #ifdef VG_HMI_BOARD
     s_net.net_ok = false;
+    s_net.wifi_ok = false;
     s_net.mimo_ok = false;
+    s_net.llm_ok = false;
     s_net.acq_ok = (s_sensor_n > 0);
     s_net.aud_ok = true;
     s_net.ota_active = false;
@@ -1040,7 +1127,9 @@ static void apply_scenario(vg_scenario_t s)
     s_net.ip[0] = '\0';
 #else
     s_net.net_ok = true;
+    s_net.wifi_ok = true;
     s_net.mimo_ok = true;
+    s_net.llm_ok = true;
     s_net.acq_ok = true;
     s_net.aud_ok = true;
     s_net.ota_active = false;
@@ -1056,20 +1145,23 @@ static void apply_scenario(vg_scenario_t s)
             primary->severity = VG_SEV_WARN;
             primary->age_sec = 12;
             primary->quality_pct = 92;
+            sensor_alarm_begin(primary, VG_SEV_WARN);
+            primary->al_duration_sec = 45;
             if(s_sensor_n > 2) {
                 s_sensors[2].base_value = 185.0f;
                 fill_sensor_history(&s_sensors[2], 185.0f, 2.0f, 0.2f);
                 s_sensors[2].severity = VG_SEV_WARN;
                 s_sensors[2].age_sec = 8;
+                sensor_alarm_begin(&s_sensors[2], VG_SEV_WARN);
+                s_sensors[2].al_duration_sec = 30;
             }
             if(s_sensor_n > 8) {
                 s_sensors[8].severity = VG_SEV_WARN;
                 s_sensors[8].base_value = 60.0f;
                 fill_sensor_history(&s_sensors[8], 60.0f, 1.0f, 0.1f);
+                sensor_alarm_begin(&s_sensors[8], VG_SEV_WARN);
+                s_sensors[8].al_duration_sec = 20;
             }
-            set_alarm_from_sensor(primary, VG_SEV_WARN, "温度预警", primary->thr_warn, 45);
-            lv_snprintf(logbuf, sizeof(logbuf), "告警触发: %s", s_alarm.title);
-            vg_model_append_log(VG_LOG_ALARM, VG_SEV_WARN, logbuf);
             break;
 
         case VG_SCENARIO_CRIT:
@@ -1079,20 +1171,23 @@ static void apply_scenario(vg_scenario_t s)
             primary->severity = VG_SEV_CRIT;
             primary->age_sec = 30;
             primary->quality_pct = 88;
+            sensor_alarm_begin(primary, VG_SEV_CRIT);
+            primary->al_duration_sec = 120;
             if(s_sensor_n > 3) {
                 s_sensors[3].base_value = 6.2f;
                 fill_sensor_history(&s_sensors[3], 6.2f, 0.4f, 0.1f);
                 s_sensors[3].severity = VG_SEV_WARN;
                 s_sensors[3].age_sec = 18;
+                sensor_alarm_begin(&s_sensors[3], VG_SEV_WARN);
+                s_sensors[3].al_duration_sec = 60;
             }
             if(s_sensor_n > 9) {
                 s_sensors[9].severity = VG_SEV_CRIT;
                 s_sensors[9].base_value = 78.0f;
                 fill_sensor_history(&s_sensors[9], 78.0f, 1.5f, 0.2f);
+                sensor_alarm_begin(&s_sensors[9], VG_SEV_CRIT);
+                s_sensors[9].al_duration_sec = 90;
             }
-            set_alarm_from_sensor(primary, VG_SEV_CRIT, "温度严重告警", primary->thr_crit, 120);
-            lv_snprintf(logbuf, sizeof(logbuf), "告警触发: %s", s_alarm.title);
-            vg_model_append_log(VG_LOG_ALARM, VG_SEV_CRIT, logbuf);
             break;
 
         case VG_SCENARIO_OFFLINE:
@@ -1105,21 +1200,23 @@ static void apply_scenario(vg_scenario_t s)
             primary->age_sec = 300;
             primary->quality_pct = 0;
             s_net.acq_ok = false;
+            sensor_alarm_begin(primary, VG_SEV_OFFLINE);
+            primary->al_duration_sec = 300;
             if(s_sensor_n > 6) {
                 s_sensors[6].online = false;
                 s_sensors[6].severity = VG_SEV_OFFLINE;
                 s_sensors[6].age_sec = 120;
                 s_sensors[6].quality_pct = 0;
+                sensor_alarm_begin(&s_sensors[6], VG_SEV_OFFLINE);
+                s_sensors[6].al_duration_sec = 150;
             }
-            set_alarm_from_sensor(primary, VG_SEV_OFFLINE, "传感器离线", 0.0f, 300);
-            lv_snprintf(logbuf, sizeof(logbuf), "告警触发: %s", s_alarm.title);
-            vg_model_append_log(VG_LOG_ALARM, VG_SEV_OFFLINE, logbuf);
             /* OTA offer stays available; upgrading fails (no network). */
             set_ota_offer();
             break;
 
         case VG_SCENARIO_AI_DOWN:
             s_net.mimo_ok = false;
+            s_net.llm_ok = false;
             s_net.latency_ms = 999;
             vg_model_append_log(VG_LOG_SYS, VG_SEV_WARN, "MiMo 服务不可用");
             break;
@@ -1134,6 +1231,7 @@ static void apply_scenario(vg_scenario_t s)
             vg_model_append_log(VG_LOG_SYS, VG_SEV_OK, "场景切换: 正常");
             break;
     }
+    derive_primary_alarm();
     rebuild_filter();
 }
 
@@ -1190,6 +1288,7 @@ uint16_t vg_model_home_sensor_count(void) { return s_filt_n; }
 
 void vg_model_set_home_filter(vg_home_filter_t f)
 {
+    if(s_home_filter == f) return;
     s_home_filter = f;
     rebuild_filter();
     notify_all();
@@ -1244,6 +1343,12 @@ void vg_model_on_change(vg_model_change_cb_t cb, void * user)
     s_listener_n++;
 }
 
+int vg_model_debug_listener_count(void)
+{
+    /* Read-only debug query for the HMI perf snapshot (HMI thread only). */
+    return s_listener_n;
+}
+
 void vg_model_off_change(vg_model_change_cb_t cb, void * user)
 {
     int i;
@@ -1256,6 +1361,76 @@ void vg_model_off_change(vg_model_change_cb_t cb, void * user)
         }
     }
 }
+
+#ifdef VG_HMI_BOARD
+/* Status bar sync: NET/WIFI/MiMo/AUD come from the board backend
+ * (net_mgr cached samples + buzzer device), ACQ derives from live
+ * point online states. Only state changes mark dirty. */
+static bool vg_model_board_poll_net(void)
+{
+    vg_ui_net_live_t live;
+    uint16_t i;
+    uint16_t online_n = 0;
+    bool dirty = false;
+    bool b;
+
+    if(!vg_ui_backend_poll_net(&live)) {
+        return false;
+    }
+
+    b = live.rj45_has_ip || live.wifi_has_ip;
+    if(s_net.net_ok != b) {
+        s_net.net_ok = b;
+        dirty = true;
+    }
+
+    if(s_net.mimo_ok != live.mqtt_online) {
+        s_net.mimo_ok = live.mqtt_online;
+        dirty = true;
+    }
+
+    /* MiMo chip follows the LLM link: the board health monitor's probe
+     * verdict (real finished rounds count too).  Before the first probe
+     * of this boot there is no verdict yet, so the MQTT session is the
+     * fallback signal. */
+    b = live.llm_seen ? live.llm_ok : live.mqtt_online;
+    if(s_net.llm_ok != b) {
+        s_net.llm_ok = b;
+        dirty = true;
+    }
+
+    b = live.wifi_assoc && live.wifi_has_ip;
+    if(s_net.wifi_ok != b) {
+        s_net.wifi_ok = b;
+        dirty = true;
+    }
+
+    if(s_net.aud_ok != live.aud_ok) {
+        s_net.aud_ok = live.aud_ok;
+        dirty = true;
+    }
+
+    if(strcmp(s_net.ip, live.ip) != 0) {
+        strncpy(s_net.ip, live.ip, sizeof(s_net.ip) - 1);
+        s_net.ip[sizeof(s_net.ip) - 1] = '\0';
+        dirty = true;
+    }
+
+    /* ACQ honest state: configured points all offline -> acquisition down */
+    for(i = 0; i < s_sensor_n; i++) {
+        if(s_sensors[i].online) online_n++;
+    }
+    if(s_sensor_n > 0) {
+        b = (online_n > 0);
+        if(s_net.acq_ok != b) {
+            s_net.acq_ok = b;
+            dirty = true;
+        }
+    }
+
+    return dirty;
+}
+#endif
 
 void vg_model_tick(void)
 {
@@ -1273,16 +1448,37 @@ void vg_model_tick(void)
     dirty = true;
 #else
     dirty = vg_ui_backend_apply_live();
-    (void)i;
+    dirty |= vg_model_board_poll_net();
 #endif
-    if(s_alarm.active) {
-        const vg_sensor_t * p = vg_model_get_sensor(s_alarm.sensor_id);
-        if(p) s_alarm.value = p->value;
-        s_alarm.duration_sec++;
-        dirty = true;
+    for(i = 0; i < s_sensor_n; i++) {
+        if(s_sensors[i].al_active) {
+            if(s_sensors[i].al_duration_sec < 1000000) {
+                s_sensors[i].al_duration_sec++;
+            }
+            dirty = true;
+        }
     }
-    if(dirty) {
-        notify_all();
+    derive_primary_alarm();
+
+    /* The fullscreen voice overlay hides every bound view, so invalidating
+     * them each second under it only burns render time against the upload's
+     * SDRAM traffic.  Data and alarm durations above still advance; one
+     * catch-up refresh fires on the tick after the overlay hides. */
+
+    {
+        struct vg_voice_ui vui;
+        static bool covered_last;
+        bool covered = vg_voice_round_ui(&vui) && vui.visible;
+
+        if((dirty || covered_last) && !covered) {
+            /* Live severity/online changes never rebuild the cached home
+             * filter index on their own; refresh it so the home list matches
+             * the live chip counts (e.g. a point recovering drops out of the
+             * 告警 list). */
+            rebuild_filter();
+            notify_all();
+        }
+        covered_last = covered;
     }
 }
 
@@ -1335,20 +1531,108 @@ void vg_model_request_diagnosis(void)
     lv_timer_set_repeat_count(s_diag_tmr, 1);
 }
 
+/* Acknowledge one point's alarm episode: records awareness only; the row
+ * stays until the restore condition is met (CONTEXT.md Acknowledgement). */
+void vg_model_ack_alarm_id(const char * id)
+{
+    uint16_t i;
+    char logbuf[96];
+
+    if(id == NULL || id[0] == '\0') return;
+    for(i = 0; i < s_sensor_n; i++) {
+        vg_sensor_t * s = &s_sensors[i];
+        if(strcmp(s->id, id) != 0 || !s->al_active || s->al_acked) continue;
+        s->al_acked = true;
+        lv_snprintf(logbuf, sizeof(logbuf), "告警已标记处理: %s", s->name);
+        vg_model_append_log(VG_LOG_UI, VG_SEV_INFO, logbuf);
+        notify_all();
+        return;
+    }
+}
+
+void vg_model_mute_alarm_id(const char * id)
+{
+    uint16_t i;
+    char logbuf[96];
+
+    if(id == NULL || id[0] == '\0') return;
+    for(i = 0; i < s_sensor_n; i++) {
+        vg_sensor_t * s = &s_sensors[i];
+        if(strcmp(s->id, id) != 0 || !s->al_active || s->al_muted) continue;
+        s->al_muted = true;
+        lv_snprintf(logbuf, sizeof(logbuf), "告警已静音: %s", s->name);
+        vg_model_append_log(VG_LOG_UI, VG_SEV_INFO, logbuf);
+        notify_all();
+        return;
+    }
+}
+
+/* No-arg forms act on the primary alarm (status-bar chip / diagnosis path) */
 void vg_model_ack_alarm(void)
 {
-    if(!s_alarm.active || s_alarm.acked) return;
-    s_alarm.acked = true;
-    vg_model_append_log(VG_LOG_UI, VG_SEV_INFO, "告警已标记处理");
-    notify_all();
+    if(!s_alarm.active) return;
+    vg_model_ack_alarm_id(s_alarm.sensor_id);
 }
 
 void vg_model_mute_alarm(void)
 {
     if(!s_alarm.active) return;
-    s_alarm.muted = true;
-    vg_model_append_log(VG_LOG_UI, VG_SEV_INFO, "告警已静音");
+    vg_model_mute_alarm_id(s_alarm.sensor_id);
+}
+
+void vg_model_mute_all_alarms(void)
+{
+    uint16_t i, n = 0;
+    char logbuf[80];
+
+    for(i = 0; i < s_sensor_n; i++) {
+        vg_sensor_t * s = &s_sensors[i];
+        if(s->al_active && !s->al_muted) {
+            s->al_muted = true;
+            n++;
+        }
+    }
+    if(n == 0) return;
+    lv_snprintf(logbuf, sizeof(logbuf), "已静音 %u 个告警", (unsigned)n);
+    vg_model_append_log(VG_LOG_UI, VG_SEV_INFO, logbuf);
     notify_all();
+}
+
+uint16_t vg_model_collect_alarms(vg_alarm_t * out, uint16_t max)
+{
+    static const vg_severity_t order[3] = { VG_SEV_CRIT, VG_SEV_OFFLINE, VG_SEV_WARN };
+    uint16_t k, i, n = 0;
+
+    if(out == NULL || max == 0) return 0;
+    for(k = 0; k < 3; k++) {
+        for(i = 0; i < s_sensor_n; i++) {
+            const vg_sensor_t * s = &s_sensors[i];
+            if(!s->al_active || s->severity != order[k]) continue;
+            if(n >= max) return n;
+            fill_alarm_from_sensor(&out[n++], s);
+        }
+    }
+    return n;
+}
+
+uint16_t vg_model_active_alarm_count(void)
+{
+    uint16_t i, n = 0;
+    for(i = 0; i < s_sensor_n; i++) {
+        if(s_sensors[i].al_active) n++;
+    }
+    return n;
+}
+
+bool vg_model_alarms_all_quieted(void)
+{
+    uint16_t i, n = 0;
+    for(i = 0; i < s_sensor_n; i++) {
+        if(!s_sensors[i].al_active) continue;
+        n++;
+        if(!s_sensors[i].al_acked && !s_sensors[i].al_muted) return false;
+    }
+    return n > 0;
 }
 
 const vg_log_entry_t * vg_model_get_logs(uint16_t * out_count)
@@ -1493,6 +1777,7 @@ void vg_model_import_runtime_points(const vg_runtime_point_t * pts, int n)
     if(pts == NULL || n <= 0) {
         s_sensor_n = 0;
         s_selected_id[0] = '\0';
+        derive_primary_alarm();
         rebuild_filter();
         notify_all();
         return;
@@ -1548,6 +1833,10 @@ void vg_model_import_runtime_points(const vg_runtime_point_t * pts, int n)
     s_net.acq_ok = true;
 #endif
 
+    /* memset(s) above reset every per-point alarm episode; re-derive the
+     * (now empty) primary alarm from the fresh table. */
+    derive_primary_alarm();
+    s_structure_version++;
     rebuild_filter();
     notify_all();
 }
@@ -1582,8 +1871,6 @@ bool vg_model_set_live(uint16_t idx, float value, bool online)
             enum vg_alarm_kind kind;
             float thr = 0.0f;
             vg_severity_t sev;
-            const char * title;
-            int rank;
 
             memset(&rule, 0, sizeof(rule));
             strncpy(rule.cmp, s->cmp, sizeof(rule.cmp) - 1);
@@ -1592,39 +1879,29 @@ bool vg_model_set_live(uint16_t idx, float value, bool online)
             rule.warn = s->thr_warn;
             rule.crit = s->thr_crit;
             rule.fail_n = s->fail_n;
-            kind = vg_alarm_eval(&rule, 1, 0, value, &thr);
+            kind = vg_alarm_sample(&rule, &s->fail_window, 1, value, &thr);
             if(kind == VG_ALARM_KIND_CRIT) {
                 sev = VG_SEV_CRIT;
-                title = "点表严重告警";
             }
             else if(kind == VG_ALARM_KIND_WARN) {
                 sev = VG_SEV_WARN;
-                title = "点表预警";
             }
             else {
                 sev = VG_SEV_OK;
-                title = NULL;
             }
             if(s->severity != sev) {
                 s->severity = sev;
                 changed = true;
             }
-            rank = vg_alarm_kind_rank(kind);
-            if(title != NULL &&
-               (!s_alarm.active ||
-                strcmp(s_alarm.sensor_id, s->id) == 0 ||
-                rank > vg_alarm_kind_rank(
-                    s_alarm.severity == VG_SEV_CRIT ? VG_ALARM_KIND_CRIT :
-                    s_alarm.severity == VG_SEV_OFFLINE ? VG_ALARM_KIND_OFFLINE :
-                    s_alarm.severity == VG_SEV_WARN ? VG_ALARM_KIND_WARN :
-                    VG_ALARM_KIND_NONE))) {
-                char titled[VG_ALARM_TITLE_MAX];
-
-                lv_snprintf(titled, sizeof(titled), "%s %s", s->name, title);
-                set_alarm_from_sensor(s, sev, titled, thr,
-                                     s_alarm.active &&
-                                     strcmp(s_alarm.sensor_id, s->id) == 0 ?
-                                     s_alarm.duration_sec : 0);
+            /* Per-point episode: begin on trigger, end when the point reads
+             * normal. Every simultaneously alarming point keeps its own
+             * episode — no rank gate discards lower-severity alarms. */
+            if(sev != VG_SEV_OK && !s->al_active) {
+                sensor_alarm_begin(s, sev);
+                changed = true;
+            }
+            else if(sev == VG_SEV_OK && s->al_active) {
+                sensor_alarm_end(s);
                 changed = true;
             }
         }
@@ -1639,6 +1916,7 @@ bool vg_model_set_live(uint16_t idx, float value, bool online)
                     (VG_HISTORY_LEN - 1) * sizeof(float));
             s->history[VG_HISTORY_LEN - 1] = value;
         }
+        s->history_version++;
     }
     else {
         uint8_t prev_streak = s->fail_streak;
@@ -1663,28 +1941,18 @@ bool vg_model_set_live(uint16_t idx, float value, bool online)
             rule.warn = s->thr_warn;
             rule.crit = s->thr_crit;
             rule.fail_n = s->fail_n;
-            kind = vg_alarm_eval(&rule, 0, s->fail_streak, s->value, &thr);
+            kind = vg_alarm_sample(&rule, &s->fail_window, 0, s->value, &thr);
             if(kind == VG_ALARM_KIND_OFFLINE) {
                 if(s->online || s->severity != VG_SEV_OFFLINE) {
                     changed = true;
                 }
                 s->online = false;
                 s->severity = VG_SEV_OFFLINE;
-                if(!s_alarm.active ||
-                   strcmp(s_alarm.sensor_id, s->id) == 0 ||
-                   vg_alarm_kind_rank(VG_ALARM_KIND_OFFLINE) >
-                   vg_alarm_kind_rank(
-                       s_alarm.severity == VG_SEV_CRIT ? VG_ALARM_KIND_CRIT :
-                       s_alarm.severity == VG_SEV_OFFLINE ? VG_ALARM_KIND_OFFLINE :
-                       s_alarm.severity == VG_SEV_WARN ? VG_ALARM_KIND_WARN :
-                       VG_ALARM_KIND_NONE)) {
-                    char titled[VG_ALARM_TITLE_MAX];
-
-                    lv_snprintf(titled, sizeof(titled), "%s 离线", s->name);
-                    set_alarm_from_sensor(s, VG_SEV_OFFLINE, titled, 0.0f,
-                                         s_alarm.active &&
-                                         strcmp(s_alarm.sensor_id, s->id) == 0 ?
-                                         s_alarm.duration_sec : 0);
+                /* A point already threshold-alarming keeps its episode
+                 * (duration/ack continuity); only a fresh offline trip
+                 * starts a new one. */
+                if(!s->al_active) {
+                    sensor_alarm_begin(s, VG_SEV_OFFLINE);
                     changed = true;
                 }
             }
@@ -1697,6 +1965,9 @@ bool vg_model_set_live(uint16_t idx, float value, bool online)
         s->severity = VG_SEV_OFFLINE;
         changed = true;
 #endif
+    }
+    if(changed) {
+        derive_primary_alarm();
     }
     return changed;
 }

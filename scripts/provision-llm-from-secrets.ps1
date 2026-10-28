@@ -35,10 +35,18 @@ if ($endpoint -match '^https?://') {
   } else { $llmHost = $rest }
 }
 
-$obj = @{ host = $llmHost; path = $path; port = $portNum; model = 'mimo-v2.5'; api_key = $key }
+# The LLM model the voice agent actually uses (matches gen-agent-secrets.sh).
+# A stale provisioned model makes every agent round fail with
+# "Unsupported model" once the plan drops it.
+$model = 'mimo-v2.6-flash'
+$modelFile = Join-Path $ContestRoot "secrets\agent_llm.model"
+if (Test-Path $modelFile) { $m = (Get-Content -LiteralPath $modelFile -Raw).Trim(); if ($m) { $model = $m } }
+
+$obj = @{ host = $llmHost; path = $path; port = $portNum; model = $model; api_key = $key }
 $obj | ConvertTo-Json -Compress | Out-File -LiteralPath $plain -Encoding ascii -NoNewline
 
 $port = New-Object System.IO.Ports.SerialPort $ComPort, 115200
+$port.Encoding = [System.Text.Encoding]::UTF8
 $port.ReadTimeout = 15000
 $port.DtrEnable = $true
 $port.RtsEnable = $true
@@ -90,14 +98,29 @@ for ($i = 0; $i -lt $hex.Length; $i += 32) {
   $chunk = $hex.Substring($i, [Math]::Min(32, $hex.Length - $i))
   Send-Cmd $port "vgprovision put $chunk" 6 | Out-Null
 }
-$out = Send-Cmd $port "vgprovision commit" 10
+$out = Send-Cmd $port "vgprovision commit" 12
 Write-Host $out
 $st = Send-Cmd $port "vgprovision status" 8
 Write-Host $st
 if ($st -notmatch 'vgprovision: OK') { $port.Close(); throw "provision status failed" }
+if ($out -match 'not persistent') {
+  $port.Close()
+  throw "store is RAM-backed: credentials would be lost on the next boot. Check the eMMC mount (mount / df) before re-provisioning."
+}
 
-Write-Host "[provision] rebooting to apply..."
-Send-Cmd $port "reboot" 10 | Out-Null
+# The board cannot reboot itself: CONFIG_BOARDCTL_RESET is unset on
+# velaguard-lvgl, so NSH has no 'reboot' command and the old Send-Cmd "reboot"
+# below was a silent no-op.  commit only writes the sealed blob and the
+# .apply_on_boot flag; the LLM config appears at the next boot.  Saying so is
+# what keeps this script honest - it used to print OK while the board still had
+# no backend.
+Write-Host "[provision] blob written and verified."
+Write-Host "[provision] Reset the board to apply: the LLM config is written on boot."
+Write-Host "[provision]   - press the board reset button, or"
+Write-Host "[provision]   - powershell -File .debug/nsh_reset_only.ps1   (SWD reset)"
+Write-Host ""
+Write-Host "[provision] After the reset, confirm with:"
+Write-Host "[provision]   nsh> vgagent status     (expect llm: credentials=ready)"
+Write-Host "[provision]   vela> config_show       (expect API Key : tp-c****)"
+Write-Host "[provision]   vela> router_status     (expect backend_count 1, status ok)"
 $port.Close()
-Start-Sleep -Seconds 22
-Write-Host "[provision] OK"

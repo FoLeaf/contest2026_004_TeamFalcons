@@ -38,6 +38,9 @@ endif()
 # Main include files of the project
 include_directories(${PROJECT_SOURCE_DIR}/main/inc)
 include_directories(${PROJECT_SOURCE_DIR}/main/ui)
+# vg_hmi_perf.h lives next to the firmware app; without VG_HMI_PERF_ENABLED
+# its hooks are no-op static inlines, so no extra source is linked here.
+include_directories(${PROJECT_SOURCE_DIR}/../app/velaguard)
 
 # Define options for LVGL with default values (OFF)
 option(LV_USE_DRAW_SDL "Use SDL draw unit" OFF)
@@ -88,6 +91,12 @@ target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS
 # VelaGuard HMI UI sources
 file(GLOB_RECURSE VG_UI_SOURCES
     "${PROJECT_SOURCE_DIR}/main/ui/*.c"
+)
+
+# The voice overlay belongs to the board HMI: it calls into the voice round,
+# which is only linked into the firmware.
+list(REMOVE_ITEM VG_UI_SOURCES
+    "${PROJECT_SOURCE_DIR}/main/ui/widgets/vg_voice_overlay.c"
 )
 
 # Create the main executable, depending on the FreeRTOS option

@@ -25,6 +25,8 @@
 
 #include "modbus_port_openvela.h"
 
+#include "vg_discover.h"
+
 #ifdef CONFIG_VG_FRAME_STATS
 #include "vg_frame_stats.h"
 #endif
@@ -257,26 +259,6 @@ int main(int argc, FAR char *argv[])
     }
 
   port.fd = -1;
-  if (vg_modbus_port_open(&port, cfg.dev) < 0)
-    {
-      fprintf(stderr, "vgmodbus: open %s failed: %d\n", cfg.dev, errno);
-      return 1;
-    }
-
-  vg_modbus_port_bind(&port, &pc);
-
-  err = nmbs_client_create(&nmbs, &pc);
-  if (err != NMBS_ERROR_NONE)
-    {
-      fprintf(stderr, "vgmodbus: nmbs_client_create: %s\n",
-              nmbs_strerror(err));
-      vg_modbus_port_close(&port);
-      return 1;
-    }
-
-  nmbs_set_read_timeout(&nmbs, VGMODBUS_READ_TO_MS);
-  nmbs_set_byte_timeout(&nmbs, VGMODBUS_BYTE_TO_MS);
-  nmbs_set_destination_rtu_address(&nmbs, cfg.addr);
 
   printf("vgmodbus: %s addr=%u fc=%u start=%u qty=%u\n",
          cfg.dev, (unsigned int)cfg.addr, (unsigned int)cfg.fc,
@@ -285,25 +267,59 @@ int main(int argc, FAR char *argv[])
   for (; ; )
     {
       uint16_t regs[VGMODBUS_MAX_REGS];
+      bool locked;
 #ifdef CONFIG_VG_FRAME_STATS
       int32_t t0 = now_ms();
 #endif
 
       memset(regs, 0, sizeof(regs));
-      err = do_read(&nmbs, &cfg, regs);
-#ifdef CONFIG_VG_FRAME_STATS
-      record_frame(cfg.addr, err, t0);
-#endif
-      if (err == NMBS_ERROR_NONE)
+
+      /* Serialize with the HMI acq poller / vgpoint: a collision on the
+       * half-duplex bus shows up as failures on both sides. */
+
+      locked = (vg_bus_lock_timeout(1000) == 0);
+      if (!locked)
         {
-          fails = 0;
-          print_regs(cfg.addr, cfg.start, cfg.qty, regs);
+          fails++;
+          printf("vgmodbus: bus busy, skip round\n");
         }
       else
         {
-          fails++;
-          printf("read failed: %s (fails=%lu)\n",
-                 nmbs_strerror(err), (unsigned long)fails);
+          /* Open/flush and close also affect the half-duplex UART. Keep
+           * the entire session inside the bus lock, including failures. */
+          err = NMBS_ERROR_TRANSPORT;
+          if (vg_modbus_port_open(&port, cfg.dev) == 0)
+            {
+              vg_modbus_port_bind(&port, &pc);
+              err = nmbs_client_create(&nmbs, &pc);
+              if (err == NMBS_ERROR_NONE)
+                {
+                  nmbs_set_read_timeout(&nmbs, VGMODBUS_READ_TO_MS);
+                  nmbs_set_byte_timeout(&nmbs, VGMODBUS_BYTE_TO_MS);
+                  nmbs_set_destination_rtu_address(&nmbs, cfg.addr);
+                  err = do_read(&nmbs, &cfg, regs);
+                }
+              vg_modbus_port_close(&port);
+            }
+          vg_bus_unlock();
+#ifdef CONFIG_VG_FRAME_STATS
+          record_frame(cfg.addr, err, t0);
+#endif
+        }
+
+      if (locked)
+        {
+          if (err == NMBS_ERROR_NONE)
+            {
+              fails = 0;
+              print_regs(cfg.addr, cfg.start, cfg.qty, regs);
+            }
+          else
+            {
+              fails++;
+              printf("read failed: %s (fails=%lu)\n",
+                     nmbs_strerror(err), (unsigned long)fails);
+            }
         }
 
       n++;
@@ -318,6 +334,5 @@ int main(int argc, FAR char *argv[])
         }
     }
 
-  vg_modbus_port_close(&port);
   return (fails == 0) ? 0 : 1;
 }

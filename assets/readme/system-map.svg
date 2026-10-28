@@ -1,80 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
-  <title id="title">VelaGuard 系统形态</title>
-  <desc id="desc">现场 Modbus 从站经 RS485 进入 STM32H750B-DK 网关；网关内部分为永远本地的采集告警环、LVGL HMI 与板载 ai_agent；网络侧连接云端 MiMo LLM 与 MQTT。</desc>
-
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="648" viewBox="0 0 1200 648" role="img" aria-labelledby="title desc">
+  <title id="title">VelaGuard 系统形态示意</title>
+  <desc id="desc">Modbus 从站经 RS485 进入 STM32H750B-DK。openvela 在本地执行周期采集、帧统计、阈值与离线告警、配置存储和 LVGL 显示。板载 ai_agent 经 HTTPS 访问 MiMo，做解释、运行报告与查数。MQTT Broker 接收明文在线状态。RJ45 为主链路，ESP-01S 为备链路；断网不影响本地采集与告警。</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; letter-spacing: 0; fill: #18181b; }
+    .muted { fill: #71717a; }
+    .local { fill: #047857; }
+    .network { fill: #0369a1; }
+    .node { fill: #ffffff; stroke: #d4d4d8; stroke-width: 1.5; }
+    .rule { fill: none; stroke: #e4e4e7; stroke-width: 1.5; }
+  </style>
   <defs>
-    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 1 L9 5 L0 9" fill="none" stroke="#8B9BA6" stroke-width="1.4"/>
-    </marker>
-    <marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 1 L9 5 L0 9" fill="none" stroke="#2EC4B6" stroke-width="1.4"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M2 1L6 5L2 9" fill="none" stroke="#71717a" stroke-width="1.5"/>
     </marker>
   </defs>
 
-  <rect width="1200" height="420" rx="20" fill="#0E1317"/>
-
-  <text x="48" y="48" fill="#7E8F9A" font-size="16" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" letter-spacing="1">SYSTEM MAP</text>
-  <text x="48" y="86" fill="#F2F6F8" font-size="32" font-weight="700" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">现场 → 网关 → 云端</text>
-  <text x="48" y="118" fill="#C5D0D7" font-size="18" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">USB CDC / UART 仅作调试救援；独立网关不依赖长期连电脑。</text>
-
-  <!-- field column -->
-  <g transform="translate(48 150)" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <rect width="200" height="210" rx="12" fill="#172027" stroke="#3A4A56" stroke-width="1.5"/>
-    <text x="100" y="34" text-anchor="middle" fill="#7E8F9A" font-size="16">现场 Modbus 从站</text>
-    <g font-size="16" fill="#C5D0D7" text-anchor="middle">
-      <rect x="24" y="56" width="152" height="36" rx="6" fill="#1E2A33" stroke="#3A4A56"/>
-      <text x="100" y="79">温湿度 / 电表</text>
-      <rect x="24" y="104" width="152" height="36" rx="6" fill="#1E2A33" stroke="#3A4A56"/>
-      <text x="100" y="127">流量计等</text>
-      <rect x="24" y="152" width="152" height="36" rx="6" fill="#1E2A33" stroke="#F4A261"/>
-      <text x="100" y="175" fill="#F4A261">RS485 半双工</text>
-    </g>
+  <rect width="1200" height="648" fill="#ffffff"/>
+  <g id="heading">
+    <text x="48" y="46" class="muted" font-size="18">01 / SYSTEM</text>
+    <text x="48" y="102" font-size="40" font-weight="600">现场到云端，各自负责什么</text>
+    <text x="48" y="144" class="muted" font-size="22">采集、告警与显示在板上运行；解释、运行报告与查数走云端 MiMo。</text>
   </g>
 
-  <path d="M248 255 H292" stroke="#F4A261" stroke-width="2.5" marker-end="url(#m)" fill="none"/>
-
-  <!-- gateway -->
-  <g transform="translate(292 140)" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <rect width="460" height="230" rx="12" fill="#172027" stroke="#F4A261" stroke-width="2"/>
-    <text x="230" y="36" text-anchor="middle" fill="#F4A261" font-size="20" font-weight="600">STM32H750B-DK + openvela</text>
-
-    <rect x="20" y="56" width="200" height="150" rx="10" fill="#1E2A33" stroke="#F4A261" stroke-width="1.5"/>
-    <text x="120" y="84" text-anchor="middle" fill="#F4A261" font-size="17" font-weight="600">永远本地</text>
-    <g fill="#C5D0D7" font-size="15" text-anchor="middle">
-      <text x="120" y="114">Modbus 周期采集</text>
-      <text x="120" y="140">帧质量统计</text>
-      <text x="120" y="166">阈值 / 突变 / 离线告警</text>
-      <text x="120" y="192">配置与事件日志</text>
-    </g>
-
-    <rect x="236" y="56" width="204" height="68" rx="10" fill="#1E2A33" stroke="#3A4A56"/>
-    <text x="338" y="88" text-anchor="middle" fill="#F2F6F8" font-size="16" font-weight="600">LVGL 现场 HMI</text>
-    <text x="338" y="112" text-anchor="middle" fill="#8B9BA6" font-size="14">只读展示 + 人工确认</text>
-
-    <rect x="236" y="138" width="204" height="68" rx="10" fill="#1E2A33" stroke="#2EC4B6" stroke-width="1.5"/>
-    <text x="338" y="170" text-anchor="middle" fill="#2EC4B6" font-size="16" font-weight="600">ai_agent 运营助手</text>
-    <text x="338" y="194" text-anchor="middle" fill="#8B9BA6" font-size="14">解释 / 日报 / NL 查数</text>
+  <g id="field">
+    <text x="48" y="204" class="muted" font-size="20">现场设备</text>
+    <rect x="48" y="228" width="264" height="274" rx="8" class="node"/>
+    <text x="72" y="274" font-size="26" font-weight="600">Modbus 从站</text>
+    <text x="72" y="324" font-size="22">温湿度 / 流量</text>
+    <text x="72" y="360" font-size="22">电量 / 水浸</text>
+    <path d="M72 408H288" class="rule"/>
+    <text x="72" y="454" class="muted" font-size="20">RS485 · 9600 baud</text>
   </g>
 
-  <!-- network arrows -->
-  <g fill="none" stroke-width="2">
-    <path d="M752 210 H808" stroke="#8B9BA6" stroke-dasharray="5 4" marker-end="url(#m)"/>
-    <path d="M752 278 H808" stroke="#2EC4B6" marker-end="url(#ma)"/>
-  </g>
-  <text x="780" y="192" text-anchor="middle" fill="#8B9BA6" font-size="13" font-family="-apple-system, 'Segoe UI', 'PingFang SC', sans-serif">RJ45/ESP-01</text>
-
-  <!-- cloud -->
-  <g transform="translate(808 150)" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <rect width="344" height="210" rx="12" fill="#172027" stroke="#3A4A56" stroke-width="1.5"/>
-    <text x="172" y="34" text-anchor="middle" fill="#7E8F9A" font-size="16">云端（需要网络）</text>
-
-    <rect x="24" y="56" width="296" height="56" rx="10" fill="#1E2A33" stroke="#3A4A56"/>
-    <text x="172" y="90" text-anchor="middle" fill="#C5D0D7" font-size="16">MQTT Broker · 遥测 / 告警 / OTA</text>
-
-    <rect x="24" y="128" width="296" height="56" rx="10" fill="#1E2A33" stroke="#2EC4B6" stroke-width="1.5"/>
-    <text x="172" y="162" text-anchor="middle" fill="#2EC4B6" font-size="16">MiMo LLM · OpenAI 兼容 HTTPS</text>
+  <g id="gateway">
+    <text x="372" y="204" class="local" font-size="20">独立板端</text>
+    <rect x="372" y="228" width="440" height="274" rx="8" class="node"/>
+    <text x="396" y="270" font-size="26" font-weight="600">STM32H750B-DK</text>
+    <text x="396" y="302" class="muted" font-size="20">openvela / NuttX</text>
+    <text x="396" y="342" font-size="22">周期采集 · 帧质量统计</text>
+    <text x="396" y="374" font-size="22">阈值 / 离线告警 · 配置存储</text>
+    <text x="396" y="406" font-size="22">LVGL HMI · NSH</text>
+    <path d="M396 426H788" class="rule"/>
+    <text x="396" y="456" class="network" font-size="22" font-weight="600">ai_agent</text>
+    <text x="528" y="456" font-size="20">解释 / 运行报告 / 查数</text>
   </g>
 
-  <!-- bottom note -->
-  <text x="48" y="400" fill="#7E8F9A" font-size="16" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">断网：采集 / 告警 / 统计 / 日志照常；Agent 降级为规则引擎原始信息，不假装还能 AI 诊断。</text>
+  <g id="network-services">
+    <text x="872" y="204" class="network" font-size="20">联网服务</text>
+    <rect x="872" y="228" width="280" height="274" rx="8" class="node"/>
+    <text x="896" y="274" class="network" font-size="26" font-weight="600">MiMo LLM</text>
+    <text x="896" y="310" font-size="22">HTTPS 直连</text>
+    <path d="M896 342H1128" class="rule"/>
+    <text x="896" y="388" font-size="26" font-weight="600">MQTT Broker</text>
+    <text x="896" y="426" font-size="22">在线状态上报（明文）</text>
+    <text x="896" y="474" class="muted" font-size="18">遥测加密与 OTA 规划中</text>
+  </g>
+
+  <g id="connections" fill="none" stroke="#71717a" stroke-width="1.5" marker-end="url(#arrow)">
+    <path d="M320 366H364"/>
+    <path d="M820 366H864" stroke-dasharray="4 4"/>
+  </g>
+  <g id="operating-boundary">
+    <path d="M48 540H1152" class="rule"/>
+    <text x="48" y="580" class="local" font-size="22">断网照常：采集、告警、统计、配置与显示。</text>
+    <text x="48" y="616" class="muted" font-size="20">网络出口：RJ45 主链路 / ESP-01S 备链路</text>
+  </g>
 </svg>

@@ -15,7 +15,7 @@
 
 上位机经 ST-LINK 虚拟串口，向板载 NSH 按行发送文本命令，批量写入或修改运行时点表（从站地址、寄存器、倍率、比较方式、预警值、严重值），并按 `id` 查询已确认点的当前值。
 
-写点表走候选/`apply`。查当前值走 `vgpoint get`，读 HMI 最近一次采集快照，不占用 RS485。不订阅实时曲线，不推送告警。告警仍由板端写入 `/data/velaguard/pending_alarm.txt`，屏幕自己读。
+写点表走候选/`apply`。查当前值走 `vgpoint get`，读 HMI 最近一次采集快照，不占用 RS485。不订阅实时曲线，不经 NSH 推送告警。告警仍由板端写入 `/data/velaguard/pending_alarm.txt`，屏幕自己读。`apply --confirm` 成功后，若 MQTT 在线，会把已确认 `points.json` 发到 `vg/{device_id}/point_table`（空表不发）。
 
 RS485 只给板做 Modbus 主站。不经 RS485、MQTT 或第二路 UART 下发配置。
 
@@ -51,6 +51,9 @@ RS485 只给板做 Modbus 主站。不经 RS485、MQTT 或第二路 UART 下发�
 `add` / `set` / `del` 只改候选。采集在 `apply --confirm` 成功之前仍用已确认表。
 
 第一次改候选时：若候选文件不存在，则把已确认表复制过去；已确认也没有，则从空表开始。
+这里的「不存在」只指文件缺失。候选或已确认表**存在但读不出来**（损坏、I/O 错、存储根
+不可达）时不从空表开始，直接回 `ERR code=io`——否则一次 `apply --confirm` 就会拿空表
+覆盖掉已确认表。
 
 `vgdiscover apply --confirm` 写出的旧表没有阈值字段。读入时 `cmp` / `warn` / `crit` 视为空：采集可用，不做模拟量告警，直到上位机 `set` 补上。
 
@@ -64,7 +67,7 @@ RS485 只给板做 Modbus 主站。不经 RS485、MQTT 或第二路 UART 下发�
 
 每个点两个身份字段：`id`（主键）和 `name`（显示名）。`id` 大小写敏感，同一张表里不得重复。`name` 可重复，可含中文。`addr`+`reg` 允许重复，不推荐。
 
-查找、去重、`set` / `del` / `test` / `get`、告警关联一律按 `id`。不得按 `name` 索引。旧字段 `tag` 不是身份字段：对象里只有 `tag`、没有合法 `id` 的点丢弃，不升成 `id`。
+查找、去重、`set` / `del` / `test` / `get`、告警关联一律按 `id`。不得按 `name` 索引。旧字段 `tag` 不是身份字段：对象里只有 `tag`、没有合法 `id` 时整表报错，不升成 `id`，也不静默丢弃。
 
 | 字段 | 类型 | 约束 | 缺省 |
 |------|------|------|------|
@@ -76,20 +79,20 @@ RS485 只给板做 Modbus 主站。不经 RS485、MQTT 或第二路 UART 下发�
 | `qty` | 整数 | 1..4 | 1 |
 | `dtype` | 字符串 | `int16` 或 `uint16` | `int16` |
 | `scale` | 浮点 | 有限值，建议大于 0 | `1` |
-| `unit` | 字符串 | 最多 7 个 ASCII 字符 | 空 |
+| `unit` | 字符串 | 最多 7 字节；禁止空白和控制字符 | 空 |
 | `cmp` | 字符串 | `ge` / `le` / `eq`，或空 | 空：不做模拟量告警 |
 | `warn` | 浮点或空 | 有限值 | 空 |
 | `crit` | 浮点或空 | 有限值 | 空 |
-| `fail_n` | 整数 | 1..20 | `3`（连续读失败则离线） |
+| `fail_n` | 整数 | 1..20 | `3`（滑窗有效阈值最低为 5） |
 
 告警规则（实现阶段执行，规范先定口径）：
 
 - `cmp` 为空，或 `ge`/`le` 时 `warn` 与 `crit` 都空：该点不做模拟量告警，仍采集。
 - `eq`：用 `crit` 作为等于判定（例如水浸等于 1）。`warn` 可空。
 - `ge` / `le`：有 `warn` 则预警，有 `crit` 则严重。两者都有时，`ge` 要求 `warn <= crit`，`le` 要求 `warn >= crit`。
-- 离线：该点连续读失败达到 `fail_n` 次。
+- 离线：最近 8 次真实采样中失败数达到 `min(max(fail_n,5),8)`；成功采样立即恢复在线，再按实际值比较阈值。
 
-JSON 里空阈值**省略该键**，不要写 `null`（板端解析按数字 `sscanf`）。例：
+JSON 里空阈值**省略该键**，不要写 `null`。板端完整解析 JSON，非法字段、重复 id、截断或超限整表报错；浮点数保存时保留往返精度。例：
 
 ```json
 {"schema_version":1,"bus":{"device":"/dev/rs485","baud":9600},"hits":[1],"points":[{"id":"temp","name":"温度","addr":1,"fc":3,"reg":0,"qty":1,"dtype":"int16","scale":0.1,"unit":"C","cmp":"ge","warn":40,"crit":55,"fail_n":3},{"id":"flood","name":"水浸","addr":2,"fc":3,"reg":2,"qty":1,"dtype":"uint16","scale":1,"unit":"","cmp":"eq","crit":1,"fail_n":3}]}
@@ -115,6 +118,13 @@ vgpoint list -c
 ```
 
 默认打印已确认表。`-c` 打印候选。只读。
+
+表文件不存在、**且存储根还在**时回 `OK n=0`（空表是合法状态，演示流程要拍这一拍）。
+其余情况都回 `ERR code=io msg=<token>`，不再把存储故障显示成 0 点，token 见第 7.1 节：
+
+- 文件在但读不出来（内容损坏、I/O 错、空间不足、堆不足）；
+- 文件不存在且存储根不可达——`/data` 软链接悬空、eMMC 没挂上、或写入落进了 RAM
+  伪文件系统（`msg=enodev`，重启即丢，不算可用存储）。
 
 ### 5.2 `add`
 
@@ -157,7 +167,7 @@ vgpoint test <id>
 
 试读时必须占用总线忙标志，让周期采集让路（实现时复用 `board_bus_busy()` 一类状态）。总线已被扫描/落盘占用则 `bus_busy`，不要硬抢 `/dev/rs485`。
 
-某个点读失败：该点 `READ ... ok=0`，命令仍可 `OK`（部分失败）。候选为空则 `no_candidate`。全部点都读失败才 `test_fail`。
+某个点读失败：该点 `READ ... ok=0`，命令仍可 `OK`（部分失败）。候选为空、缺失或读不出来则 `no_candidate`。全部点都读失败才 `test_fail`。
 
 ### 5.6 `get`
 
@@ -168,7 +178,7 @@ vgpoint get <id>
 
 读已确认表对应的采集快照，不占用 RS485，不改候选或已确认 JSON。省略 id 则输出快照里全部点；给出 id 则只输出该点。
 
-已确认表为空（文件缺失或点数为 0）：`OK cmd=get table=committed n=0`，无 VALUE 行。带 id 且已确认表为空：`no_id`。
+已确认表为空（文件缺失且存储根可达，或点数为 0）：`OK cmd=get table=committed n=0`，无 VALUE 行。带 id 且已确认表为空：`no_id`。读不出来或存储根不可达：`ERR code=io msg=<token>`，规则与 5.1 相同。
 
 已确认表非空但快照文件尚不存在（HMI 还未写出）：`no_sample`。给出的 id 不在快照中：`no_id`。全表 `get` 以快照为准，只列快照里的点。
 
@@ -180,11 +190,11 @@ vgpoint get <id>
 vgpoint apply --confirm
 ```
 
-把候选覆盖到已确认路径，并按现有双槽规则调用 `vg_config_commit`（设备名可沿用或写成 `vgpoint`）。刷新屏幕使用的点表。
+候选点表完整写入临时文件、同步并回读校验，保留已确认文件的 `.bak` 后替换；失败不更新内存点表，不发送 MQTT 点表变更通知。点表提交不修改设备名等配置元数据，也不调用 `vg_config_commit`。临时文件与备份不能保证 FAT 掉电原子性，完整点记录双槽留在维护 TODO。
 
 没有 `--confirm`：**必须** `ERR code=need_confirm`，退出码 1。不要做成 dry-run 却返回成功，以免脚本误判。
 
-候选文件不存在：`no_candidate`（`msg=missing`）。
+候选文件不存在或读不出来（含内容损坏）：`no_candidate`（`msg=missing`），不会拿一张空表覆盖已确认表。
 候选文件存在但点数为 0：允许落盘，把已确认表写成空表，返回 `OK cmd=apply table=committed n=0`。这是「删光全部点再确认落盘」的合法结果。`test` 对空候选仍 `no_candidate`。
 
 ### 5.8 `abort`
@@ -200,6 +210,8 @@ vgpoint abort
 确认在板端执行这条 `apply --confirm`。上位机脚本在 `test` 打出 `READ` 行之后**必须停下来等人**（PC 上回车，或人在 NSH 手打 `vgpoint apply --confirm`），再单独发 apply。
 
 固件不得在 `test` 成功后自动 apply。本期不做屏幕长按确认。
+
+实现边界：当前 `cmd_apply` 强制检查 `--confirm` 参数，但没有强制检查此前是否试读、试读是否对应当前候选；人工等待由操作者和上位机流程保证。按用户2026-10-18更正，新增 [MQTT候选接入设计](velaguard-candidate-mqtt-protocol.md) 不试读，配置校验后经板端二次确认直接添加，要求候选版本绑定与配置入口互斥，尚未实现。本文NSH的先试读、等人确认步骤及命令返回格式保持，不能借用NSH apply绕过新入口的本地确认。
 
 ---
 
@@ -269,7 +281,7 @@ vgpoint: VALUE id=flood value=- ok=0 unit=- age_ms=210
 | `full` | 候选已有 32 点还 `add` |
 | `dup_id` | `add` 的 id 已在候选中 |
 | `no_id` | `set` / `del` / 带 id 的 `test` / 带 id 的 `get` 找不到该点 |
-| `no_candidate` | `test` 时候选为空或不存在；`apply` 时候选文件不存在 |
+| `no_candidate` | `test` 时候选为空、不存在或读不出来；`apply` 时候选不存在或读不出来（含内容损坏） |
 | `no_sample` | `get` 时已确认表非空，但采集快照文件尚不存在 |
 | `need_confirm` | `apply` 未带 `--confirm` |
 | `bus_busy` | 试读时扫描或另一路总线操作占用 RS485 |
@@ -277,11 +289,47 @@ vgpoint: VALUE id=flood value=- ok=0 unit=- age_ms=210
 | `io` | 写 eMMC / 读文件 / `vg_config_commit` 失败 |
 | `denied` | 预留：调用方被拒绝（见第 8 节；NSH 人工调用不走这条） |
 
+### 7.1 `io` 的 `msg`
+
+`list` / `get` 读取点表失败、以及 `add` / `set` / `del` 准备候选表失败时，`msg` 是病因
+token，由板端 errno 映射而来。errno 数值随平台变化，token 才是稳定可检索的：
+
+| token | 含义 |
+| --- | --- |
+| `enoent` | 路径不存在：`/data` 软链接悬空、目录没建起来 |
+| `enotdir` | 表所在目录被同名普通文件占了位 |
+| `erofs` | 只读文件系统 |
+| `enospc` | eMMC 没有空间 |
+| `enomem` | 内存不足 |
+| `eacces` | 权限不足 |
+| `efbig` | 文件超过点表 JSON 上限 |
+| `einval` | 文件存在但内容不是合法点表 |
+| `enodev` | 存储根落在 RAM 伪文件系统上，重启即丢 |
+| `eio` | 其他，含未识别的 errno |
+
+表所在的目录缺失不算故障：板端把读表时的 `ENOTDIR` 与 `ENOENT` 同样看待，
+`list` / `get` 回 `OK n=0`，`add` / `set` / `del` 直接重建目录树再写。NuttX 在
+路径中间某级缺失时回的是 `ENOTDIR`（不是 `ENOENT`），这一点与桌面 libc 不同；
+只有目录名被普通文件占用时才会真的报 `enotdir`。
+
+其余 `io` 的 `msg` 仍是操作名（`write_fail` / `write_points` / `commit_fail` /
+`unlink_fail` / `read_fail`），用来区分是哪一个写或读失败。
+
+文件不存在不算故障：`list` / `get` 对已确认表文件缺失回 `OK n=0`。`test` / `apply`
+只要候选读不出来就回 `no_candidate`，缺失和内容损坏都在内，`msg` 沿用操作名的
+`empty` / `missing`，不带 token。
+
+回 `io` 且带 token 的是这几处：`list` / `get` 读表失败（含文件缺失但存储根不可达），
+`add` / `set` / `del` 准备候选表（读既有表、建父目录、打开文件、写盘）失败。
+
+`list` / `get` 打 `enoent` 表示存储根本身不可达，不是「表还是空的」；判路径断在哪一段用
+`vgcfg probe`。
+
 ---
 
 ## 8. Agent 禁令
 
-Agent 的 `run_shell` 白名单保持只读：`vgmodbus`、`vgstats`、`vgcfg dump`。
+带屏产品中 Agent 的 `run_shell` 只允许只读元数据命令及 `vgstats dump`、`vgruntime dump`、`vgcfg dump`、`vgnet status`，10 秒执行超时。`vgmodbus` 不向 Agent 开放；板端人工 NSH 命令继续保留。运营 Skill 用 `vg_point_read` / `vg_run_report` 读取快照。
 
 禁止通过 Agent 调用：
 
@@ -290,6 +338,71 @@ Agent 的 `run_shell` 白名单保持只读：`vgmodbus`、`vgstats`、`vgcfg du
 - `vgcfg commit`
 
 实现阶段改 `app/velaguard/vg_agent_seed.c` 的 Skill 正文，并在 Agent 工具层挡住这些命令。规范先把口径定死：点表变更只能由调试串口上的人或上位机脚本发起。
+
+### 8.1 诊断 AI 不可用：先看 `vgagent status`
+
+```text
+nsh> vgagent status
+round: state=idle gen=0 owner=none
+llm: credentials=ready provision_file=present
+```
+
+`credentials=MISSING` 表示 `/data/agent/config/config.json` 里没有非空的
+`llm_host` 或 `api_key`，也就是 agent 没有任何 backend 可调。此时每一轮都以失败
+结束、不产出任何文档，告警页会显示「AI 凭证未配置，显示规则摘要」，报告页会退回
+`runtime-report.md`。这是凭证问题，不是建议或报告功能的问题，处理方式是重新
+provision（见 `README.md` 的 `scripts/provision-llm-from-secrets.sh`）。
+
+`provision_file` 表示封存的 `/data/velaguard/provision/llm_secrets.v1` 是否存在。
+两者不一致（blob 在、凭证不在）说明应用步骤没跑：`commit` 之后必须复位板子，
+配置在开机时写入。
+
+`vgprovision commit` 若打印 `WARNING store is not persistent`，说明 `/data` 当前是
+RAM 存储（eMMC 未挂载或退化成 tmpfs），此时写进去的凭证重启即丢。
+
+### 8.2 只读数据工具：`vgagent tools` / `vgagent tool`
+
+Agent 有两个只读数据工具，模型在 `ask` 时会自己调用：
+
+| 工具 | 作用 |
+|---|---|
+| `vg_point_read {query?}` | 读已确认点表里一个点位的工程值、单位、采样新鲜度与阈值；`query` 可写 id 或中文点名，留空列出全部点位 |
+| `vg_run_report {}` | 读自本次上电以来的运行报告（通信质量 / 点位在线 / 异常时间线） |
+
+两者都只读文件，不打开 RS485，也不写任何文件。`vgpoint` 仍在 `tool_shell.c`
+的白名单外，Agent 不能借这两个工具改点表。
+
+模型后端不可达时，`ask` 一定失败，但工具本身仍然可以单独验证：
+
+```text
+nsh> vgagent tools
+tools: 10676 bytes
+tool: "vg_point_read","description":"...","input_schema":{...}}
+tool: "vg_run_report","description":"...","input_schema":{...}}
+
+nsh> vgagent tool vg_point_read ups_load
+tool vg_point_read rc=0
+vgquery: point id=ups_load name=UPS负载 value=72.5 unit=% ok=1 age_ms=120 warn=ge70 crit=ge90
+
+nsh> vgagent tool vg_run_report {}
+tool vg_run_report rc=0
+运行报告由板上统计生成，数字不是推测。
+...
+```
+
+`vgagent tools` 打印的是注册表实际下发给模型的工具定义。注册表会静默丢弃
+JSON 解析不通过的 provider，从外部看和「模型没调用」一样，所以要看到字符串
+本身才能区分这两种情况。
+
+`vgagent tool` 走的是和 ReAct 循环同一套 guard 与审计路径，调用会记进
+`/data/velaguard/logs/agent_tools.log`。**它只用于板端诊断与验收，不是给人用的
+配置通道**，两个工具本身也只读。
+
+`query` 传一个裸词即可（`vgagent tool vg_point_read UPS负载`）：NSH 会吃掉
+JSON 参数需要的引号，`{"query":"ups_load"}` 会变成 `{query:ups_load}` 而解析
+失败，因此工具层接受裸词并自己补成合法 JSON。
+
+板上验收不依赖模型的路径是 `scripts/vg_agent_tools_probe.ps1`。
 
 ---
 
@@ -340,3 +453,11 @@ Agent 的 `run_shell` 白名单保持只读：`vgmodbus`、`vgstats`、`vgcfg du
 - 新增 PowerShell 批量脚本
 
 实现前以本文为准；若命令或字段有变，先改本文再改代码。
+
+## 维护诊断
+
+`vgstoretest [rounds]` 只写 `/data/velaguard/diagnostics/store-probe.bin` 及备份，默认 50 轮，范围 1..10000。每轮同步、回读比较完整数据，并比较上一轮备份。返回 `vgstoretest: OK` 或 `ERR rc=...`；不格式化，不修改点表或凭证，也不向设备端 Agent 开放。
+
+在 Windows 执行 `scripts/maintenance_soak.ps1` 可进行 24 小时串口观察，遇到故障即停止，不自动复位。该脚本要求已配置 LLM 凭证；物理阈值/拔线注入、人工点表确认和实际 AI 产物仍须单独验收。
+
+扫描页的生成候选操作不提交已确认表；已有候选时拒绝覆盖。需要先在 NSH 用 `vgpoint test` 核对实际结果，再由人单独发送 `vgpoint apply --confirm`。本轮仍未增加候选版本绑定校验。

@@ -33,11 +33,16 @@ app/velaguard/host_tests/test_config_store
 app/velaguard/host_tests/test_discover
 app/velaguard/host_tests/test_vgpoint
 app/velaguard/host_tests/test_alarm_eval
+app/velaguard/host_tests/test_time_sync
+app/velaguard/host_tests/test_hmi_perf
+app/velaguard/host_tests/test_hmi_sched
+app/velaguard/host_tests/test_runtime_render
 
 # Local AI / editor tooling (do not submit; contest code lives in-tree)
 .claude
 .claude/
 .codex/
+.zcode/
 .cursor/*
 !.cursor/hooks.json
 !.cursor/hooks/
@@ -50,6 +55,7 @@ app/velaguard/host_tests/test_alarm_eval
 # Accidental apt downloads (do not submit)
 *.deb
 .grok/
+.scratch/
 # .clangd is committed (portable include flags for all machines)
 
 # Editor settings: keep the shared VS Code project configuration.
@@ -86,3 +92,39 @@ app/velaguard/agent_secrets.h
 !logs/**
 # Collector local failure dumps (not scored session transcripts)
 logs/**/errors/
+
+# Host test binaries built by `make -C app/velaguard/host_tests test`
+/app/velaguard/host_tests/test_*
+!/app/velaguard/host_tests/test_*.c
+!/app/velaguard/host_tests/test_*.py
+
+# Report authoring stays out of the repository. The submission directory keeps
+# the deliverable (DOCX/PDF/poster), its figures and the raw evidence the report
+# cites; the scripts that generate them, the styling pipeline, the regression
+# tests and the internal wording notes are local build tooling. They remain on
+# the authoring machine so the report can still be rebuilt, but they are not
+# part of the product repository.
+/docs/submission/*.py
+/docs/submission/*.ps1
+/docs/submission/*.mjs
+/docs/submission/BUILD.md
+/docs/submission/gongwen/
+/docs/plan-917-submission.md
+# Bundled font copy is unused (figures read system fonts); the preview zip is a
+# local packaging step.
+/docs/submission/fonts/
+/docs/submission/TeamFalcons-*-PREVIEW.zip
+/docs/submission/REQUIREMENTS.md
+
+# Headless/HMI framebuffer captures and scratch logs dropped at the repo root during accept runs
+/*.ppm
+/*.log
+
+# Submission material backups (kept out of git; canonical copies live elsewhere)
+docs/submission/.backup-*/
+
+# Local connection notes (MQTT and MiMo endpoints); never commit.
+connect_info
+
+# Provisioning / credential material must never enter the repo
+/secrets/
