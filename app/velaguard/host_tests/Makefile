@@ -65,11 +65,12 @@ test_provision_creds: test_provision_creds.c ../vg_provision.c ../vg_provision.h
 
 # vg_provision.c is included by the test rather than linked, so the record
 # paths can be redirected; only the file store is linked.  rename is wrapped
-# so a publication can be made to fail the way a dying eMMC write would.
+# so a publication can be made to fail the way a dying eMMC write would, and
+# read so the two concurrent loads can be interleaved on purpose.
 test_mqtt_cred: test_mqtt_cred.c ../vg_provision.c ../vg_provision.h \
                 ../vg_file_store.c ../vg_file_store.h
 	$(CC) $(CFLAGS) -o $@ test_mqtt_cred.c ../vg_file_store.c \
-	  -Wl,--wrap=rename
+	  -Wl,--wrap=rename,--wrap=read
 
 test_agent_query: test_agent_query.c ../vg_agent_query.c ../vg_agent_query.h
 	$(CC) $(CFLAGS) -o $@ test_agent_query.c ../vg_agent_query.c

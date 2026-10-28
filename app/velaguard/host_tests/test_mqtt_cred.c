@@ -15,9 +15,11 @@
  ****************************************************************************/
 
 #include <errno.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #define VG_PROVISION_DIR  "."
 #define VG_PROVISION_FILE "vgtest-llm_secrets.v1"
@@ -116,6 +118,109 @@ int __wrap_rename(const char *from, const char *to)
     }
 
   return __real_rename(from, to);
+}
+
+/****************************************************************************
+ * Deterministic interleaving of two loads
+ *
+ * The store's working buffers are module scope, so two concurrent loads share
+ * them.  The case that matters is a second load writing into the sealed-bytes
+ * buffer between the first load's read() and its integrity check: the first
+ * load then authenticates bytes that were never on the card.
+ *
+ * The rendezvous below forces exactly that window.  Loader A is stopped inside
+ * its read of the shared buffer, the record on the card is replaced, and
+ * loader B is released to try to enter the same buffer.  A then continues and
+ * must still see its own record.
+ *
+ * The handshake up to "B has been released" is deterministic.  The last step,
+ * "B has started a read of the shared buffer", is waited for with a bounded
+ * deadline, because with the lock held end to end B never gets there and there
+ * is no event to wait for.  That deadline can only make the test miss a
+ * regression, never report one that is not there.
+ ****************************************************************************/
+
+static pthread_mutex_t t_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t  t_cv   = PTHREAD_COND_INITIALIZER;
+static volatile int    t_armed;
+static int             t_first_inside;
+static int             t_first_done;
+static int             t_second_started;
+static int             t_second_reached;
+
+ssize_t __real_read(int fd, void *buf, size_t n);
+
+ssize_t __wrap_read(int fd, void *buf, size_t n)
+{
+  ssize_t got;
+
+  if (!t_armed || buf != (void *)g_mqtt_blob)
+    {
+      return __real_read(fd, buf, n);
+    }
+
+  /* Fill the buffer first: the window under test opens once the first loader
+   * holds bytes it has not authenticated yet. */
+
+  got = __real_read(fd, buf, n);
+
+  pthread_mutex_lock(&t_lock);
+  if (!t_first_inside)
+    {
+      struct timespec deadline;
+
+      t_first_inside = 1;
+      pthread_cond_broadcast(&t_cv);
+
+      while (!t_second_started)
+        {
+          pthread_cond_wait(&t_cv, &t_lock);
+        }
+
+      clock_gettime(CLOCK_REALTIME, &deadline);
+      deadline.tv_nsec += 200000000L;
+      if (deadline.tv_nsec >= 1000000000L)
+        {
+          deadline.tv_sec++;
+          deadline.tv_nsec -= 1000000000L;
+        }
+
+      while (!t_second_reached)
+        {
+          if (pthread_cond_timedwait(&t_cv, &t_lock, &deadline) == ETIMEDOUT)
+            {
+              break;
+            }
+        }
+
+      t_first_done = 1;
+    }
+  else if (!t_first_done)
+    {
+      /* A second read landed on the shared buffer while the first loader was
+       * still between its read and its integrity check. */
+
+      t_second_reached = 1;
+      pthread_cond_broadcast(&t_cv);
+    }
+
+  pthread_mutex_unlock(&t_lock);
+  return got;
+}
+
+static void *loader_a(void *arg)
+{
+  return (void *)(intptr_t)vg_mqtt_cred_load((struct vg_mqtt_credentials *)arg);
+}
+
+static void *loader_b(void *arg)
+{
+  pthread_mutex_lock(&t_lock);
+  t_second_started = 1;
+  pthread_cond_broadcast(&t_cv);
+  pthread_mutex_unlock(&t_lock);
+
+  return (void *)(intptr_t)vg_mqtt_cred_load((struct vg_mqtt_credentials *)arg);
 }
 
 /****************************************************************************
@@ -395,6 +500,113 @@ int main(void)
   expect(vg_mqtt_cred_load(&cred) == 0 && strcmp(cred.username, "second") == 0 &&
          strcmp(cred.password, "pw-two") == 0,
          "the published record is the one that reads back");
+
+  /* Interleaving.  Loader A is held inside its read of the shared buffer while
+   * the record on the card is replaced and loader B is released to try to
+   * enter the same buffer.  A must still come back with the record it read. */
+
+  {
+    struct vg_mqtt_credentials a;
+    struct vg_mqtt_credentials b;
+    pthread_t ta;
+    pthread_t tb;
+    void *res;
+    int ra = -1;
+    int rb = -1;
+
+    put_record(VG_MQTT_CRED_FILE, MQTT_JSON("interleave-a", "pw-aaaa"));
+    memset(&a, 0, sizeof(a));
+    memset(&b, 0, sizeof(b));
+
+    pthread_mutex_lock(&t_lock);
+    t_first_inside = 0;
+    t_first_done = 0;
+    t_second_started = 0;
+    t_second_reached = 0;
+    pthread_mutex_unlock(&t_lock);
+    t_armed = 1;
+
+    if (pthread_create(&ta, NULL, loader_a, &a) != 0)
+      {
+        expect(0, "loader A starts");
+        t_armed = 0;
+      }
+    else
+      {
+        pthread_mutex_lock(&t_lock);
+        while (!t_first_inside)
+          {
+            pthread_cond_wait(&t_cv, &t_lock);
+          }
+        pthread_mutex_unlock(&t_lock);
+
+        /* Replace the record while A is still inside the buffer, then let B
+         * in.  A read its bytes before the replacement, so only a clobbered
+         * buffer can change what A ends up authenticating. */
+
+        put_record(VG_MQTT_CRED_FILE, MQTT_JSON("interleave-b", "pw-bbbb"));
+
+        if (pthread_create(&tb, NULL, loader_b, &b) != 0)
+          {
+            expect(0, "loader B starts");
+            pthread_mutex_lock(&t_lock);
+            t_second_started = 1;
+            t_second_reached = 1;
+            pthread_cond_broadcast(&t_cv);
+            pthread_mutex_unlock(&t_lock);
+          }
+        else
+          {
+            pthread_join(tb, &res);
+            rb = (int)(intptr_t)res;
+          }
+
+        pthread_join(ta, &res);
+        ra = (int)(intptr_t)res;
+        t_armed = 0;
+
+        expect(!t_second_reached,
+               "a second load cannot read the shared buffer while the first "
+               "is still between its read and its check");
+        expect(ra == 0 && strcmp(a.username, "interleave-a") == 0 &&
+               strcmp(a.password, "pw-aaaa") == 0,
+               "the first loader still gets the record it read");
+        expect(rb == 0 && strcmp(b.username, "interleave-b") == 0 &&
+               strcmp(b.password, "pw-bbbb") == 0,
+               "the second loader gets the record it read");
+      }
+  }
+
+  /* And the ordinary case: several loaders at once all succeed with the
+   * record on the card. */
+
+  {
+    struct vg_mqtt_credentials many[4];
+    pthread_t threads[4];
+    void *res;
+    int started = 0;
+    size_t i;
+
+    put_record(VG_MQTT_CRED_FILE, MQTT_JSON("concurrent", "pw-shared"));
+
+    for (i = 0; i < 4; i++)
+      {
+        memset(&many[i], 0, sizeof(many[i]));
+        if (pthread_create(&threads[i], NULL, loader_a, &many[i]) == 0)
+          {
+            started++;
+          }
+      }
+
+    for (i = 0; i < (size_t)started; i++)
+      {
+        pthread_join(threads[i], &res);
+        expect((int)(intptr_t)res == 0 &&
+               strcmp(many[i].username, "concurrent") == 0 &&
+               strcmp(many[i].password, "pw-shared") == 0,
+               "a concurrent load gets the record on the card");
+      }
+  }
 
   clean_store();
 

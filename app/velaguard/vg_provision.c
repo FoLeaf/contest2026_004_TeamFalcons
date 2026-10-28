@@ -724,13 +724,22 @@ int vg_mqtt_cred_install(const void *blob, size_t blob_len)
   return vg_file_replace(VG_MQTT_CRED_FILE, blob, blob_len, 0600);
 }
 
+/* The load working set is module scope rather than function scope so that the
+ * lock below can be seen to cover every one of the four: the sealed bytes, the
+ * decrypted text, the derived UID and the mutex itself.  Both the MQTT session
+ * and the vgmqtt tool call this, and in a flat build they are tasks in one
+ * address space, so the race is reachable in the product and not only in a
+ * test.
+ */
+
+static uint8_t g_mqtt_uid[VG_PROVISION_UID_LEN];
+static uint8_t g_mqtt_blob[VG_PROVISION_BLOB_MAX];
+static char g_mqtt_plain[640];
+static pthread_mutex_t g_mqtt_lock = PTHREAD_MUTEX_INITIALIZER;
+
 int vg_mqtt_cred_load(struct vg_mqtt_credentials *out)
 {
-  static uint8_t uid[VG_PROVISION_UID_LEN];
-  static uint8_t blob[VG_PROVISION_BLOB_MAX];
-  static char plain[640];
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  size_t plain_len;
+  size_t plain_len = 0;
   ssize_t n;
   int fd;
   int ret;
@@ -742,41 +751,51 @@ int vg_mqtt_cred_load(struct vg_mqtt_credentials *out)
 
   memset(out, 0, sizeof(*out));
 
+  /* The lock covers the read() as well as the decrypt.  Holding it only
+   * around the decrypt left a window in which a second loader overwrote
+   * g_mqtt_blob between the first loader's read() and its integrity check:
+   * the first loader would then authenticate bytes that were never on the
+   * card, and could hand back the other task's record - or fail with an
+   * integrity error for a record that is perfectly good. */
+
+  pthread_mutex_lock(&g_mqtt_lock);
+
   fd = open(VG_MQTT_CRED_FILE, O_RDONLY);
   if (fd < 0)
     {
-      return -errno;
+      ret = -errno;
     }
-
-  n = read(fd, blob, sizeof(blob));
-  close(fd);
-  if (n <= 0)
+  else
     {
-      return (n == 0) ? -EINVAL : -EIO;
+      n = read(fd, g_mqtt_blob, sizeof(g_mqtt_blob));
+      close(fd);
+      if (n <= 0)
+        {
+          ret = (n == 0) ? -EINVAL : -EIO;
+        }
+      else
+        {
+          ret = vg_provision_read_uid(g_mqtt_uid);
+          if (ret == 0)
+            {
+              ret = vg_provision_crypto_open(g_mqtt_uid, g_mqtt_blob, (size_t)n,
+                                             (uint8_t *)g_mqtt_plain,
+                                             sizeof(g_mqtt_plain), &plain_len);
+            }
+
+          if (ret == 0)
+            {
+              g_mqtt_plain[plain_len] = '\0';
+              ret = vg_mqtt_cred_parse(g_mqtt_plain, out);
+            }
+        }
     }
 
-  /* The working buffers are static, so two threads loading at once would
-   * decrypt into the same plaintext.  The lock covers the whole decrypt and
-   * parse, and the plaintext is wiped before it is released. */
+  /* The decrypted text is the password in the clear; drop it before the lock
+   * is released so the next loader cannot observe it. */
 
-  pthread_mutex_lock(&lock);
-
-  ret = vg_provision_read_uid(uid);
-  if (ret == 0)
-    {
-      ret = vg_provision_crypto_open(uid, blob, (size_t)n,
-                                     (uint8_t *)plain, sizeof(plain),
-                                     &plain_len);
-    }
-
-  if (ret == 0)
-    {
-      plain[plain_len] = '\0';
-      ret = vg_mqtt_cred_parse(plain, out);
-    }
-
-  memset(plain, 0, sizeof(plain));
-  pthread_mutex_unlock(&lock);
+  memset(g_mqtt_plain, 0, sizeof(g_mqtt_plain));
+  pthread_mutex_unlock(&g_mqtt_lock);
 
   if (ret < 0)
     {
